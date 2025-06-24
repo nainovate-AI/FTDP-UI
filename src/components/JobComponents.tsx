@@ -9,18 +9,18 @@ interface JobCardProps {
 export const JobCard: React.FC<JobCardProps> = ({ job }) => {
   const { theme } = useTheme();
 
-  const getStatusColor = (status: string) => {
+  const getStatusClasses = (status: string) => {
     switch (status) {
       case 'running':
-        return '#3b82f6';
+        return 'bg-blue-600 text-white';
       case 'completed':
-        return '#10b981';
+        return 'bg-green-600 text-white';
       case 'failed':
-        return '#ef4444';
+        return 'bg-red-600 text-white';
       case 'pending':
-        return '#f59e0b';
+        return 'bg-yellow-600 text-white';
       default:
-        return theme.colors.text.muted;
+        return 'bg-gray-500 text-white';
     }
   };
 
@@ -40,170 +40,81 @@ export const JobCard: React.FC<JobCardProps> = ({ job }) => {
   };
 
   return (
-    <div style={{
-      background: theme.colors.surface,
-      border: `1px solid ${theme.colors.border}`,
-      borderRadius: '12px',
-      padding: '1.5rem',
-      boxShadow: theme.shadows.sm,
-      transition: 'all 0.3s ease'
-    }}>
+    <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 
+                    rounded-xl p-6 shadow-sm transition-all duration-300 hover:shadow-md">
       {/* Header */}
-      <div style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'flex-start',
-        marginBottom: '1rem'
-      }}>
+      <div className="flex justify-between items-start mb-4">
         <div>
-          <h3 style={{
-            fontSize: '1.125rem',
-            fontWeight: '600',
-            color: theme.colors.text.primary,
-            margin: '0 0 0.5rem 0',
-            transition: 'color 0.3s ease'
-          }}>
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 m-0 mb-2 
+                         transition-colors duration-300">
             {job.name}
           </h3>
-          <p style={{
-            fontSize: '0.875rem',
-            color: theme.colors.text.muted,
-            margin: 0,
-            transition: 'color 0.3s ease'
-          }}>
+          <p className="text-sm text-gray-500 dark:text-gray-400 m-0 transition-colors duration-300">
             {job.model}
           </p>
         </div>
-        <span style={{
-          background: getStatusColor(job.status),
-          color: 'white',
-          padding: '0.25rem 0.75rem',
-          borderRadius: '1rem',
-          fontSize: '0.75rem',
-          fontWeight: '500',
-          textTransform: 'uppercase'
-        }}>
+        <span className={`px-3 py-1 rounded-full text-xs font-medium uppercase ${getStatusClasses(job.status)}`}>
           {getStatusText(job.status)}
         </span>
       </div>
 
       {/* Progress */}
       {job.status === 'running' && (
-        <div style={{ marginBottom: '1rem' }}>
-          <div style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            marginBottom: '0.5rem'
-          }}>
-            <span style={{
-              fontSize: '0.875rem',
-              color: theme.colors.text.secondary,
-              transition: 'color 0.3s ease'
-            }}>
+        <div className="mb-4">
+          <div className="flex justify-between items-center mb-2">
+            <span className="text-sm text-gray-600 dark:text-gray-300 transition-colors duration-300">
               Progress
             </span>
-            <span style={{
-              fontSize: '0.875rem',
-              fontWeight: '500',
-              color: theme.colors.text.primary,
-              transition: 'color 0.3s ease'
-            }}>
+            <span className="text-sm font-medium text-gray-900 dark:text-gray-100 transition-colors duration-300">
               {job.progress}%
             </span>
           </div>
-          <div style={{
-            width: '100%',
-            height: '6px',
-            background: theme.colors.border,
-            borderRadius: '3px',
-            overflow: 'hidden'
-          }}>
-            <div style={{
-              width: `${job.progress}%`,
-              height: '100%',
-              background: '#3b82f6',
-              transition: 'width 0.3s ease'
-            }} />
+          <div className="w-full h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+            <div 
+              className="h-full bg-blue-600 transition-all duration-300"
+              style={{ width: `${job.progress}%` }}
+            />
           </div>
         </div>
       )}
 
       {/* Accuracy for completed jobs */}
       {job.status === 'completed' && job.accuracy && (
-        <div style={{ marginBottom: '1rem' }}>
-          <span style={{
-            fontSize: '0.875rem',
-            color: theme.colors.text.secondary,
-            marginRight: '0.5rem',
-            transition: 'color 0.3s ease'
-          }}>
+        <div className="mb-4">
+          <span className="text-sm text-gray-600 dark:text-gray-300 mr-2 transition-colors duration-300">
             Accuracy:
           </span>
-          <span style={{
-            fontSize: '0.875rem',
-            fontWeight: '600',
-            color: '#10b981'
-          }}>
+          <span className="text-sm font-semibold text-green-600">
             {job.accuracy}%
           </span>
         </div>
       )}
 
       {/* Dataset */}
-      <div style={{ marginBottom: '1rem' }}>
-        <span style={{
-          fontSize: '0.875rem',
-          color: theme.colors.text.secondary,
-          marginRight: '0.5rem',
-          transition: 'color 0.3s ease'
-        }}>
+      <div className="mb-4">
+        <span className="text-sm text-gray-600 dark:text-gray-300 mr-2 transition-colors duration-300">
           Dataset:
         </span>
-        <span style={{
-          fontSize: '0.875rem',
-          fontWeight: '500',
-          color: theme.colors.text.primary,
-          transition: 'color 0.3s ease'
-        }}>
+        <span className="text-sm font-medium text-gray-900 dark:text-gray-100 transition-colors duration-300">
           {job.dataset}
         </span>
       </div>
 
       {/* Description */}
       {job.description && (
-        <p style={{
-          fontSize: '0.875rem',
-          color: theme.colors.text.muted,
-          margin: '0 0 1rem 0',
-          lineHeight: '1.4',
-          transition: 'color 0.3s ease'
-        }}>
+        <p className="text-sm text-gray-500 dark:text-gray-400 m-0 mb-4 leading-relaxed 
+                      transition-colors duration-300">
           {job.description}
         </p>
       )}
 
       {/* Footer */}
-      <div style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        paddingTop: '1rem',
-        borderTop: `1px solid ${theme.colors.border}`
-      }}>
-        <span style={{
-          fontSize: '0.75rem',
-          color: theme.colors.text.muted,
-          transition: 'color 0.3s ease'
-        }}>
+      <div className="flex justify-between items-center pt-4 border-t border-gray-200 dark:border-gray-700">
+        <span className="text-xs text-gray-500 dark:text-gray-400 transition-colors duration-300">
           Started {new Date(job.startTime).toLocaleDateString()}
         </span>
         {job.estimatedCompletion && job.status === 'running' && (
-          <span style={{
-            fontSize: '0.75rem',
-            color: theme.colors.text.muted,
-            transition: 'color 0.3s ease'
-          }}>
+          <span className="text-xs text-gray-500 dark:text-gray-400 transition-colors duration-300">
             ETA {new Date(job.estimatedCompletion).toLocaleTimeString()}
           </span>
         )}

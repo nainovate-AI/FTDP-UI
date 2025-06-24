@@ -50,35 +50,14 @@ const CardCentricLayout: React.FC = () => {
   };
 
   return (
-    <div style={{ 
-      maxWidth: '1200px', 
-      margin: '0 auto', 
-      padding: '3rem 2rem',
-      minHeight: 'calc(100vh - 64px)'
-    }}>
+    <div className="max-w-6xl mx-auto px-8 py-12 min-h-screen">
       {/* Back Button */}
-      <div style={{ marginBottom: '2rem' }}>
+      <div className="mb-8">
         <button
           onClick={handleBackToDashboard}
-          style={{
-            background: 'transparent',
-            border: `1px solid ${theme.colors.border}`,
-            color: theme.colors.text.secondary,
-            padding: '0.5rem 1rem',
-            borderRadius: '0.375rem',
-            fontSize: '0.875rem',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.5rem',
-            transition: 'all 0.2s'
-          }}
-          onMouseOver={(e) => {
-            e.currentTarget.style.background = theme.colors.hover;
-          }}
-          onMouseOut={(e) => {
-            e.currentTarget.style.background = 'transparent';
-          }}
+          className="bg-transparent border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-400 
+                     px-4 py-2 rounded-md text-sm cursor-pointer flex items-center gap-2 
+                     transition-all duration-200 hover:bg-gray-50 dark:hover:bg-gray-800"
         >
           ← Back to Minimal View
         </button>
@@ -88,42 +67,18 @@ const CardCentricLayout: React.FC = () => {
       <StatsGrid stats={mockStats} />
       
       {/* Jobs Section */}
-      <div style={{ marginBottom: '2rem' }}>
-        <div style={{ 
-          display: 'flex', 
-          justifyContent: 'space-between', 
-          alignItems: 'center', 
-          marginBottom: '1.5rem' 
-        }}>
-          <h2 style={{
-            fontSize: '1.5rem',
-            fontWeight: '600',
-            color: theme.colors.text.primary,
-            margin: 0,
-            transition: 'color 0.3s ease'
-          }}>
+      <div className="mb-8">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100 m-0 transition-colors duration-300">
             Recent Finetuning Jobs
           </h2>
-          <button style={{
-            background: theme.colors.accent,
-            color: 'white',
-            padding: '0.5rem 1rem',
-            border: 'none',
-            borderRadius: '0.375rem',
-            fontSize: '0.875rem',
-            fontWeight: '500',
-            cursor: 'pointer',
-            transition: 'all 0.2s'
-          }}>
+          <button className="bg-blue-600 text-white px-4 py-2 border-0 rounded-md text-sm font-medium 
+                           cursor-pointer transition-all duration-200 hover:bg-blue-700">
             New Job
           </button>
         </div>
         
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
-          gap: '1.5rem'
-        }}>
+        <div className="grid grid-cols-[repeat(auto-fill,minmax(320px,1fr))] gap-6">
           {mockJobs.map((job) => (
             <JobCard key={job.id} job={job} />
           ))}
@@ -131,126 +86,47 @@ const CardCentricLayout: React.FC = () => {
       </div>
       
       {/* Additional action cards */}
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
-        gap: '1.5rem'
-      }}>
-        <div style={{ 
-          background: theme.colors.surface,
-          textAlign: 'center', 
-          padding: '2rem',
-          borderRadius: '12px',
-          border: `1px solid ${theme.colors.border}`,
-          boxShadow: theme.shadows.sm,
-          transition: 'all 0.3s ease'
-        }}>
-          <h3 style={{ 
-            marginBottom: '1rem', 
-            color: '#3b82f6',
-            fontSize: '1.125rem',
-            fontWeight: '600'
-          }}>
+      <div className="grid grid-cols-[repeat(auto-fit,minmax(250px,1fr))] gap-6">
+        <div className="bg-white dark:bg-gray-800 text-center p-8 rounded-xl border border-gray-200 dark:border-gray-700 
+                        shadow-sm transition-all duration-300 hover:shadow-md">
+          <h3 className="mb-4 text-blue-600 text-lg font-semibold">
             Quick Start
           </h3>
-          <p style={{ 
-            color: theme.colors.text.muted, 
-            marginBottom: '1.5rem', 
-            fontSize: '0.875rem',
-            transition: 'color 0.3s ease'
-          }}>
+          <p className="text-gray-500 dark:text-gray-400 mb-6 text-sm transition-colors duration-300">
             Create your first finetuning job with our guided setup
           </p>
-          <button style={{ 
-            width: '100%',
-            background: theme.colors.accent,
-            color: 'white',
-            padding: '0.5rem 1rem',
-            border: 'none',
-            borderRadius: '0.375rem',
-            fontSize: '0.875rem',
-            fontWeight: '500',
-            cursor: 'pointer',
-            transition: 'all 0.2s'
-          }}>
+          <button className="w-full bg-blue-600 text-white px-4 py-2 border-0 rounded-md text-sm font-medium 
+                           cursor-pointer transition-all duration-200 hover:bg-blue-700">
             Get Started
           </button>
         </div>
         
-        <div style={{ 
-          background: theme.colors.surface,
-          textAlign: 'center', 
-          padding: '2rem',
-          borderRadius: '12px',
-          border: `1px solid ${theme.colors.border}`,
-          boxShadow: theme.shadows.sm,
-          transition: 'all 0.3s ease'
-        }}>
-          <h3 style={{ 
-            marginBottom: '1rem', 
-            color: '#10b981',
-            fontSize: '1.125rem',
-            fontWeight: '600'
-          }}>
+        <div className="bg-white dark:bg-gray-800 text-center p-8 rounded-xl border border-gray-200 dark:border-gray-700 
+                        shadow-sm transition-all duration-300 hover:shadow-md">
+          <h3 className="mb-4 text-green-600 text-lg font-semibold">
             Documentation
           </h3>
-          <p style={{ 
-            color: theme.colors.text.muted, 
-            marginBottom: '1.5rem', 
-            fontSize: '0.875rem',
-            transition: 'color 0.3s ease'
-          }}>
+          <p className="text-gray-500 dark:text-gray-400 mb-6 text-sm transition-colors duration-300">
             Learn best practices for model finetuning
           </p>
-          <button style={{ 
-            width: '100%',
-            padding: '0.5rem 1rem',
-            border: `1px solid ${theme.colors.border}`,
-            background: 'transparent',
-            color: theme.colors.text.primary,
-            borderRadius: '0.375rem',
-            cursor: 'pointer',
-            transition: 'all 0.2s'
-          }}>
+          <button className="w-full px-4 py-2 border border-gray-200 dark:border-gray-700 bg-transparent 
+                           text-gray-900 dark:text-gray-100 rounded-md cursor-pointer transition-all duration-200 
+                           hover:bg-gray-50 dark:hover:bg-gray-700">
             Read Docs
           </button>
         </div>
         
-        <div style={{ 
-          background: theme.colors.surface,
-          textAlign: 'center', 
-          padding: '2rem',
-          borderRadius: '12px',
-          border: `1px solid ${theme.colors.border}`,
-          boxShadow: theme.shadows.sm,
-          transition: 'all 0.3s ease'
-        }}>
-          <h3 style={{ 
-            marginBottom: '1rem', 
-            color: '#f59e0b',
-            fontSize: '1.125rem',
-            fontWeight: '600'
-          }}>
+        <div className="bg-white dark:bg-gray-800 text-center p-8 rounded-xl border border-gray-200 dark:border-gray-700 
+                        shadow-sm transition-all duration-300 hover:shadow-md">
+          <h3 className="mb-4 text-yellow-600 text-lg font-semibold">
             Support
           </h3>
-          <p style={{ 
-            color: theme.colors.text.muted, 
-            marginBottom: '1.5rem', 
-            fontSize: '0.875rem',
-            transition: 'color 0.3s ease'
-          }}>
+          <p className="text-gray-500 dark:text-gray-400 mb-6 text-sm transition-colors duration-300">
             Get help from our expert team
           </p>
-          <button style={{ 
-            width: '100%',
-            padding: '0.5rem 1rem',
-            border: `1px solid ${theme.colors.border}`,
-            background: 'transparent',
-            color: theme.colors.text.primary,
-            borderRadius: '0.375rem',
-            cursor: 'pointer',
-            transition: 'all 0.2s'
-          }}>
+          <button className="w-full px-4 py-2 border border-gray-200 dark:border-gray-700 bg-transparent 
+                           text-gray-900 dark:text-gray-100 rounded-md cursor-pointer transition-all duration-200 
+                           hover:bg-gray-50 dark:hover:bg-gray-700">
             Contact Us
           </button>
         </div>

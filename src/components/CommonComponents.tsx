@@ -7,30 +7,12 @@ export const WelcomePanel: React.FC = () => {
   const { theme } = useTheme();
   
   return (
-    <div style={{
-      background: theme.colors.surface,
-      padding: '3rem',
-      borderRadius: '12px',
-      border: `1px solid ${theme.colors.border}`,
-      boxShadow: theme.shadows.md,
-      textAlign: 'center',
-      marginBottom: '2rem',
-      transition: 'all 0.3s ease'
-    }}>
-      <h1 style={{
-        fontSize: '2.5rem',
-        fontWeight: '600',
-        color: theme.colors.text.primary,
-        marginBottom: '1rem',
-        transition: 'color 0.3s ease'
-      }}>
+    <div className="bg-white dark:bg-gray-800 p-12 rounded-xl border border-gray-200 dark:border-gray-700 
+                    shadow-md text-center mb-8 transition-all duration-300">
+      <h1 className="text-4xl font-semibold text-gray-900 dark:text-gray-100 mb-4 transition-colors duration-300">
         Welcome back, Alex
       </h1>
-      <p style={{
-        fontSize: '1.125rem',
-        color: theme.colors.text.muted,
-        transition: 'color 0.3s ease'
-      }}>
+      <p className="text-lg text-gray-500 dark:text-gray-400 transition-colors duration-300">
         Manage your AI model finetuning jobs and monitor training progress
       </p>
     </div>
@@ -46,51 +28,28 @@ export const StatsGrid: React.FC<StatsGridProps> = ({ stats }) => {
   const { theme } = useTheme();
   
   return (
-    <div style={{
-      display: 'grid',
-      gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-      gap: '1.5rem',
-      marginBottom: '2rem'
-    }}>
+    <div className="grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-6 mb-8">
       {stats.map((stat, index) => (
         <div 
           key={index} 
-          style={{
-            background: theme.colors.surface,
-            padding: '2rem',
-            borderRadius: '12px',
-            border: `1px solid ${theme.colors.border}`,
-            boxShadow: theme.shadows.sm,
-            textAlign: 'center',
-            transition: 'all 0.3s ease'
-          }}
+          className="bg-white dark:bg-gray-800 p-8 rounded-xl border border-gray-200 dark:border-gray-700 
+                     shadow-sm text-center transition-all duration-300 hover:shadow-md"
         >
-          <h3 style={{
-            fontSize: '0.875rem',
-            color: theme.colors.text.muted,
-            margin: '0 0 0.75rem 0',
-            textTransform: 'uppercase',
-            letterSpacing: '0.05em',
-            transition: 'color 0.3s ease'
-          }}>
+          <h3 className="text-sm text-gray-500 dark:text-gray-400 m-0 mb-3 uppercase tracking-wider 
+                         transition-colors duration-300">
             {stat.title}
           </h3>
-          <div style={{
-            fontSize: '2.5rem',
-            fontWeight: '700',
-            color: theme.colors.text.primary,
-            marginBottom: '0.5rem',
-            transition: 'color 0.3s ease'
-          }}>
+          <div className="text-4xl font-bold text-gray-900 dark:text-gray-100 mb-2 transition-colors duration-300">
             {stat.value}
           </div>
           {stat.change && (
-            <div style={{ 
-              fontSize: '0.875rem', 
-              color: stat.trend === 'up' ? '#10b981' : stat.trend === 'down' ? '#ef4444' : theme.colors.text.muted,
-              fontWeight: '500',
-              transition: 'color 0.3s ease'
-            }}>
+            <div className={`text-sm font-medium transition-colors duration-300 ${
+              stat.trend === 'up' 
+                ? 'text-green-500' 
+                : stat.trend === 'down' 
+                ? 'text-red-500' 
+                : 'text-gray-500 dark:text-gray-400'
+            }`}>
               {stat.change}
             </div>
           )}

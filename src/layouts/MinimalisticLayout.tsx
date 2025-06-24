@@ -42,74 +42,35 @@ const MinimalisticLayout: React.FC = () => {
   };
 
   return (
-    <div style={{ 
-      maxWidth: '1200px', 
-      margin: '0 auto', 
-      padding: '3rem 2rem',
-      minHeight: 'calc(100vh - 64px)'
-    }}>
+    <div className="max-w-6xl mx-auto px-8 py-12 min-h-screen">
       {/* Simplified welcome section */}
-      <div style={{ 
-        textAlign: 'center', 
-        marginBottom: '4rem',
-        padding: '2rem 0'
-      }}>
-        <h1 style={{ 
-          fontSize: '2.5rem', 
-          fontWeight: '300', 
-          color: theme.colors.text.primary,
-          marginBottom: '1rem',
-          letterSpacing: '-0.025em',
-          transition: 'color 0.3s ease'
-        }}>
+      <div className="text-center mb-16 py-8">
+        <h1 className="text-4xl font-light text-gray-900 dark:text-gray-100 mb-4 tracking-tight transition-colors duration-300">
           Good morning, Alex
         </h1>
-        <p style={{ 
-          fontSize: '1.125rem', 
-          color: theme.colors.text.muted,
-          fontWeight: '400',
-          transition: 'color 0.3s ease'
-        }}>
+        <p className="text-lg text-gray-500 dark:text-gray-400 font-normal transition-colors duration-300">
           You have 8 active jobs and 3 pending reviews
         </p>
       </div>
 
       {/* Minimalist stats */}
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(2, 1fr)',
-        gridTemplateRows: 'repeat(2, 1fr)',
-        gap: '3rem',
-        marginBottom: '4rem',
-        padding: '2rem 0'
-      }}>
+      <div className="grid grid-cols-2 grid-rows-2 gap-12 mb-16 py-8">
         {mockStats.map((stat, index) => (
-          <div key={index} style={{ textAlign: 'center' }}>
-            <div style={{ 
-              fontSize: '2.5rem', 
-              fontWeight: '700', 
-              color: theme.colors.text.primary,
-              marginBottom: '0.5rem',
-              transition: 'color 0.3s ease'
-            }}>
+          <div key={index} className="text-center">
+            <div className="text-4xl font-bold text-gray-900 dark:text-gray-100 mb-2 transition-colors duration-300">
               {stat.value}
             </div>
-            <div style={{ 
-              fontSize: '0.875rem', 
-              color: theme.colors.text.muted,
-              textTransform: 'uppercase',
-              letterSpacing: '0.1em',
-              transition: 'color 0.3s ease'
-            }}>
+            <div className="text-sm text-gray-500 dark:text-gray-400 uppercase tracking-wider transition-colors duration-300">
               {stat.title}
             </div>
             {stat.change && (
-              <div style={{ 
-                fontSize: '0.875rem', 
-                color: stat.trend === 'up' ? '#10b981' : stat.trend === 'down' ? '#ef4444' : theme.colors.text.muted,
-                marginTop: '0.25rem',
-                fontWeight: '500'
-              }}>
+              <div className={`text-sm mt-1 font-medium ${
+                stat.trend === 'up' 
+                  ? 'text-green-500' 
+                  : stat.trend === 'down' 
+                  ? 'text-red-500' 
+                  : 'text-gray-500 dark:text-gray-400'
+              }`}>
                 {stat.change}
               </div>
             )}
@@ -118,43 +79,16 @@ const MinimalisticLayout: React.FC = () => {
       </div>
 
       {/* View More Section */}
-      <div style={{ 
-        textAlign: 'center', 
-        marginTop: '4rem',
-        padding: '3rem 0'
-      }}>
+      <div className="text-center mt-16 py-12">
         <button 
           onClick={handleViewMore}
-          style={{
-            background: theme.colors.text.primary,
-            color: theme.colors.background,
-            padding: '1rem 2rem',
-            border: 'none',
-            borderRadius: '0.75rem',
-            fontSize: '1rem',
-            fontWeight: '500',
-            cursor: 'pointer',
-            transition: 'all 0.2s',
-            boxShadow: theme.shadows.md
-          }}
-          onMouseOver={(e) => {
-            e.currentTarget.style.background = theme.colors.text.secondary;
-            e.currentTarget.style.transform = 'translateY(-1px)';
-          }}
-          onMouseOut={(e) => {
-            e.currentTarget.style.background = theme.colors.text.primary;
-            e.currentTarget.style.transform = 'translateY(0)';
-          }}
+          className="bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 px-8 py-4 
+                     border-0 rounded-xl text-base font-medium cursor-pointer transition-all duration-200 
+                     shadow-md hover:bg-gray-700 dark:hover:bg-gray-300 hover:-translate-y-0.5"
         >
           View More Details
         </button>
-        <p style={{ 
-          color: theme.colors.text.muted, 
-          fontSize: '0.875rem', 
-          marginTop: '1rem',
-          fontStyle: 'italic',
-          transition: 'color 0.3s ease'
-        }}>
+        <p className="text-gray-500 dark:text-gray-400 text-sm mt-4 italic transition-colors duration-300">
           See detailed view of jobs, datasets, and more
         </p>
       </div>
