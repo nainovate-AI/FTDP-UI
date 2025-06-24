@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react';
+import React, { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { mockStats, mockJobs } from '../../types';
 import { ThemeToggle } from '../ThemeToggle';
@@ -18,6 +18,7 @@ interface CardCentricLayoutProps {
  */
 export const CardCentricLayout: React.FC<CardCentricLayoutProps> = ({ children }) => {
   const router = useRouter();
+  const currentJobsScrollRef = useRef<HTMLDivElement>(null);
 
   const handleBackToDashboard = () => {
     router.push('/dashboard/minimal');
@@ -33,11 +34,28 @@ export const CardCentricLayout: React.FC<CardCentricLayoutProps> = ({ children }
     console.log('View all jobs');
   };
 
+  const scrollCurrentJobs = (direction: 'left' | 'right') => {
+    if (currentJobsScrollRef.current) {
+      const scrollAmount = 408; // Width of one card (384px) + gap (24px) = 408px
+      const currentScroll = currentJobsScrollRef.current.scrollLeft;
+      const newScrollPosition = direction === 'left' 
+        ? currentScroll - scrollAmount 
+        : currentScroll + scrollAmount;
+      
+      currentJobsScrollRef.current.scrollTo({
+        left: newScrollPosition,
+        behavior: 'smooth'
+      });
+    }
+  };
+
+  const currentJobs = mockJobs.filter(job => job.status === 'running' || job.status === 'pending');
+
   if (children) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-        <ThemeToggle />
-        <div className="max-w-7xl mx-auto p-6">
+      <div className="cards-dashboard-container min-h-screen w-screen m-0 p-0">
+        <div className="max-w-7xl mx-auto p-6 bg-inherit">
+          <ThemeToggle />
           {children}
         </div>
       </div>
@@ -45,31 +63,29 @@ export const CardCentricLayout: React.FC<CardCentricLayoutProps> = ({ children }
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <ThemeToggle />
-      <div className="max-w-7xl mx-auto p-6">
+    <div className="cards-dashboard-container min-h-screen w-screen m-0 p-0">
+      <div className="max-w-7xl mx-auto p-6 bg-inherit">
+        <ThemeToggle />
         {/* Welcome Panel */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-8 mb-8">
-          <div className="text-center">
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">
-              Welcome back, Alex
-            </h1>
-            <p className="text-gray-600 dark:text-gray-400 mb-6">
-              Here's what's happening with your projects today
-            </p>
-            <button 
-              onClick={handleCreateJob}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg 
-                       font-medium transition-colors duration-200 shadow-md hover:shadow-lg">
-              + Create New Fine-tuning Job
-            </button>
-          </div>
+        <div className="cards-welcome-panel rounded-xl p-8 mb-8 text-center">
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">
+            Welcome back, Alex
+          </h1>
+          <p className="text-gray-600 dark:text-gray-400 mb-6">
+            Here's what's happening with your projects today
+          </p>
+          <button 
+            onClick={handleCreateJob}
+            className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg 
+                     font-medium transition-colors duration-200 shadow-md hover:shadow-lg">
+            + Create New Fine-tuning Job
+          </button>
         </div>
 
         {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {mockStats.map((stat, index) => (
-            <div key={index} className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6">
+            <div key={index} className="cards-stat-item rounded-xl p-6">
               <div className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-1">
                 {stat.value}
               </div>
@@ -92,20 +108,43 @@ export const CardCentricLayout: React.FC<CardCentricLayoutProps> = ({ children }
         </div>
 
         {/* Current Jobs Grid */}
-        <div className="mb-8">
+        <div className="mb-8 relative">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Current Jobs</h2>
-            <button 
-              onClick={handleViewAllJobs}
-              className="bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 
-                       text-gray-700 dark:text-gray-300 px-4 py-2 rounded-lg text-sm font-medium 
-                       transition-colors duration-200">
-              View All Jobs
-            </button>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {mockJobs.filter(job => job.status === 'running' || job.status === 'pending').map((job) => (
-              <div key={job.id} className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6">
+          
+          {/* Floating Arrow Buttons */}
+          {currentJobs.length > 3 && (
+            <>
+              <button 
+                onClick={() => scrollCurrentJobs('left')}
+                className="absolute left-0 top-1/2 transform -translate-y-1/2 z-10 p-3 rounded-full 
+                         bg-transparent hover:bg-blue-500 border-0 hover:border hover:border-blue-500 
+                         text-gray-400 hover:text-white transition-all duration-300 
+                         hover:shadow-lg opacity-50 hover:opacity-100">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                </svg>
+              </button>
+              <button 
+                onClick={() => scrollCurrentJobs('right')}
+                className="absolute right-0 top-1/2 transform -translate-y-1/2 z-10 p-3 rounded-full 
+                         bg-transparent hover:bg-blue-500 border-0 hover:border hover:border-blue-500 
+                         text-gray-400 hover:text-white transition-all duration-300 
+                         hover:shadow-lg opacity-50 hover:opacity-100">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
+            </>
+          )}
+          
+          <div 
+            ref={currentJobsScrollRef}
+            className="flex gap-6 overflow-x-auto scrollbar-hide pb-4 px-12"
+          >
+            {currentJobs.map((job) => (
+              <div key={job.id} className="cards-job-item rounded-xl p-6 transition-all duration-300 hover:-translate-y-0.5 flex-shrink-0 w-80 md:w-96">
                 <div className="flex justify-between items-start mb-4">
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                     {job.name}
@@ -161,7 +200,7 @@ export const CardCentricLayout: React.FC<CardCentricLayoutProps> = ({ children }
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {mockJobs.filter(job => job.status === 'completed' || job.status === 'failed').map((job) => (
-              <div key={job.id} className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6">
+              <div key={job.id} className="cards-job-item rounded-xl p-6 transition-all duration-300 hover:-translate-y-0.5">
                 <div className="flex justify-between items-start mb-4">
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                     {job.name}

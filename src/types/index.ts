@@ -112,5 +112,37 @@ export const mockJobs: Job[] = [
     startTime: '2024-01-15T13:15:00Z',
     estimatedCompletion: '2024-01-15T18:00:00Z',
     description: 'Social media sentiment analysis and moderation'
+  },
+  {
+    id: '7',
+    name: 'Image Recognition Training',
+    model: 'vision-transformer',
+    dataset: 'product_images_labeled.jsonl',
+    status: 'running',
+    progress: 45,
+    startTime: '2024-01-16T07:30:00Z',
+    estimatedCompletion: '2024-01-16T12:00:00Z',
+    description: 'Product image classification and recognition'
+  },
+  {
+    id: '8',
+    name: 'Financial Analysis Bot',
+    model: 'gpt-3.5-turbo',
+    dataset: 'financial_reports_v2.jsonl',
+    status: 'pending',
+    progress: 0,
+    startTime: '2024-01-16T14:00:00Z',
+    description: 'Financial document analysis and insights'
+  },
+  {
+    id: '9',
+    name: 'Language Translation',
+    model: 'marian-mt',
+    dataset: 'multilingual_corpus.jsonl',
+    status: 'running',
+    progress: 78,
+    startTime: '2024-01-15T06:00:00Z',
+    estimatedCompletion: '2024-01-15T16:30:00Z',
+    description: 'Multi-language translation optimization'
   }
 ];
