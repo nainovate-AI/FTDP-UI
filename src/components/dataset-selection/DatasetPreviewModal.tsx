@@ -15,9 +15,15 @@ interface DatasetPreviewModalProps {
   validationErrors: string[];
   taskType?: string;
   selectedTags?: string[];
+  title?: string; // For new uploads
+  description?: string; // For new uploads
+  datasetId?: string; // For existing datasets
+  originalInputColumn?: string; // Original input column for change detection
+  originalTargetColumn?: string; // Original target column for change detection
   onInputColumnChange: (column: string) => void;
   onTargetColumnChange: (column: string) => void;
   onSave?: (datasetData: any) => void;
+  onUpdateDataset?: (datasetId: string, updates: any) => void; // For updating existing datasets
   onClose: () => void;
 }
 
@@ -29,9 +35,15 @@ export const DatasetPreviewModal: React.FC<DatasetPreviewModalProps> = ({
   validationErrors,
   taskType,
   selectedTags,
+  title,
+  description,
+  datasetId,
+  originalInputColumn,
+  originalTargetColumn,
   onInputColumnChange,
   onTargetColumnChange,
   onSave,
+  onUpdateDataset,
   onClose
 }) => {
   const [showUnsavedWarning, setShowUnsavedWarning] = useState(false);
@@ -41,7 +53,16 @@ export const DatasetPreviewModal: React.FC<DatasetPreviewModalProps> = ({
 
   // Prevent closing if input or target columns are not selected
   const canClose = inputColumn && targetColumn && validationErrors.length === 0;
-  const canSave = canClose && previewData.isNewUpload;
+  const canSave = canClose && (previewData.isNewUpload || datasetId);
+  
+  // Check if there are unsaved changes for existing datasets
+  const hasColumnChanges = datasetId && (
+    inputColumn !== originalInputColumn || 
+    targetColumn !== originalTargetColumn
+  );
+  
+  // Only show unsaved warning for new uploads or when columns have changed
+  const shouldWarnOnClose = previewData.isNewUpload ? hasUnsavedChanges : hasColumnChanges;
 
   const handleInputChange = (column: string) => {
     onInputColumnChange(column);
@@ -54,28 +75,38 @@ export const DatasetPreviewModal: React.FC<DatasetPreviewModalProps> = ({
   };
 
   const handleSave = () => {
-    if (canSave && onSave) {
-      const datasetData = {
-        name: previewData.filename.replace(/\.[^/.]+$/, ""), // Remove file extension
-        description: `Uploaded dataset from ${previewData.filename}`,
-        format: 'CSV',
-        taskType: taskType || 'Text Classification',
-        samples: previewData.data.length,
-        size: `${(previewData.data.length * 0.1).toFixed(1)} KB`, // Rough estimate
-        tags: selectedTags || [],
-        inputColumn,
-        targetColumn,
-        columns: previewData.columns,
-        preview: previewData.data.slice(0, 10), // Store first 10 rows
-      };
-      onSave(datasetData);
-      setHasUnsavedChanges(false);
+    if (canSave) {
+      if (previewData.isNewUpload && onSave) {
+        // Save new dataset
+        const datasetData = {
+          name: title || previewData.filename.replace(/\.[^/.]+$/, ""), // Use title or fallback to filename
+          description: description || `Uploaded dataset from ${previewData.filename}`, // Use description or fallback
+          format: 'CSV',
+          taskType: taskType || 'Text Classification',
+          samples: previewData.data.length,
+          size: `${(previewData.data.length * 0.1).toFixed(1)} KB`, // Rough estimate
+          tags: selectedTags || [],
+          inputColumn,
+          targetColumn,
+          columns: previewData.columns,
+          preview: previewData.data.slice(0, 10), // Store first 10 rows
+        };
+        onSave(datasetData);
+        setHasUnsavedChanges(false);
+      } else if (datasetId && onUpdateDataset) {
+        // Update existing dataset columns
+        const updates = {
+          inputColumn,
+          targetColumn,
+        };
+        onUpdateDataset(datasetId, updates);
+      }
     }
   };
 
   const handleCloseClick = () => {
     if (canClose) {
-      if (hasUnsavedChanges && previewData.isNewUpload) {
+      if (shouldWarnOnClose) {
         setShowUnsavedWarning(true);
       } else {
         onClose();
@@ -314,7 +345,7 @@ export const DatasetPreviewModal: React.FC<DatasetPreviewModalProps> = ({
                   <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
-                  Save Dataset
+                  {previewData.isNewUpload ? 'Save Dataset' : 'Update Columns'}
                 </button>
               </div>
             )}

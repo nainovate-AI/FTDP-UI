@@ -8,12 +8,6 @@ export const DatasetTips: React.FC = () => {
       </h3>
       <div className="space-y-4 text-sm">
         <div>
-          <h4 className="font-medium text-gray-900 dark:text-gray-100 mb-1">Format Requirements</h4>
-          <p className="text-gray-600 dark:text-gray-400">
-            Currently supporting CSV format. JSONL format with 'prompt' and 'completion' fields coming soon!
-          </p>
-        </div>
-        <div>
           <h4 className="font-medium text-gray-900 dark:text-gray-100 mb-1">Quality Matters</h4>
           <p className="text-gray-600 dark:text-gray-400">
             High-quality, diverse examples lead to better model performance.

@@ -12,73 +12,11 @@ import {
   DatasetPreviewModal,
   DatasetEditModal
 } from '../../../components/dataset-selection';
-import { loadDatasets, addDataset, updateDataset, type Dataset } from '../../../utils/datasetUtils';
-
-const mockDatasets: Dataset[] = [
-  {
-    id: '1',
-    name: 'Customer Support QA Dataset',
-    description: 'Customer support questions with detailed answers and troubleshooting steps',
-    size: '2.3 MB',
-    format: 'CSV',
-    taskType: 'Question Answering',
-    samples: 5420,
-    lastModified: '2024-01-15',
-    tags: ['factual', 'customer-service', 'support'],
-    inputColumn: 'question',
-    targetColumn: 'answer',
-    columns: ['question', 'answer', 'category', 'priority'],
-    preview: [
-      { question: 'How do I reset my password?', answer: 'Click on "Forgot Password" on the login page and follow the instructions.', category: 'account', priority: 'high' },
-      { question: 'Where can I find my order history?', answer: 'Go to your account dashboard and click on "Order History" in the sidebar.', category: 'orders', priority: 'medium' },
-      { question: 'How to cancel my subscription?', answer: 'Navigate to Settings > Billing > Cancel Subscription. Note that cancellation takes effect at the end of your current billing cycle.', category: 'billing', priority: 'high' },
-      { question: 'Why is my payment failing?', answer: 'Check if your card details are correct and has sufficient funds. Contact your bank if the issue persists.', category: 'payment', priority: 'high' },
-      { question: 'How to update my profile information?', answer: 'Go to Settings > Profile and click Edit. Save your changes when done.', category: 'account', priority: 'low' }
-    ]
-  },
-  {
-    id: '2',
-    name: 'Article Summarization Dataset',
-    description: 'News articles paired with human-written summaries for training summarization models',
-    size: '15.7 MB',
-    format: 'CSV',
-    taskType: 'Summarization',
-    samples: 12800,
-    lastModified: '2024-01-12',
-    tags: ['news', 'abstractive', 'journalism'],
-    inputColumn: 'article',
-    targetColumn: 'summary',
-    columns: ['article', 'summary', 'source', 'date', 'category'],
-    preview: [
-      { article: 'Breaking: Scientists at MIT have developed a new quantum computing algorithm that could revolutionize...', summary: 'MIT researchers create breakthrough quantum algorithm with potential to transform computing.', source: 'TechNews', date: '2024-01-10', category: 'technology' },
-      { article: 'The global economy shows signs of recovery as inflation rates begin to stabilize across major markets...', summary: 'Global economic recovery underway as inflation stabilizes in key markets.', source: 'EconDaily', date: '2024-01-09', category: 'economics' },
-      { article: 'Climate change activists gathered in major cities worldwide to demand immediate action on carbon emissions...', summary: 'Worldwide climate protests call for urgent action on carbon emission reductions.', source: 'GreenNews', date: '2024-01-08', category: 'environment' }
-    ]
-  },
-  {
-    id: '3',
-    name: 'Code Generation Examples',
-    description: 'Programming tasks with corresponding code solutions and explanations',
-    size: '8.9 MB',
-    format: 'CSV',
-    taskType: 'Code Generation',
-    samples: 3200,
-    lastModified: '2024-01-10',
-    tags: ['python', 'documentation', 'programming'],
-    inputColumn: 'prompt',
-    targetColumn: 'code',
-    columns: ['prompt', 'code', 'language', 'difficulty', 'explanation'],
-    preview: [
-      { prompt: 'Write a function to reverse a string', code: 'def reverse_string(s):\n    return s[::-1]', language: 'python', difficulty: 'easy', explanation: 'Uses Python slice notation to reverse the string' },
-      { prompt: 'Create a binary search algorithm', code: 'def binary_search(arr, target):\n    left, right = 0, len(arr) - 1\n    while left <= right:\n        mid = (left + right) // 2\n        if arr[mid] == target:\n            return mid\n        elif arr[mid] < target:\n            left = mid + 1\n        else:\n            right = mid - 1\n    return -1', language: 'python', difficulty: 'medium', explanation: 'Efficient O(log n) search algorithm for sorted arrays' },
-      { prompt: 'Implement a stack data structure', code: 'class Stack:\n    def __init__(self):\n        self.items = []\n    \n    def push(self, item):\n        self.items.append(item)\n    \n    def pop(self):\n        return self.items.pop() if self.items else None', language: 'python', difficulty: 'easy', explanation: 'Basic stack implementation using Python list' }
-    ]
-  }
-];
+import { loadDatasets, addDataset, updateDataset, deleteDataset, type Dataset } from '../../../utils/datasetUtils';
 
 export default function DatasetSelection() {
   const router = useRouter();
-  const [datasets, setDatasets] = useState<Dataset[]>(mockDatasets);
+  const [datasets, setDatasets] = useState<Dataset[]>([]);
   const [selectedDataset, setSelectedDataset] = useState<string | null>(null);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
@@ -93,18 +31,21 @@ export default function DatasetSelection() {
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
   const [showEditModal, setShowEditModal] = useState<boolean>(false);
   const [editingDataset, setEditingDataset] = useState<Dataset | null>(null);
+  const [originalInputColumn, setOriginalInputColumn] = useState<string>('');
+  const [originalTargetColumn, setOriginalTargetColumn] = useState<string>('');
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const [title, setTitle] = useState<string>('');
+  const [description, setDescription] = useState<string>('');
 
   // Load datasets on component mount
   useEffect(() => {
     const loadInitialDatasets = async () => {
       try {
         const loadedDatasets = await loadDatasets();
-        if (loadedDatasets.length > 0) {
-          setDatasets(loadedDatasets);
-        }
+        setDatasets(loadedDatasets);
       } catch (error) {
         console.error('Failed to load datasets:', error);
-        // Keep using mockDatasets as fallback
+        setDatasets([]); // Set empty array if loading fails
       }
     };
     
@@ -153,7 +94,10 @@ export default function DatasetSelection() {
           setIsUploading(false);
           setUploadProgress(0);
           
-          // Simulate file parsing and show preview
+          // Store the uploaded file
+          setUploadedFile(file);
+          
+          // Don't auto-show preview anymore, wait for save
           simulateFilePreview(file);
         }
       }, 200);
@@ -177,11 +121,12 @@ export default function DatasetSelection() {
       isNewUpload: true
     };
     
+    // Store preview data but don't show it yet
     setPreviewData(mockPreview);
     setInputColumn(''); // Reset column selections
     setTargetColumn('');
     setValidationErrors([]);
-    setShowPreview(true);
+    // Don't auto-show preview: setShowPreview(true);
   };
 
   const handleTagToggle = (tag: string) => {
@@ -226,16 +171,21 @@ export default function DatasetSelection() {
     setSelectedDataset(datasetId);
     const dataset = datasets.find(d => d.id === datasetId);
     if (dataset && dataset.preview) {
+      const inputCol = dataset.inputColumn || '';
+      const targetCol = dataset.targetColumn || '';
+      
       setPreviewData({
         filename: dataset.name,
         columns: dataset.columns || [],
         data: dataset.preview,
         isNewUpload: false
       });
-      setInputColumn(dataset.inputColumn || '');
-      setTargetColumn(dataset.targetColumn || '');
+      setInputColumn(inputCol);
+      setTargetColumn(targetCol);
+      setOriginalInputColumn(inputCol);
+      setOriginalTargetColumn(targetCol);
       setShowPreview(true);
-      validateColumns(dataset.inputColumn || '', dataset.targetColumn || '', dataset.columns || []);
+      validateColumns(inputCol, targetCol, dataset.columns || []);
     }
   };
 
@@ -284,6 +234,20 @@ export default function DatasetSelection() {
         const updatedDatasets = await loadDatasets();
         setDatasets(updatedDatasets);
         console.log('Dataset saved successfully');
+        
+        // Close the preview modal after successful save
+        setShowPreview(false);
+        
+        // Reset the upload section
+        setUploadedFile(null);
+        setPreviewData(null);
+        setTitle('');
+        setDescription('');
+        setTaskType('');
+        setSelectedTags([]);
+        setInputColumn('');
+        setTargetColumn('');
+        setValidationErrors([]);
       }
     } catch (error) {
       console.error('Failed to save dataset:', error);
@@ -311,6 +275,79 @@ export default function DatasetSelection() {
     } catch (error) {
       console.error('Failed to update dataset:', error);
     }
+  };
+
+  const handleDatasetDelete = async (datasetId: string) => {
+    try {
+      const success = await deleteDataset(datasetId);
+      if (success) {
+        // Remove from local state
+        setDatasets(prev => prev.filter(d => d.id !== datasetId));
+        // Clear selection if the deleted dataset was selected
+        if (selectedDataset === datasetId) {
+          setSelectedDataset(null);
+        }
+        console.log('Dataset deleted successfully');
+      }
+    } catch (error) {
+      console.error('Failed to delete dataset:', error);
+    }
+  };
+
+  const handleDatasetPreview = (datasetId: string) => {
+    // Close edit modal first
+    setShowEditModal(false);
+    setEditingDataset(null);
+    
+    // Then trigger dataset selection which will open preview
+    handleDatasetSelect(datasetId);
+  };
+
+  const handleDatasetColumnUpdate = async (datasetId: string, updates: any) => {
+    try {
+      const success = await updateDataset(datasetId, updates);
+      if (success) {
+        // Update local state
+        setDatasets(prev => prev.map(d => 
+          d.id === datasetId ? { ...d, ...updates } : d
+        ));
+        // Update original values to reflect the save
+        setOriginalInputColumn(updates.inputColumn);
+        setOriginalTargetColumn(updates.targetColumn);
+        console.log('Dataset columns updated successfully');
+        // Close the preview modal after successful save
+        setShowPreview(false);
+      }
+    } catch (error) {
+      console.error('Failed to update dataset columns:', error);
+    }
+  };
+
+  const handleSaveUploadedDataset = async () => {
+    if (!uploadedFile || !previewData) return;
+
+    // Show preview modal for column selection
+    setShowPreview(true);
+  };
+
+  const handleClearUpload = () => {
+    setUploadedFile(null);
+    setPreviewData(null);
+    setTitle('');
+    setDescription('');
+    setTaskType('');
+    setSelectedTags([]);
+    setInputColumn('');
+    setTargetColumn('');
+    setValidationErrors([]);
+  };
+
+  const handleDescriptionChange = (desc: string) => {
+    setDescription(desc);
+  };
+
+  const handleTitleChange = (titleValue: string) => {
+    setTitle(titleValue);
   };
 
   return (
@@ -344,6 +381,9 @@ export default function DatasetSelection() {
               isAddingTag={isAddingTag}
               customTag={customTag}
               taskTags={taskTags}
+              uploadedFile={uploadedFile}
+              title={title}
+              description={description}
               onFileUpload={handleFileUpload}
               onTaskTypeChange={handleTaskTypeChange}
               onTagToggle={handleTagToggle}
@@ -353,6 +393,10 @@ export default function DatasetSelection() {
               onAddCustomTag={handleAddCustomTag}
               onKeyPress={handleKeyPress}
               onRemoveTag={handleRemoveTag}
+              onTitleChange={handleTitleChange}
+              onDescriptionChange={handleDescriptionChange}
+              onSaveDataset={handleSaveUploadedDataset}
+              onClearUpload={handleClearUpload}
             />
 
             <ExistingDatasets
@@ -383,9 +427,15 @@ export default function DatasetSelection() {
           validationErrors={validationErrors}
           taskType={taskType}
           selectedTags={selectedTags}
+          title={title}
+          description={description}
+          datasetId={selectedDataset || undefined}
+          originalInputColumn={originalInputColumn}
+          originalTargetColumn={originalTargetColumn}
           onInputColumnChange={handleInputColumnChange}
           onTargetColumnChange={handleTargetColumnChange}
           onSave={handleDatasetSave}
+          onUpdateDataset={handleDatasetColumnUpdate}
           onClose={() => setShowPreview(false)}
         />
 
@@ -394,6 +444,8 @@ export default function DatasetSelection() {
           dataset={editingDataset}
           taskTags={taskTags}
           onSave={handleDatasetUpdate}
+          onDelete={handleDatasetDelete}
+          onPreview={handleDatasetPreview}
           onClose={() => {
             setShowEditModal(false);
             setEditingDataset(null);
