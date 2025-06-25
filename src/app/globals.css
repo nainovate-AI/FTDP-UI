@@ -57,7 +57,7 @@ body {
     background: #111827;
   }
   
-  /* Card-Centric Dashboard Layout Styles - Colors Only */
+  /* Detailed Dashboard Layout Styles - Colors Only */
   .cards-dashboard-container {
     background: #f9fafb;
   }
@@ -108,5 +108,19 @@ body {
 
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
+  }
+
+  /* Dataset Selection Page Styles */
+  .dataset-upload-area {
+    transition: border-color 0.2s ease, background-color 0.2s ease;
+  }
+
+  .dataset-upload-area:hover {
+    border-color: #3b82f6;
+    background-color: rgba(59, 130, 246, 0.02);
+  }
+
+  .dark .dataset-upload-area:hover {
+    background-color: rgba(59, 130, 246, 0.05);
   }
 }

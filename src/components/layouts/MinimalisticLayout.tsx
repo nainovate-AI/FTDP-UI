@@ -20,12 +20,11 @@ export const MinimalisticLayout: React.FC<MinimalisticLayoutProps> = ({ children
   const router = useRouter();
 
   const handleViewMore = () => {
-    router.push('/dashboard/cards');
+    router.push('/finetuning/dashboard/detailed');
   };
 
   const handleCreateJob = () => {
-    // TODO: Navigate to job creation page or open modal
-    console.log('Create new fine-tuning job');
+    router.push('/finetuning/dataset-selection');
   };
 
   if (children) {

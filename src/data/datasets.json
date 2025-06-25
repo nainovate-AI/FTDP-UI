@@ -1,0 +1,277 @@
+[
+  {
+    "id": "1",
+    "name": "Customer Support QA Dataset",
+    "description": "Customer support questions with detailed answers and troubleshooting steps",
+    "size": "2.3 MB",
+    "format": "CSV",
+    "taskType": "Question Answering",
+    "samples": 5420,
+    "lastModified": "2025-06-25",
+    "tags": [
+      "factual",
+      "customer-service",
+      "support"
+    ],
+    "inputColumn": "question",
+    "targetColumn": "answer",
+    "columns": [
+      "question",
+      "answer",
+      "category",
+      "priority"
+    ],
+    "preview": [
+      {
+        "question": "How do I reset my password?",
+        "answer": "Click on \"Forgot Password\" on the login page and follow the instructions.",
+        "category": "account",
+        "priority": "high"
+      },
+      {
+        "question": "Where can I find my order history?",
+        "answer": "Go to your account dashboard and click on \"Order History\" in the sidebar.",
+        "category": "orders",
+        "priority": "medium"
+      },
+      {
+        "question": "How to cancel my subscription?",
+        "answer": "Navigate to Settings > Billing > Cancel Subscription. Note that cancellation takes effect at the end of your current billing cycle.",
+        "category": "billing",
+        "priority": "high"
+      },
+      {
+        "question": "Why is my payment failing?",
+        "answer": "Check if your card details are correct and has sufficient funds. Contact your bank if the issue persists.",
+        "category": "payment",
+        "priority": "high"
+      },
+      {
+        "question": "How to update my profile information?",
+        "answer": "Go to Settings > Profile and click Edit. Save your changes when done.",
+        "category": "account",
+        "priority": "low"
+      }
+    ]
+  },
+  {
+    "id": "2",
+    "name": "Article Summarization Dataset",
+    "description": "News articles paired with human-written summaries for training summarization models",
+    "size": "15.7 MB",
+    "format": "CSV",
+    "taskType": "Summarization",
+    "samples": 12800,
+    "lastModified": "2024-01-12",
+    "tags": [
+      "news",
+      "abstractive",
+      "journalism"
+    ],
+    "inputColumn": "article",
+    "targetColumn": "summary",
+    "columns": [
+      "article",
+      "summary",
+      "source",
+      "date",
+      "category"
+    ],
+    "preview": [
+      {
+        "article": "Breaking: Scientists at MIT have developed a new quantum computing algorithm that could revolutionize...",
+        "summary": "MIT researchers create breakthrough quantum algorithm with potential to transform computing.",
+        "source": "TechNews",
+        "date": "2024-01-10",
+        "category": "technology"
+      },
+      {
+        "article": "The global economy shows signs of recovery as inflation rates begin to stabilize across major markets...",
+        "summary": "Global economic recovery underway as inflation stabilizes in key markets.",
+        "source": "EconDaily",
+        "date": "2024-01-09",
+        "category": "economics"
+      },
+      {
+        "article": "Climate change activists gathered in major cities worldwide to demand immediate action on carbon emissions...",
+        "summary": "Worldwide climate protests call for urgent action on carbon emission reductions.",
+        "source": "GreenNews",
+        "date": "2024-01-08",
+        "category": "environment"
+      }
+    ]
+  },
+  {
+    "id": "3",
+    "name": "Code Generation Examples",
+    "description": "Programming tasks with corresponding code solutions and explanations",
+    "size": "8.9 MB",
+    "format": "CSV",
+    "taskType": "Code Generation",
+    "samples": 3200,
+    "lastModified": "2024-01-10",
+    "tags": [
+      "python",
+      "documentation",
+      "programming"
+    ],
+    "inputColumn": "prompt",
+    "targetColumn": "code",
+    "columns": [
+      "prompt",
+      "code",
+      "language",
+      "difficulty",
+      "explanation"
+    ],
+    "preview": [
+      {
+        "prompt": "Write a function to reverse a string",
+        "code": "def reverse_string(s):\n    return s[::-1]",
+        "language": "python",
+        "difficulty": "easy",
+        "explanation": "Uses Python slice notation to reverse the string"
+      },
+      {
+        "prompt": "Create a binary search algorithm",
+        "code": "def binary_search(arr, target):\n    left, right = 0, len(arr) - 1\n    while left <= right:\n        mid = (left + right) // 2\n        if arr[mid] == target:\n            return mid\n        elif arr[mid] < target:\n            left = mid + 1\n        else:\n            right = mid - 1\n    return -1",
+        "language": "python",
+        "difficulty": "medium",
+        "explanation": "Efficient O(log n) search algorithm for sorted arrays"
+      },
+      {
+        "prompt": "Implement a stack data structure",
+        "code": "class Stack:\n    def __init__(self):\n        self.items = []\n    \n    def push(self, item):\n        self.items.append(item)\n    \n    def pop(self):\n        return self.items.pop() if self.items else None",
+        "language": "python",
+        "difficulty": "easy",
+        "explanation": "Basic stack implementation using Python list"
+      }
+    ]
+  },
+  {
+    "name": "FT_medical_3_2 (1)",
+    "description": "Uploaded dataset from FT_medical_3_2 (1).csv",
+    "format": "CSV",
+    "taskType": "Text Classification",
+    "samples": 7,
+    "size": "0.7 KB",
+    "tags": [],
+    "inputColumn": "text",
+    "targetColumn": "label",
+    "columns": [
+      "text",
+      "label",
+      "confidence",
+      "source"
+    ],
+    "preview": [
+      {
+        "text": "This product is amazing!",
+        "label": "positive",
+        "confidence": 0.95,
+        "source": "review"
+      },
+      {
+        "text": "I hate this service.",
+        "label": "negative",
+        "confidence": 0.89,
+        "source": "feedback"
+      },
+      {
+        "text": "The quality is okay.",
+        "label": "neutral",
+        "confidence": 0.76,
+        "source": "review"
+      },
+      {
+        "text": "Best purchase ever!",
+        "label": "positive",
+        "confidence": 0.92,
+        "source": "review"
+      },
+      {
+        "text": "Could be better.",
+        "label": "neutral",
+        "confidence": 0.68,
+        "source": "feedback"
+      },
+      {
+        "text": "Terrible experience.",
+        "label": "negative",
+        "confidence": 0.94,
+        "source": "review"
+      },
+      {
+        "text": "Highly recommended!",
+        "label": "positive",
+        "confidence": 0.87,
+        "source": "review"
+      }
+    ],
+    "id": "1750844985077",
+    "lastModified": "2025-06-25"
+  },
+  {
+    "name": "FT_medical_3_2 (1)",
+    "description": "Uploaded dataset from FT_medical_3_2 (1).csv",
+    "format": "CSV",
+    "taskType": "Text Classification",
+    "samples": 7,
+    "size": "0.7 KB",
+    "tags": [],
+    "inputColumn": "text",
+    "targetColumn": "label",
+    "columns": [
+      "text",
+      "label",
+      "confidence",
+      "source"
+    ],
+    "preview": [
+      {
+        "text": "This product is amazing!",
+        "label": "positive",
+        "confidence": 0.95,
+        "source": "review"
+      },
+      {
+        "text": "I hate this service.",
+        "label": "negative",
+        "confidence": 0.89,
+        "source": "feedback"
+      },
+      {
+        "text": "The quality is okay.",
+        "label": "neutral",
+        "confidence": 0.76,
+        "source": "review"
+      },
+      {
+        "text": "Best purchase ever!",
+        "label": "positive",
+        "confidence": 0.92,
+        "source": "review"
+      },
+      {
+        "text": "Could be better.",
+        "label": "neutral",
+        "confidence": 0.68,
+        "source": "feedback"
+      },
+      {
+        "text": "Terrible experience.",
+        "label": "negative",
+        "confidence": 0.94,
+        "source": "review"
+      },
+      {
+        "text": "Highly recommended!",
+        "label": "positive",
+        "confidence": 0.87,
+        "source": "review"
+      }
+    ],
+    "id": "1750844986336",
+    "lastModified": "2025-06-25"
+  }
+]

@@ -10,7 +10,7 @@ interface CardCentricLayoutProps {
 }
 
 /**
- * Layout: Card-Centric Layout
+ * Layout: Detailed Dashboard Layout
  * 
  * Description:
  * Modern card-based layout with emphasis on visual separation and modularity.
@@ -21,12 +21,11 @@ export const CardCentricLayout: React.FC<CardCentricLayoutProps> = ({ children }
   const currentJobsScrollRef = useRef<HTMLDivElement>(null);
 
   const handleBackToDashboard = () => {
-    router.push('/dashboard/minimal');
+    router.push('/finetuning/dashboard/minimal');
   };
 
   const handleCreateJob = () => {
-    // TODO: Navigate to job creation page or open modal
-    console.log('Create new fine-tuning job');
+    router.push('/finetuning/dataset-selection');
   };
 
   const handleViewAllJobs = () => {
@@ -242,7 +241,7 @@ export const CardCentricLayout: React.FC<CardCentricLayoutProps> = ({ children }
           </div>
         </div>
 
-        {/* Back to Dashboard Button */}
+        {/* Back to Minimal View Button */}
         <div className="text-center">
           <button
             onClick={handleBackToDashboard}
@@ -250,7 +249,7 @@ export const CardCentricLayout: React.FC<CardCentricLayoutProps> = ({ children }
                        rounded-lg font-medium hover:bg-gray-700 dark:hover:bg-gray-300 
                        transition-colors duration-200"
           >
-            Back to Dashboard
+            Back to Minimal View
           </button>
         </div>
 

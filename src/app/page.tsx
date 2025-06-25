@@ -35,7 +35,7 @@ export default function Home() {
                 <div>• Minimal visual clutter</div>
               </div>
               <Link 
-                href="/dashboard/minimal"
+                href="/finetuning/dashboard/minimal"
                 className="inline-block w-full bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 
                            text-center py-3 px-6 rounded-lg font-medium hover:bg-gray-700 
                            dark:hover:bg-gray-300 transition-colors duration-200"
@@ -45,14 +45,14 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Card-Centric Layout Card */}
+          {/* Detailed Layout Card */}
           <div className="home-card-gradient border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300">
             <div className="p-6">
               <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-3">
-                Card-Centric Layout
+                Detailed Layout
               </h2>
               <p className="text-gray-600 dark:text-gray-300 mb-6">
-                Modern card-based layout with emphasis on visual separation and modularity.
+                Comprehensive dashboard with detailed job cards, statistics, and visual progress tracking.
                 Ideal for detailed data exploration and management.
               </p>
               <div className="space-y-2 text-sm text-gray-500 dark:text-gray-400 mb-6">
@@ -62,11 +62,11 @@ export default function Home() {
                 <div>• Progress tracking</div>
               </div>
               <Link 
-                href="/dashboard/cards"
+                href="/finetuning/dashboard/detailed"
                 className="inline-block w-full bg-indigo-600 text-white text-center py-3 px-6 
                            rounded-lg font-medium hover:bg-indigo-700 transition-colors duration-200"
               >
-                View Card-Centric Dashboard
+                View Detailed Dashboard
               </Link>
             </div>
           </div>
