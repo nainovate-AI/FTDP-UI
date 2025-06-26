@@ -1,0 +1,11 @@
+input,output,confidence,source
+This product is amazing!,positive,0.95,review
+I hate this service.,negative,0.89,feedback
+The quality is okay.,neutral,0.76,review
+Best purchase ever!,positive,0.92,review
+Could be better.,neutral,0.68,feedback
+Terrible experience.,negative,0.94,review
+Highly recommended!,positive,0.87,review
+Not worth the money.,negative,0.81,review
+Perfect for my needs.,positive,0.93,review
+Average product quality.,neutral,0.72,review

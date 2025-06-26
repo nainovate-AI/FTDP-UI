@@ -1,0 +1,35 @@
+{
+  "_comment": "This file contains metadata for the entire fine-tuning process",
+  "_note": "Replace with real API calls when integrating with backend services",
+  "finetuningSession": {
+    "id": "session_1750912194926",
+    "createdAt": "2025-06-26T04:29:54.926Z",
+    "lastModified": "2025-06-26T04:30:34.781Z",
+    "status": "dataset_selection"
+  },
+  "dataset": {
+    "uid": "dataset_1750912234781_e1vwbff4s",
+    "id": "1750851702932",
+    "name": "4",
+    "selectedAt": "2025-06-26T04:30:34.781Z"
+  },
+  "model": {
+    "_comment": "Model configuration will be added in model selection step",
+    "baseModel": null,
+    "modelName": null,
+    "parameters": {}
+  },
+  "training": {
+    "_comment": "Training configuration will be added in training setup step",
+    "epochs": null,
+    "batchSize": null,
+    "learningRate": null,
+    "validationSplit": null
+  },
+  "deployment": {
+    "_comment": "Deployment configuration will be added in deployment step",
+    "endpoint": null,
+    "version": null,
+    "environment": null
+  }
+}
