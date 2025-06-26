@@ -2,11 +2,38 @@
 
 All notable changes to the AI Fine-tuning Dashboard will be documented in this file.
 
-## [1.1.0] - 2025-06-26
+## [1.0.2] - 2025-06-26
 
 ### 🚀 Major Features
 
+#### HuggingFace Model Management System
+- **Real-time Model Updates**: Fixed models not appearing after add/remove operations without page refresh
+- **Backend Synchronization**: Implemented robust backend connection handling with automatic fallback
+- **Force Reconnect**: Added manual reconnect functionality to restore backend connection
+- **Enhanced Search**: Improved HuggingFace model search with better error handling and status indicators
+- **Connection Status**: Visual indicators showing backend connection status (green/yellow status messages)
+- **Immediate UI Updates**: Models now appear instantly after successful add/remove operations
+
 ### 🔧 Bug Fixes
+
+#### Model Selection Real-time Updates
+- **Fixed Add/Remove Sync**: Models now update immediately after being added or removed via search
+- **Backend Connection Handling**: Improved error handling when backend connection fails during initial load
+- **Force Reload Logic**: Enhanced reload functionality that bypasses cache and forces fresh data retrieval
+- **Status Tracking**: Added `isUsingBackend` flag to track connection status and data source
+- **Enhanced Logging**: Comprehensive console logging with emoji indicators for debugging (🔍🌐✅❌📂🔄)
+
+#### UI/UX Improvements
+- **Icon Consistency**: Replaced emoji warning icons (⚠️) with proper caution icons (⚠) throughout the interface
+- **Backend Status Messages**: Clear visual indicators distinguishing between backend-connected and local data modes
+- **Reconnect Button**: Added "Reconnect" button with refresh icon for manual backend reconnection
+- **Success Feedback**: Improved success/error messaging for model add/remove operations
+
+#### Backend API Enhancements
+- **Request Logging**: Added HTTP request logging middleware with 📨/📤 emoji indicators
+- **Response Format**: Standardized API response format for add/remove operations with proper success/error structures
+- **CORS Configuration**: Updated CORS settings to support frontend on port 3002
+- **Error Handling**: Enhanced error responses with detailed status codes and messages
 
 #### CSV Parsing Engine Fix
 - **Pandas Compatibility**: Fixed "low_memory option not supported with python engine" error
@@ -41,6 +68,13 @@ All notable changes to the AI Fine-tuning Dashboard will be documented in this f
 
 ### 🔧 Enhanced Features
 
+#### Model Management System Improvements
+- **Force Reconnect**: Added `forceReconnect()` function for manual backend reconnection attempts
+- **Enhanced State Management**: Improved model state synchronization between frontend and backend
+- **Connection Timeout**: Added 5-second timeout to prevent hanging connections
+- **Automatic Fallback**: Seamless fallback to local JSON data when backend is unavailable
+- **Real-time Status**: Dynamic backend connection status tracking and user notification
+
 #### Improved File Upload
 - **Async Processing**: File upload now uses async CSV parsing
 - **Progress Indicators**: Enhanced upload progress with parsing status
@@ -56,6 +90,12 @@ All notable changes to the AI Fine-tuning Dashboard will be documented in this f
 
 ### 🏗️ Technical Infrastructure
 
+#### Model Management Backend Updates
+- **Enhanced Response Format**: Updated `ModelSelection.remove_model()` to return standardized response structure
+- **Improved API Endpoints**: Modified `/api/models/{model_id}` DELETE endpoint for consistent response format
+- **Request Middleware**: Added HTTP request logging middleware for debugging
+- **Connection Handling**: Enhanced error handling and timeout management in API calls
+
 #### New Backend Components
 - `python-backend/main.py`: FastAPI application with CSV processing endpoints
 - `python-backend/requirements.txt`: Python dependencies (FastAPI, pandas, uvicorn)
@@ -66,11 +106,32 @@ All notable changes to the AI Fine-tuning Dashboard will be documented in this f
 - `src/utils/csvPreviewApi.ts`: API client for FastAPI backend communication
 - Updated `src/utils/filePreviewUtils.ts`: Enhanced with real CSV parsing
 - Updated `src/hooks/useFileUpload.ts`: Async file processing with backend integration
+- **Enhanced Model Management**: Updated `src/hooks/useModelManagement.ts` with force reconnect and improved synchronization
+- **UI Components**: Updated `src/components/model-selection/HuggingFaceSearch.tsx` with proper caution icons
+- **Model Selection Page**: Enhanced `src/app/finetuning/model-selection/page.tsx` with reconnect button and status indicators
 - Enhanced component interfaces with backend status and error handling
 
 #### Development Experience
 - **Comprehensive Documentation**: Updated README with backend setup instructions
 - **API Documentation**: Auto-generated docs at `/docs` endpoint
+- **Enhanced Debugging**: Console logging with emoji indicators for easy troubleshooting
+- **Better Error Messages**: Improved error reporting throughout the model management system
+
+### 🔍 Debugging & Monitoring
+
+#### Console Logging Enhancements
+- **🔍 Search Operations**: Clear logging for model search and discovery
+- **🌐 Network Requests**: Detailed HTTP request/response logging
+- **✅ Success Operations**: Success confirmation for add/remove operations
+- **❌ Error Tracking**: Comprehensive error logging with context
+- **📂 Data Source**: Clear indication of local vs. backend data usage
+- **🔄 Reconnection**: Logging for manual reconnection attempts
+
+#### Status Indicators
+- **Green Status**: "Backend Connected - Full functionality available"
+- **Yellow Status**: "Using local data - Start Python backend for search functionality"
+- **Error States**: Clear messaging for connection failures and operational errors
+- **Loading States**: Visual feedback during operations and reconnection attempts
 - **Health Monitoring**: System health checks and status reporting
 - **Error Logging**: Detailed logging for debugging and monitoring
 
