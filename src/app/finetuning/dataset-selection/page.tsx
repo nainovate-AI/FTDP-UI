@@ -100,13 +100,14 @@ export default function DatasetSelection() {
   const handleNext = () => {
     if (selectedDataset) {
       const selectedDatasetData = getSelectedDatasetData();
-      // TODO: Navigate to next step
+      // Navigate to model selection
       console.log('Proceeding with dataset:', {
         id: selectedDataset,
         uid: selectedDatasetData?.uid,
         name: selectedDatasetData?.name,
         filePath: selectedDatasetData?.filePath
       });
+      router.push('/finetuning/model-selection');
     }
   };
 

@@ -1,0 +1,485 @@
+{
+  "models": [
+    {
+      "id": "meta-llama/Llama-3.1-8B-Instruct",
+      "name": "Llama 3.1 8B Instruct",
+      "provider": "Meta",
+      "category": "Instruction Following",
+      "description": "Multilingual large language model fine-tuned for instruction following",
+      "parameters": "8B",
+      "contextLength": 131072,
+      "license": "Llama 3.1 Community License",
+      "downloadSize": "4.7 GB",
+      "tags": [
+        "instruction-tuned",
+        "multilingual",
+        "efficient"
+      ],
+      "capabilities": [
+        "text-generation",
+        "conversation",
+        "instruction-following",
+        "code-generation"
+      ],
+      "recommended": true,
+      "performance": {
+        "speed": "Very Fast",
+        "accuracy": "Very Good",
+        "memoryUsage": "Low"
+      },
+      "useCase": "General instruction following, chat applications, code assistance"
+    },
+    {
+      "id": "meta-llama/Llama-3.1-70B-Instruct",
+      "name": "Llama 3.1 70B Instruct",
+      "provider": "Meta",
+      "category": "Instruction Following",
+      "description": "Large multilingual model with excellent performance on complex tasks",
+      "parameters": "70B",
+      "contextLength": 131072,
+      "license": "Llama 3.1 Community License",
+      "downloadSize": "39.6 GB",
+      "tags": [
+        "large-model",
+        "multilingual",
+        "powerful"
+      ],
+      "capabilities": [
+        "advanced-reasoning",
+        "complex-instruction-following",
+        "code-generation",
+        "analysis"
+      ],
+      "recommended": false,
+      "performance": {
+        "speed": "Moderate",
+        "accuracy": "Excellent",
+        "memoryUsage": "High"
+      },
+      "useCase": "Complex reasoning, advanced code generation, research tasks"
+    },
+    {
+      "id": "mistralai/Mistral-7B-Instruct-v0.3",
+      "name": "Mistral 7B Instruct v0.3",
+      "provider": "Mistral AI",
+      "category": "Instruction Following",
+      "description": "Efficient instruction-following model with strong performance",
+      "parameters": "7B",
+      "contextLength": 32768,
+      "license": "Apache 2.0",
+      "downloadSize": "4.1 GB",
+      "tags": [
+        "efficient",
+        "instruction-tuned",
+        "european"
+      ],
+      "capabilities": [
+        "text-generation",
+        "instruction-following",
+        "conversation",
+        "multilingual"
+      ],
+      "recommended": true,
+      "performance": {
+        "speed": "Very Fast",
+        "accuracy": "Good",
+        "memoryUsage": "Low"
+      },
+      "useCase": "Efficient instruction following, multilingual applications, resource-constrained environments"
+    },
+    {
+      "id": "microsoft/DialoGPT-large",
+      "name": "DialoGPT Large",
+      "provider": "Microsoft",
+      "category": "Conversational",
+      "description": "Large-scale conversational response generation model",
+      "parameters": "774M",
+      "contextLength": 1024,
+      "license": "MIT",
+      "downloadSize": "1.5 GB",
+      "tags": [
+        "conversational",
+        "dialogue",
+        "compact"
+      ],
+      "capabilities": [
+        "conversation",
+        "dialogue-generation",
+        "chat"
+      ],
+      "recommended": false,
+      "performance": {
+        "speed": "Excellent",
+        "accuracy": "Good",
+        "memoryUsage": "Very Low"
+      },
+      "useCase": "Conversational AI, chatbots, dialogue systems"
+    },
+    {
+      "id": "google/flan-t5-xxl",
+      "name": "FLAN-T5 XXL",
+      "provider": "Google",
+      "category": "Instruction Following",
+      "description": "Instruction-finetuned T5 model with strong zero-shot performance",
+      "parameters": "11B",
+      "contextLength": 512,
+      "license": "Apache 2.0",
+      "downloadSize": "20.9 GB",
+      "tags": [
+        "instruction-tuned",
+        "zero-shot",
+        "versatile"
+      ],
+      "capabilities": [
+        "instruction-following",
+        "text-generation",
+        "summarization",
+        "question-answering"
+      ],
+      "recommended": true,
+      "performance": {
+        "speed": "Fast",
+        "accuracy": "Very Good",
+        "memoryUsage": "Moderate"
+      },
+      "useCase": "Zero-shot task performance, instruction following, text understanding"
+    },
+    {
+      "id": "bigscience/bloom-7b1",
+      "name": "BLOOM 7B1",
+      "provider": "BigScience",
+      "category": "Multilingual",
+      "description": "Large open multilingual language model trained on diverse languages",
+      "parameters": "7.1B",
+      "contextLength": 2048,
+      "license": "RAIL License",
+      "downloadSize": "13.2 GB",
+      "tags": [
+        "multilingual",
+        "diverse",
+        "open-science"
+      ],
+      "capabilities": [
+        "multilingual-generation",
+        "text-completion",
+        "translation"
+      ],
+      "recommended": false,
+      "performance": {
+        "speed": "Fast",
+        "accuracy": "Good",
+        "memoryUsage": "Moderate"
+      },
+      "useCase": "Multilingual applications, diverse language support, research"
+    },
+    {
+      "id": "stabilityai/stablelm-3b-4e1t",
+      "name": "StableLM 3B 4E1T",
+      "provider": "Stability AI",
+      "category": "Compact Model",
+      "description": "Efficient 3B parameter model trained on diverse text data",
+      "parameters": "3B",
+      "contextLength": 4096,
+      "license": "CC BY-SA-4.0",
+      "downloadSize": "1.2 GB",
+      "tags": [
+        "compact",
+        "efficient",
+        "lightweight"
+      ],
+      "capabilities": [
+        "text-generation",
+        "completion",
+        "basic-reasoning"
+      ],
+      "recommended": false,
+      "performance": {
+        "speed": "Excellent",
+        "accuracy": "Fair",
+        "memoryUsage": "Very Low"
+      },
+      "useCase": "Resource-constrained environments, edge deployment, lightweight applications"
+    },
+    {
+      "id": "codellama/CodeLlama-7b-Instruct-hf",
+      "name": "Code Llama 7B Instruct",
+      "provider": "Meta",
+      "category": "Code Generation",
+      "description": "Specialized code generation model based on Llama 2",
+      "parameters": "7B",
+      "contextLength": 16384,
+      "license": "Llama 2 Community License",
+      "downloadSize": "12.9 GB",
+      "tags": [
+        "code-generation",
+        "programming",
+        "instruction-tuned"
+      ],
+      "capabilities": [
+        "code-generation",
+        "code-completion",
+        "programming-assistance",
+        "debugging"
+      ],
+      "recommended": true,
+      "performance": {
+        "speed": "Fast",
+        "accuracy": "Very Good",
+        "memoryUsage": "Moderate"
+      },
+      "useCase": "Code generation, programming assistance, software development"
+    },
+    {
+      "id": "bert-base-uncased",
+      "name": "BERT Base Uncased",
+      "provider": "Google",
+      "category": "Text Classification",
+      "description": "Test model for verification",
+      "parameters": "110M",
+      "contextLength": 512,
+      "license": "Apache 2.0",
+      "downloadSize": "440MB",
+      "tags": [
+        "test",
+        "bert"
+      ],
+      "capabilities": [
+        "text-classification"
+      ],
+      "recommended": false,
+      "performance": {
+        "speed": "Fast",
+        "accuracy": "Good",
+        "memoryUsage": "Low"
+      },
+      "useCase": "Test model for backend verification"
+    },
+    {
+      "id": "mistralai/Mistral-Small-3.2-24B-Instruct-2506",
+      "name": "Mistral Small 3.2 24B Instruct",
+      "provider": "Mistral AI",
+      "category": "Instruction Following",
+      "description": "Advanced multimodal model capable of processing both text and images",
+      "parameters": "24B",
+      "contextLength": 131072,
+      "license": "Apache 2.0",
+      "downloadSize": "48 GB",
+      "tags": [
+        "multimodal",
+        "instruction-tuned",
+        "multilingual",
+        "vision"
+      ],
+      "capabilities": [
+        "image-text-to-text",
+        "text-generation",
+        "instruction-following",
+        "vision-language"
+      ],
+      "recommended": false,
+      "performance": {
+        "speed": "Moderate",
+        "accuracy": "Very Good",
+        "memoryUsage": "High"
+      },
+      "useCase": "Multimodal applications, image understanding, visual question answering"
+    },
+    {
+      "id": "distilbert-base-uncased",
+      "name": "DistilBERT Base Uncased",
+      "provider": "HuggingFace",
+      "category": "Text Classification",
+      "description": "Distilled version of BERT for faster inference",
+      "parameters": "66M",
+      "contextLength": 512,
+      "license": "Apache 2.0",
+      "downloadSize": "268MB",
+      "tags": [
+        "distilbert",
+        "bert",
+        "distilled"
+      ],
+      "capabilities": [
+        "text-classification",
+        "feature-extraction"
+      ],
+      "recommended": true,
+      "performance": {
+        "speed": "Very Fast",
+        "accuracy": "Good",
+        "memoryUsage": "Low"
+      },
+      "useCase": "Downloads: 12500000, Likes: 450"
+    },
+    {
+      "id": "google-bert/bert-base-uncased",
+      "name": "BERT Base Uncased",
+      "provider": "Google",
+      "category": "Text Understanding",
+      "description": "Bidirectional encoder representations from transformers for masked language modeling",
+      "parameters": "110M",
+      "contextLength": 512,
+      "license": "Apache 2.0",
+      "downloadSize": "440 MB",
+      "tags": [
+        "bert",
+        "fill-mask",
+        "feature-extraction",
+        "transformer"
+      ],
+      "capabilities": [
+        "fill-mask",
+        "feature-extraction",
+        "text-classification"
+      ],
+      "recommended": true,
+      "performance": {
+        "speed": "Very Fast",
+        "accuracy": "Very Good",
+        "memoryUsage": "Low"
+      },
+      "useCase": "Text understanding, feature extraction, downstream task fine-tuning"
+    },
+    {
+      "id": "google-bert/bert-base-chinese",
+      "name": "BERT Base Chinese",
+      "provider": "Google",
+      "category": "Text Understanding",
+      "description": "BERT model trained on Chinese text for Chinese language understanding tasks",
+      "parameters": "110M",
+      "contextLength": 512,
+      "license": "Apache 2.0",
+      "downloadSize": "440 MB",
+      "tags": [
+        "bert",
+        "chinese",
+        "fill-mask",
+        "multilingual"
+      ],
+      "capabilities": [
+        "fill-mask",
+        "text-classification",
+        "feature-extraction"
+      ],
+      "recommended": false,
+      "performance": {
+        "speed": "Very Fast",
+        "accuracy": "Very Good",
+        "memoryUsage": "Low"
+      },
+      "useCase": "Chinese text understanding, feature extraction, NLP tasks"
+    },
+    {
+      "id": "boltuix/bert-mobile",
+      "name": "BERT Mobile",
+      "provider": "Boltuix",
+      "category": "Text Understanding",
+      "description": "Lightweight BERT variant optimized for mobile and edge deployment",
+      "parameters": "25M",
+      "contextLength": 512,
+      "license": "MIT",
+      "downloadSize": "100 MB",
+      "tags": [
+        "bert",
+        "mobile",
+        "lightweight",
+        "edge-computing"
+      ],
+      "capabilities": [
+        "fill-mask",
+        "text-classification",
+        "feature-extraction"
+      ],
+      "recommended": false,
+      "performance": {
+        "speed": "Excellent",
+        "accuracy": "Good",
+        "memoryUsage": "Very Low"
+      },
+      "useCase": "Mobile applications, edge computing, resource-constrained environments"
+    },
+    {
+      "id": "unitary/toxic-bert",
+      "name": "Toxic BERT",
+      "provider": "Unitary",
+      "category": "Text Classification",
+      "description": "BERT model fine-tuned for toxic content detection and content moderation",
+      "parameters": "110M",
+      "contextLength": 512,
+      "license": "Apache 2.0",
+      "downloadSize": "440 MB",
+      "tags": [
+        "bert",
+        "toxicity-detection",
+        "content-moderation",
+        "safety"
+      ],
+      "capabilities": [
+        "text-classification",
+        "toxicity-detection",
+        "content-moderation"
+      ],
+      "recommended": false,
+      "performance": {
+        "speed": "Fast",
+        "accuracy": "Very Good",
+        "memoryUsage": "Low"
+      },
+      "useCase": "Content moderation, toxicity detection, safety applications"
+    },
+    {
+      "id": "Fan-s/reddit-tc-bert",
+      "name": "reddit-tc-bert",
+      "provider": "Fan-s",
+      "category": "Text Classification",
+      "description": "Pre-trained text classification model",
+      "parameters": "See model card",
+      "contextLength": 512,
+      "license": "Apache 2.0",
+      "downloadSize": "Unknown",
+      "tags": [
+        "bert",
+        "text-classification",
+        "generated_from_trainer"
+      ],
+      "capabilities": [
+        "text-classification"
+      ],
+      "recommended": false,
+      "performance": {
+        "speed": "Unknown",
+        "accuracy": "Unknown",
+        "memoryUsage": "Unknown"
+      },
+      "useCase": "Sentiment analysis, content moderation, categorization"
+    }
+  ],
+  "categories": [
+    "All Models",
+    "Code Generation",
+    "Compact Model",
+    "Conversational",
+    "Instruction Following",
+    "Multilingual",
+    "Multimodal",
+    "Text Classification",
+    "Text Generation",
+    "Text Understanding"
+  ],
+  "providers": [
+    "All Providers",
+    "BigScience",
+    "Fan-s",
+    "Google",
+    "Meta",
+    "Microsoft",
+    "Mistral AI",
+    "OpenAI",
+    "Stability AI",
+    "boltuix",
+    "institutional",
+    "rednote-hilab",
+    "reducto",
+    "uer"
+  ]
+}

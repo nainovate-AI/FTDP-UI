@@ -129,14 +129,14 @@ interface FinetuningMetadata {
   };
   dataset: {
     uid: string | null;
-    id: string | null;
     name: string | null;
     selectedAt: string | null;
   };
   model: {
+    uid: string | null;
     baseModel: string | null;
     modelName: string | null;
-    parameters: Record<string, any>;
+    provider: string | null;
   };
   training: {
     epochs: number | null;
@@ -173,8 +173,8 @@ export const loadMetadata = async (): Promise<FinetuningMetadata> => {
       // Return default metadata structure
       return {
         finetuningSession: { id: null, createdAt: null, lastModified: null, status: "dataset_selection" },
-        dataset: { uid: null, id: null, name: null, selectedAt: null },
-        model: { baseModel: null, modelName: null, parameters: {} },
+        dataset: { uid: null, name: null, selectedAt: null },
+        model: { uid: null, baseModel: null, modelName: null, provider: null },
         training: { epochs: null, batchSize: null, learningRate: null, validationSplit: null },
         deployment: { endpoint: null, version: null, environment: null }
       };
@@ -211,7 +211,6 @@ export const updateDatasetSelection = async (dataset: Dataset): Promise<boolean>
     // Update dataset information in metadata
     metadata.dataset = {
       uid: datasetUID,
-      id: dataset.id,
       name: dataset.name,
       selectedAt: new Date().toISOString()
     };
