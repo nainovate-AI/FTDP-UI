@@ -9,6 +9,16 @@ export const useToast = () => {
     type: 'success' | 'error' | 'warning' | 'info' = 'info',
     duration?: number
   ) => {
+    // Check if a toast with the same message and type already exists
+    const existingToast = toasts.find(toast => 
+      toast.message === message && toast.type === type
+    );
+    
+    // If duplicate exists, return the existing toast's id without creating a new one
+    if (existingToast) {
+      return existingToast.id;
+    }
+    
     const id = Math.random().toString(36).substr(2, 9);
     const newToast: Toast = {
       id,
@@ -19,7 +29,7 @@ export const useToast = () => {
 
     setToasts(prev => [...prev, newToast]);
     return id;
-  }, []);
+  }, [toasts]);
 
   const removeToast = useCallback((id: string) => {
     setToasts(prev => prev.filter(toast => toast.id !== id));

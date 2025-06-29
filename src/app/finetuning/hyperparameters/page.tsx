@@ -49,8 +49,7 @@ export default function HyperparameterConfiguration() {
   // Animation states for smooth transitions
   const [isAnimating, setIsAnimating] = useState(false);
   
-  // Batch size warning debouncing and tracking
-  const [lastBatchWarningTime, setLastBatchWarningTime] = useState(0);
+  // Batch size warning tracking
   const [activeToastIds, setActiveToastIds] = useState<Set<string>>(new Set());
 
   // Editing states for inline editing
@@ -163,22 +162,7 @@ export default function HyperparameterConfiguration() {
 
   // Handle batch size warning for both manual and automated modes with debouncing
   const checkBatchSizeWarning = (batchValue: number) => {
-    const now = Date.now();
-    const warningType = 'batch-size-warning';
-    
-    // Remove existing batch size warnings to prevent duplicates
-    const existingWarnings = Array.from(activeToastIds).filter(id => id.startsWith(warningType));
-    existingWarnings.forEach(id => {
-      removeToast(id);
-      setActiveToastIds(prev => {
-        const newSet = new Set(prev);
-        newSet.delete(id);
-        return newSet;
-      });
-    });
-    
-    if (batchValue > memorySoftLimit && now - lastBatchWarningTime > 1000) { // Reduced to 1 second
-      setLastBatchWarningTime(now);
+    if (batchValue > memorySoftLimit) {
       const toastId = addToast(`Batch size exceeds recommended value. Consider lowering to ${memorySoftLimit} or less.`, 'warning', 8000);
       setActiveToastIds(prev => new Set(prev).add(toastId));
     }
@@ -214,9 +198,14 @@ export default function HyperparameterConfiguration() {
     if (isRange) {
       const parts = editingValue.split('-').map(p => parseFloat(p.trim()));
       if (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1])) {
-        // Allow manual override, no clamping to max
-        const newMin = Math.max(0.0001, Math.min(parts[0], parts[1] - step));
-        const newMax = Math.max(parts[1], parts[0] + step);
+        let newMin = Math.max(0.0001, parts[0]);
+        let newMax = Math.max(0.0001, parts[1]);
+        
+        // Implement seamless movement mechanism
+        if (newMin >= newMax) {
+          // If min >= max, push max forward
+          newMax = newMin + step;
+        }
         
         setValue([newMin, newMax]);
       }
@@ -533,110 +522,71 @@ export default function HyperparameterConfiguration() {
           />
         ) : (
           <div className="space-y-4">
-            {/* Dual Range Slider */}
-            <div className="relative h-6 flex items-center">
-              {/* Background track */}
-              <div className="absolute w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg"></div>
-              {/* Active range track */}
-              <div 
-                className="absolute h-2 bg-blue-500 rounded-lg"
-                style={{
-                  left: `${((value as number[])[0] - min) / (max - min) * 100}%`,
-                  width: `${((value as number[])[1] - (value as number[])[0]) / (max - min) * 100}%`
-                }}
-              ></div>
-              {/* Minimum range slider */}
-              <input
-                type="range"
-                min={min}
-                max={max}
-                step={step}
-                value={(value as number[])[0]}
-                onChange={(e) => {
-                  const newMin = parseFloat(e.target.value);
-                  const currentMax = (value as number[])[1];
-                  if (newMin < currentMax) {
-                    setValue([newMin, currentMax]);
-                    if (label === 'Batch Size') {
-                      checkBatchSizeWarning(newMin);
-                    }
-                  }
-                }}
-                className="absolute w-full h-2 bg-transparent rounded-lg appearance-none cursor-pointer slider range-min z-20"
-              />
-              {/* Maximum range slider */}
-              <input
-                type="range"
-                min={min}
-                max={max}
-                step={step}
-                value={(value as number[])[1]}
-                onChange={(e) => {
-                  const newMax = parseFloat(e.target.value);
-                  const currentMin = (value as number[])[0];
-                  if (newMax > currentMin) {
-                    setValue([currentMin, newMax]);
-                    if (label === 'Batch Size') {
-                      checkBatchSizeWarning(newMax);
-                    }
-                  }
-                }}
-                className="absolute w-full h-2 bg-transparent rounded-lg appearance-none cursor-pointer slider range-max z-10"
-              />
-            </div>
-            
-            {/* Dual Input Boxes for Range */}
-            <div className="grid grid-cols-2 gap-4">
+            {/* Two Separate Sliders */}
+            <div className="space-y-3">
+              {/* Min Slider */}
               <div className="space-y-2">
                 <label className="text-xs text-gray-500 dark:text-gray-400">Minimum</label>
                 <input
-                  type="number"
+                  type="range"
                   min={min}
-                  max={(value as number[])[1] - step}
+                  max={max}
                   step={step}
                   value={(value as number[])[0]}
                   onChange={(e) => {
-                    const newMin = parseFloat(e.target.value) || min;
+                    const newMin = parseFloat(e.target.value);
                     const currentMax = (value as number[])[1];
                     
-                    if (newMin < currentMax) {
+                    if (newMin >= currentMax) {
+                      // Push the max slider forward seamlessly
+                      const newMax = Math.min(max, newMin + step);
+                      setValue([newMin, newMax]);
+                    } else {
                       setValue([newMin, currentMax]);
-                      if (label === 'Batch Size') {
-                        checkBatchSizeWarning(newMin);
-                      }
+                    }
+                    
+                    if (label === 'Batch Size') {
+                      checkBatchSizeWarning(Math.max(newMin, currentMax));
                     }
                   }}
-                  className="w-full px-3 py-2 text-sm border border-gray-200 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 focus:outline-none focus:border-blue-500 transition-colors"
-                  placeholder="Min"
+                  className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer slider transition-all duration-300 ease-out"
                 />
+                <div className="text-xs text-gray-500 dark:text-gray-400 text-center">
+                  {formatValue((value as number[])[0])}
+                </div>
               </div>
+              
+              {/* Max Slider */}
               <div className="space-y-2">
                 <label className="text-xs text-gray-500 dark:text-gray-400">Maximum</label>
                 <input
-                  type="number"
-                  min={(value as number[])[0] + step}
+                  type="range"
+                  min={min}
+                  max={max}
                   step={step}
                   value={(value as number[])[1]}
                   onChange={(e) => {
-                    const newMax = parseFloat(e.target.value) || max;
+                    const newMax = parseFloat(e.target.value);
                     const currentMin = (value as number[])[0];
                     
-                    if (newMax > currentMin) {
+                    if (newMax <= currentMin) {
+                      // Push the min slider backward seamlessly
+                      const newMin = Math.max(min, newMax - step);
+                      setValue([newMin, newMax]);
+                    } else {
                       setValue([currentMin, newMax]);
-                      if (label === 'Batch Size') {
-                        checkBatchSizeWarning(newMax);
-                      }
+                    }
+                    
+                    if (label === 'Batch Size') {
+                      checkBatchSizeWarning(newMax);
                     }
                   }}
-                  className="w-full px-3 py-2 text-sm border border-gray-200 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 focus:outline-none focus:border-blue-500 transition-colors"
-                  placeholder="Max"
+                  className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer slider transition-all duration-300 ease-out"
                 />
+                <div className="text-xs text-gray-500 dark:text-gray-400 text-center">
+                  {formatValue((value as number[])[1])}
+                </div>
               </div>
-            </div>
-            
-            {/* Range Preview */}
-            <div className="text-xs text-gray-500 dark:text-gray-400 text-center">
-              Range: {formatValue((value as number[])[0])} - {formatValue((value as number[])[1])}
             </div>
           </div>
         )}
@@ -995,54 +945,6 @@ export default function HyperparameterConfiguration() {
           background: #1d4ed8;
         }
         
-        .range-min::-webkit-slider-thumb {
-          background: #10b981;
-        }
-        
-        .range-min::-webkit-slider-thumb:hover {
-          background: #059669;
-        }
-        
-        .range-min::-webkit-slider-thumb:active {
-          background: #047857;
-        }
-        
-        .range-max::-webkit-slider-thumb {
-          background: #ef4444;
-        }
-        
-        .range-max::-webkit-slider-thumb:hover {
-          background: #dc2626;
-        }
-        
-        .range-max::-webkit-slider-thumb:active {
-          background: #b91c1c;
-        }
-        
-        .range-min::-moz-range-thumb {
-          background: #10b981;
-        }
-        
-        .range-min::-moz-range-thumb:hover {
-          background: #059669;
-        }
-        
-        .range-min::-moz-range-thumb:active {
-          background: #047857;
-        }
-        
-        .range-max::-moz-range-thumb {
-          background: #ef4444;
-        }
-        
-        .range-max::-moz-range-thumb:hover {
-          background: #dc2626;
-        }
-        
-        .range-max::-moz-range-thumb:active {
-          background: #b91c1c;
-        }
-        
         /* Ensure smooth dragging */
         .slider {
           outline: none;
@@ -1069,17 +971,6 @@ export default function HyperparameterConfiguration() {
           border-radius: 4px;
           height: 8px;
           border: none;
-        }
-        
-        /* Hide default track for dual range sliders */
-        .range-min::-webkit-slider-track,
-        .range-max::-webkit-slider-track {
-          background: transparent;
-        }
-        
-        .range-min::-moz-range-track,
-        .range-max::-moz-range-track {
-          background: transparent;
         }
       `}</style>
     </div>
