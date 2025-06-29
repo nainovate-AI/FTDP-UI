@@ -5,7 +5,7 @@
     "id": "session_1750912194926",
     "createdAt": "2025-06-26T04:29:54.926Z",
     "lastModified": "2025-06-29T17:28:08.912Z",
-    "status": "dataset_selection"
+    "status": "hyperparameters_configured"
   },
   "dataset": {
     "uid": "dataset_1751023766790_b0zqofldb",
@@ -13,7 +13,7 @@
     "selectedAt": "2025-06-29T15:53:20.124Z"
   },
   "model": {
-    "uid": "22770353",
+    "uid": "openai-community/gpt2",
     "baseModel": "openai-community/gpt2",
     "modelName": "gpt2",
     "provider": "OpenAI"
@@ -26,8 +26,7 @@
     "validationSplit": null
   },
   "hyperparameters": {
-    "_comment": "Hyperparameter UID for fine-tuning. See hyperparameter-config.json for config details.",
-    "uid": null
+    "uid": "0000005k00040003000g002s"
   },
   "deployment": {
     "_comment": "Deployment configuration will be added in deployment step",

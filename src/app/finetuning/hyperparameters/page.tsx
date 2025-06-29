@@ -25,8 +25,6 @@ export default function HyperparameterConfiguration() {
   };
   
   // State management
-  const [outputDirectory, setOutputDirectory] = useState('./fine_tuned_model');
-  const [isOutputDirectoryLocked, setIsOutputDirectoryLocked] = useState(true);
   const [adapterMethod, setAdapterMethod] = useState<'LoRA' | 'QLoRA' | 'LoFTQ'>('LoRA');
   const [mode, setMode] = useState<'Manual' | 'Automated'>('Manual');
   
@@ -80,8 +78,8 @@ export default function HyperparameterConfiguration() {
   useEffect(() => {
     const loadHyperparameters = async () => {
       try {
-        const metaRes = await fetch('/api/metadata');
-        const configRes = await fetch('/src/data/hyperparameter-config.json');
+        const metaRes = await fetch('http://localhost:8000/api/metadata');
+        const configRes = await fetch('http://localhost:8000/api/hyperparameter-config');
         if (metaRes.ok && configRes.ok) {
           const metadata = await metaRes.json();
           const configData = await configRes.json();
@@ -94,7 +92,6 @@ export default function HyperparameterConfiguration() {
           
           if (uid && configData.configs[uid]) {
             const hp = configData.configs[uid];
-            setOutputDirectory(hp.outputDirectory || './fine_tuned_model');
             setAdapterMethod(hp.adapterMethod || 'LoRA');
             setMode(hp.mode || 'Manual');
             setModeLogic(hp.modeLogic || 'Biased Random');
@@ -304,7 +301,7 @@ export default function HyperparameterConfiguration() {
   const saveHyperparameters = async () => {
     try {
       const config = {
-        outputDirectory,
+        outputDirectory: './fine_tuned_model', // Default value, will be moved to job review
         adapterMethod,
         mode,
         modeLogic,
@@ -332,28 +329,37 @@ export default function HyperparameterConfiguration() {
       const uid = encodeUID(config);
 
       // Save config to hyperparameter-config.json
-      const configRes = await fetch('/api/hyperparameter-config');
+      const configRes = await fetch('http://localhost:8000/api/hyperparameter-config');
       let configData = { configs: {}, best_config_uid_manual: null, best_config_uid_automated: null };
       if (configRes.ok) configData = await configRes.json();
       (configData.configs as Record<string, any>)[uid] = config;
-      await fetch('/api/hyperparameter-config', {
+      
+      const updateConfigRes = await fetch('http://localhost:8000/api/hyperparameter-config', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(configData)
       });
+      
+      if (!updateConfigRes.ok) {
+        throw new Error('Failed to save hyperparameter config');
+      }
 
       // Save UID to metadata.json
-      await fetch('/api/metadata', {
+      const updateMetadataRes = await fetch('http://localhost:8000/api/metadata', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ hyperparameters: { uid } })
       });
+      
+      if (!updateMetadataRes.ok) {
+        throw new Error('Failed to save metadata');
+      }
 
       addToast('Hyperparameters saved successfully', 'success');
       return true;
     } catch (error) {
       console.error('Error saving hyperparameters:', error);
-      addToast('Failed to save hyperparameters', 'error');
+      addToast('Failed to save hyperparameters. Make sure the backend is running.', 'error');
       return false;
     }
   };
@@ -362,8 +368,8 @@ export default function HyperparameterConfiguration() {
     'Data Upload',
     'Model Selection',
     'Hyperparameters',
-    'Fine-tuning',
-    'Deployment'
+    'Job Review',
+    'Success'
   ];
 
   const handleBack = () => {
@@ -373,7 +379,7 @@ export default function HyperparameterConfiguration() {
   const handleNext = async () => {
     const saved = await saveHyperparameters();
     if (saved) {
-      router.push('/finetuning/training');
+      router.push('/finetuning/job-review');
     }
   };
 
@@ -405,7 +411,7 @@ export default function HyperparameterConfiguration() {
   // Suggest best config for current mode with smooth animation
   const suggestBestConfig = async () => {
     try {
-      const configRes = await fetch('/api/hyperparameter-config');
+      const configRes = await fetch('http://localhost:8000/api/hyperparameter-config');
       if (!configRes.ok) return;
       const configData = await configRes.json();
       
@@ -424,7 +430,6 @@ export default function HyperparameterConfiguration() {
         
         // Animate values smoothly
         setTimeout(() => {
-          setOutputDirectory(hp.outputDirectory || './fine_tuned_model');
           setAdapterMethod(hp.adapterMethod || 'LoRA');
           setModeLogic(hp.modeLogic || 'Biased Random');
           setSearchLimit(hp.searchLimit || 50);
@@ -621,49 +626,6 @@ export default function HyperparameterConfiguration() {
         </div>
 
         <div className="space-y-6">
-          {/* Output Directory */}
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-              Output Configuration
-            </h3>
-            <div className="space-y-3">
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                Output Directory
-              </label>
-              <div className="relative">
-                <input
-                  type="text"
-                  value={outputDirectory}
-                  onChange={(e) => setOutputDirectory(e.target.value)}
-                  disabled={isOutputDirectoryLocked}
-                  className={`w-full px-4 py-3 border rounded-lg transition-colors ${
-                    isOutputDirectoryLocked
-                      ? 'bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-500 dark:text-gray-400'
-                      : 'bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent'
-                  }`}
-                />
-                {isOutputDirectoryLocked && (
-                  <svg className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
-                  </svg>
-                )}
-              </div>
-              {isOutputDirectoryLocked && (
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-gray-500 dark:text-gray-400">
-                    Using default output path based on your dataset and model selection
-                  </span>
-                  <button
-                    onClick={() => setIsOutputDirectoryLocked(false)}
-                    className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium"
-                  >
-                    Edit Anyway
-                  </button>
-                </div>
-              )}
-            </div>
-          </div>
-
           {/* Adapter Method */}
           <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
@@ -890,7 +852,7 @@ export default function HyperparameterConfiguration() {
             onBack={handleBack}
             onNext={handleNext}
             canProceed={true}
-            nextLabel="Continue to Fine-tuning"
+            nextLabel="Continue to Job Review"
             backLabel="Back to Model Selection"
           />
         </div>

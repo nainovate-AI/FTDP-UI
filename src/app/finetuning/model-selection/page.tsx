@@ -59,8 +59,8 @@ export default function ModelSelection() {
     'Data Upload',
     'Model Selection', 
     'Hyperparameters',
-    'Fine-tuning',
-    'Deployment'
+    'Job Review',
+    'Success'
   ];
 
   return (

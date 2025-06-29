@@ -233,7 +233,7 @@ export default function DatasetSelection() {
         
         <ProgressStepper 
           currentStep={1} 
-          steps={['Data Upload', 'Model Selection', 'Hyperparameters', 'Fine-tuning', 'Deployment']} 
+          steps={['Data Upload', 'Model Selection', 'Hyperparameters', 'Job Review', 'Success']} 
         />
 
         {/* Header */}

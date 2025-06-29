@@ -10,6 +10,7 @@ import logging
 # Import service classes
 from services.dataset_selection import DatasetSelection
 from services.model_selection import ModelSelection
+from services.job_configuration import JobConfiguration
 
 
 # All endpoint definitions must come after app and CORS setup
@@ -101,6 +102,152 @@ def register_endpoints(app):
             return {"exists": exists, "model_id": model_id}
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"Failed to check model: {str(e)}")
+
+    # ------------------------
+    # JOB CONFIGURATION ENDPOINTS
+    # ------------------------
+
+    @app.get("/api/metadata")
+    async def get_metadata():
+        """Get metadata.json content"""
+        try:
+            return JobConfiguration.get_metadata()
+        except FileNotFoundError:
+            raise HTTPException(status_code=404, detail="Metadata file not found")
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Failed to load metadata: {str(e)}")
+
+    @app.post("/api/metadata")
+    async def update_metadata(updates: Dict[str, Any]):
+        """Update metadata.json with new data"""
+        try:
+            success = JobConfiguration.update_metadata(updates)
+            if success:
+                return {"success": True, "message": "Metadata updated successfully"}
+            else:
+                raise HTTPException(status_code=500, detail="Failed to update metadata")
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Failed to update metadata: {str(e)}")
+
+    @app.get("/api/hyperparameter-config")
+    async def get_hyperparameter_config():
+        """Get hyperparameter-config.json content"""
+        try:
+            return JobConfiguration.get_hyperparameter_config()
+        except FileNotFoundError:
+            raise HTTPException(status_code=404, detail="Hyperparameter config file not found")
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Failed to load hyperparameter config: {str(e)}")
+
+    @app.post("/api/hyperparameter-config")
+    async def update_hyperparameter_config(config_data: Dict[str, Any]):
+        """Update hyperparameter-config.json"""
+        try:
+            success = JobConfiguration.update_hyperparameter_config(config_data)
+            if success:
+                return {"success": True, "message": "Hyperparameter config updated successfully"}
+            else:
+                raise HTTPException(status_code=500, detail="Failed to update hyperparameter config")
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Failed to update hyperparameter config: {str(e)}")
+
+    @app.get("/api/hyperparameter-config/{uid}")
+    async def get_hyperparameter_by_uid(uid: str):
+        """Get specific hyperparameter configuration by UID"""
+        try:
+            config = JobConfiguration.get_hyperparameter_by_uid(uid)
+            if config:
+                return config
+            else:
+                raise HTTPException(status_code=404, detail=f"Hyperparameter UID not found: {uid}")
+        except HTTPException:
+            raise
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Failed to get hyperparameter config: {str(e)}")
+
+    @app.get("/api/job-configuration")
+    async def get_job_configuration():
+        """Get complete job configuration assembled from metadata and related files"""
+        try:
+            return JobConfiguration.get_job_configuration()
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Failed to get job configuration: {str(e)}")
+
+    @app.get("/api/job-configuration/validate")
+    async def validate_job_configuration():
+        """Validate job configuration - check that all UIDs exist in their respective files"""
+        try:
+            return JobConfiguration.validate_job_configuration()
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Failed to validate job configuration: {str(e)}")
+
+    @app.get("/api/dataset-by-uid/{uid}")
+    async def get_dataset_by_uid(uid: str):
+        """Get dataset information by UID"""
+        try:
+            dataset = JobConfiguration.get_dataset_by_uid(uid)
+            if dataset:
+                return dataset
+            else:
+                raise HTTPException(status_code=404, detail=f"Dataset UID not found: {uid}")
+        except HTTPException:
+            raise
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Failed to get dataset: {str(e)}")
+
+    @app.get("/api/model-by-uid/{uid}")
+    async def get_model_by_uid(uid: str):
+        """Get model information by UID"""
+        try:
+            model = JobConfiguration.get_model_by_uid(uid)
+            if model:
+                return model
+            else:
+                raise HTTPException(status_code=404, detail=f"Model UID not found: {uid}")
+        except HTTPException:
+            raise
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Failed to get model: {str(e)}")
+
+    # ------------------------
+    # FINETUNING JOBS ENDPOINTS
+    # ------------------------
+
+    @app.post("/api/jobs")
+    async def create_finetuning_job(job_data: Dict[str, Any]):
+        """Create a new finetuning job"""
+        try:
+            result = JobConfiguration.create_finetuning_job(job_data)
+            if result["success"]:
+                return result
+            else:
+                raise HTTPException(status_code=500, detail=result["message"])
+        except HTTPException:
+            raise
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Failed to create job: {str(e)}")
+
+    @app.get("/api/jobs")
+    async def get_all_jobs():
+        """Get all finetuning jobs"""
+        try:
+            return JobConfiguration.get_all_jobs()
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Failed to get jobs: {str(e)}")
+
+    @app.get("/api/jobs/{uid}")
+    async def get_job_by_uid(uid: str):
+        """Get a specific job by UID"""
+        try:
+            job = JobConfiguration.get_job_by_uid(uid)
+            if job:
+                return job
+            else:
+                raise HTTPException(status_code=404, detail=f"Job UID not found: {uid}")
+        except HTTPException:
+            raise
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Failed to get job: {str(e)}")
 
 
 # Configure logging
