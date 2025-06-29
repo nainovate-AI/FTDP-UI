@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import * as hash from 'object-hash';
 import { useRouter } from 'next/navigation';
-import { HelpCircle } from 'lucide-react';
+import { HelpCircle, AlertTriangle } from 'lucide-react';
 import { ThemeToggle } from '../../../components/ThemeToggle';
 import { ProgressStepper } from '../../../components/dataset-selection/ProgressStepper';
 import { NavigationButtons } from '../../../components/model-selection/NavigationButtons';
@@ -12,7 +12,17 @@ import { ToastContainer } from '../../../components/common/ToastNotification';
 
 export default function HyperparameterConfiguration() {
   const router = useRouter();
-  const { toasts, addToast, removeToast } = useToast();
+  const { toasts, addToast, removeToast: originalRemoveToast } = useToast();
+  
+  // Enhanced removeToast that also cleans up activeToastIds
+  const removeToast = (id: string) => {
+    originalRemoveToast(id);
+    setActiveToastIds(prev => {
+      const newSet = new Set(prev);
+      newSet.delete(id);
+      return newSet;
+    });
+  };
   
   // State management
   const [outputDirectory, setOutputDirectory] = useState('./fine_tuned_model');
@@ -27,20 +37,21 @@ export default function HyperparameterConfiguration() {
   const [weightDecay, setWeightDecay] = useState(mode === 'Manual' ? 0.01 : [0.001, 0.1]);
   
   // Automated mode specific
-  const [modeLogic, setModeLogic] = useState('Bayesian Optimization');
+  const [modeLogic, setModeLogic] = useState('Biased Random');
   const [searchLimit, setSearchLimit] = useState(50);
   const [targetLoss, setTargetLoss] = useState(0.1);
   
   // LoRA parameters
-  const [loraR, setLoraR] = useState(16);
-  const [loraAlpha, setLoraAlpha] = useState(32);
-  const [loraDropout, setLoraDropout] = useState(0.1);
+  const [loraR, setLoraR] = useState(mode === 'Manual' ? 16 : [8, 64]);
+  const [loraAlpha, setLoraAlpha] = useState(mode === 'Manual' ? 32 : [16, 128]);
+  const [loraDropout, setLoraDropout] = useState(mode === 'Manual' ? 0.1 : [0.02, 0.3]);
 
   // Animation states for smooth transitions
   const [isAnimating, setIsAnimating] = useState(false);
   
-  // Batch size warning debouncing
+  // Batch size warning debouncing and tracking
   const [lastBatchWarningTime, setLastBatchWarningTime] = useState(0);
+  const [activeToastIds, setActiveToastIds] = useState<Set<string>>(new Set());
 
   // Editing states for inline editing
   const [editingField, setEditingField] = useState<string | null>(null);
@@ -56,15 +67,15 @@ export default function HyperparameterConfiguration() {
   const memorySoftLimit = calculateMemorySoftLimit();
 
   // Tooltip definitions for parameters
-  const tooltips = {
+  const getTooltips = () => ({
     'Learning Rate': 'Controls how much the model parameters change during training. Lower values lead to more stable but slower learning.',
     'Batch Size': 'Number of training examples processed together. Higher values can speed up training but require more memory.',
     'Epochs': 'Number of complete passes through the training dataset. More epochs can improve accuracy but may cause overfitting.',
     'Weight Decay': 'Regularization technique that prevents overfitting by penalizing large weights.',
-    'Rank (r)': 'The rank of LoRA adaptation matrices. Higher values allow more expressiveness but increase parameters.',
-    'Alpha': 'Scaling factor for LoRA updates. Higher values make LoRA updates more prominent.',
+    'Rank (r)': `The rank of ${adapterMethod} adaptation matrices. Higher values allow more expressiveness but increase parameters.`,
+    'Alpha': `Scaling factor for ${adapterMethod} updates. Higher values make ${adapterMethod} updates more prominent.`,
     'Dropout': 'Randomly sets some neurons to zero during training to prevent overfitting.'
-  };
+  });
 
   // Load config from metadata UID and hyperparameter-config.json
   useEffect(() => {
@@ -87,22 +98,26 @@ export default function HyperparameterConfiguration() {
             setOutputDirectory(hp.outputDirectory || './fine_tuned_model');
             setAdapterMethod(hp.adapterMethod || 'LoRA');
             setMode(hp.mode || 'Manual');
-            setModeLogic(hp.modeLogic || 'Bayesian Optimization');
+            setModeLogic(hp.modeLogic || 'Biased Random');
             setSearchLimit(hp.searchLimit || 50);
             setTargetLoss(hp.targetLoss || 0.1);
-            setLoraR(hp.loraR || 16);
-            setLoraAlpha(hp.loraAlpha || 32);
-            setLoraDropout(hp.loraDropout || 0.1);
+            
             if (hp.mode === 'Manual') {
               setLearningRate(hp.learningRate || 2e-4);
               setBatchSize(hp.batchSize || 4);
               setEpochs(hp.epochs || 3);
               setWeightDecay(hp.weightDecay || 0.01);
+              setLoraR(hp.loraR || 16);
+              setLoraAlpha(hp.loraAlpha || 32);
+              setLoraDropout(hp.loraDropout || 0.1);
             } else {
               setLearningRate(hp.learningRateRange || [1e-5, 5e-4]);
               setBatchSize(hp.batchSizeRange || [2, 8]);
               setEpochs(hp.epochsRange || [1, 10]);
               setWeightDecay(hp.weightDecayRange || [0.001, 0.1]);
+              setLoraR(hp.loraRRange || [8, 64]);
+              setLoraAlpha(hp.loraAlphaRange || [16, 128]);
+              setLoraDropout(hp.loraDropoutRange || [0.02, 0.3]);
             }
           }
         }
@@ -149,9 +164,33 @@ export default function HyperparameterConfiguration() {
   // Handle batch size warning for both manual and automated modes with debouncing
   const checkBatchSizeWarning = (batchValue: number) => {
     const now = Date.now();
-    if (batchValue > memorySoftLimit && now - lastBatchWarningTime > 2000) { // Only show warning every 2 seconds
+    const warningType = 'batch-size-warning';
+    
+    // Remove existing batch size warnings to prevent duplicates
+    const existingWarnings = Array.from(activeToastIds).filter(id => id.startsWith(warningType));
+    existingWarnings.forEach(id => {
+      removeToast(id);
+      setActiveToastIds(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(id);
+        return newSet;
+      });
+    });
+    
+    if (batchValue > memorySoftLimit && now - lastBatchWarningTime > 1000) { // Reduced to 1 second
       setLastBatchWarningTime(now);
-      addToast(`Batch size ${batchValue} may cause Out of Memory issues. Recommended max: ${memorySoftLimit}`, 'warning');
+      const toastId = addToast(`Batch size exceeds recommended value. Consider lowering to ${memorySoftLimit} or less.`, 'warning', 8000);
+      setActiveToastIds(prev => new Set(prev).add(toastId));
+    }
+  };
+
+  // Check if batch size exceeds recommendation
+  const isBatchSizeHighWarning = () => {
+    if (mode === 'Manual') {
+      return (batchSize as number) > memorySoftLimit;
+    } else {
+      const batchArray = batchSize as number[];
+      return batchArray[1] > memorySoftLimit; // Check max value in automated mode
     }
   };
 
@@ -175,18 +214,17 @@ export default function HyperparameterConfiguration() {
     if (isRange) {
       const parts = editingValue.split('-').map(p => parseFloat(p.trim()));
       if (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1])) {
-        const newMin = Math.max(min, Math.min(parts[0], parts[1] - step));
-        const newMax = Math.min(max, Math.max(parts[1], parts[0] + step));
+        // Allow manual override, no clamping to max
+        const newMin = Math.max(0.0001, Math.min(parts[0], parts[1] - step));
+        const newMax = Math.max(parts[1], parts[0] + step);
         
-        // Smooth animation for range values
         setValue([newMin, newMax]);
       }
     } else {
       const newValue = parseFloat(editingValue);
       if (!isNaN(newValue)) {
-        const clampedValue = Math.max(min, Math.min(max, newValue));
-        
-        // Smooth animation for single values
+        // Allow manual override, only prevent zero/negative
+        const clampedValue = Math.max(0.0001, newValue);
         setValue(clampedValue);
       }
     }
@@ -257,17 +295,19 @@ export default function HyperparameterConfiguration() {
       // For range sliders, don't change the implementation here
       return;
     } else {
-      // Check if value exceeds recommended limits
+      // Allow manual override but warn about limits
       if (numValue > max) {
-        addToast(`${paramName} value (${numValue}) exceeds recommended maximum (${max}). This may cause issues.`, 'warning');
+        addToast(`${paramName} value (${numValue}) exceeds recommended maximum (${max}). This may cause issues.`, 'warning', 6000);
       }
       
-      // Special handling for batch size
+      // Special handling for batch size with enhanced warning
       if (paramName === 'Batch Size' && numValue > memorySoftLimit) {
-        addToast(`Batch size ${numValue} may cause Out of Memory issues. Recommended max: ${memorySoftLimit}`, 'warning');
+        const toastId = addToast(`Batch size exceeds recommended value. Consider lowering to ${memorySoftLimit} or less.`, 'warning', 8000);
+        setActiveToastIds(prev => new Set(prev).add(toastId));
       }
       
-      setValue(numValue);
+      // Allow any positive value, no blocking
+      setValue(Math.max(0.0001, numValue)); // Only prevent zero/negative values
     }
   };
 
@@ -281,26 +321,29 @@ export default function HyperparameterConfiguration() {
         modeLogic,
         searchLimit,
         targetLoss,
-        loraR,
-        loraAlpha,
-        loraDropout,
         ...(mode === 'Manual' ? {
           learningRate,
           batchSize,
           epochs,
-          weightDecay
+          weightDecay,
+          loraR,
+          loraAlpha,
+          loraDropout
         } : {
           learningRateRange: learningRate,
           batchSizeRange: batchSize,
           epochsRange: epochs,
-          weightDecayRange: weightDecay
+          weightDecayRange: weightDecay,
+          loraRRange: loraR,
+          loraAlphaRange: loraAlpha,
+          loraDropoutRange: loraDropout
         }),
         configuredAt: new Date().toISOString()
       };
       const uid = encodeUID(config);
 
       // Save config to hyperparameter-config.json
-      const configRes = await fetch('/src/data/hyperparameter-config.json');
+      const configRes = await fetch('/api/hyperparameter-config');
       let configData = { configs: {}, best_config_uid_manual: null, best_config_uid_automated: null };
       if (configRes.ok) configData = await configRes.json();
       (configData.configs as Record<string, any>)[uid] = config;
@@ -353,18 +396,27 @@ export default function HyperparameterConfiguration() {
       setBatchSize([2, 8]);
       setEpochs([1, 10]);
       setWeightDecay([0.001, 0.1]);
+      setLoraR([8, 64]);
+      setLoraAlpha([16, 128]);
+      setLoraDropout([0.02, 0.3]);
+      if (modeLogic === 'Bayesian Optimization' || modeLogic === 'Grid Search' || modeLogic === 'Random Search' || modeLogic === 'Hyperband') {
+        setModeLogic('Biased Random'); // Update old mode logic values
+      }
     } else {
       setLearningRate(2e-4);
       setBatchSize(4);
       setEpochs(3);
       setWeightDecay(0.01);
+      setLoraR(16);
+      setLoraAlpha(32);
+      setLoraDropout(0.1);
     }
   };
 
   // Suggest best config for current mode with smooth animation
   const suggestBestConfig = async () => {
     try {
-      const configRes = await fetch('/src/data/hyperparameter-config.json');
+      const configRes = await fetch('/api/hyperparameter-config');
       if (!configRes.ok) return;
       const configData = await configRes.json();
       
@@ -385,23 +437,26 @@ export default function HyperparameterConfiguration() {
         setTimeout(() => {
           setOutputDirectory(hp.outputDirectory || './fine_tuned_model');
           setAdapterMethod(hp.adapterMethod || 'LoRA');
-          setModeLogic(hp.modeLogic || 'Bayesian Optimization');
+          setModeLogic(hp.modeLogic || 'Biased Random');
           setSearchLimit(hp.searchLimit || 50);
           setTargetLoss(hp.targetLoss || 0.1);
-          setLoraR(hp.loraR || 16);
-          setLoraAlpha(hp.loraAlpha || 32);
-          setLoraDropout(hp.loraDropout || 0.1);
           
           if (mode === 'Manual') {
             setLearningRate(hp.learningRate || 2e-4);
             setBatchSize(hp.batchSize || 4);
             setEpochs(hp.epochs || 3);
             setWeightDecay(hp.weightDecay || 0.01);
+            setLoraR(hp.loraR || 16);
+            setLoraAlpha(hp.loraAlpha || 32);
+            setLoraDropout(hp.loraDropout || 0.1);
           } else {
             setLearningRate(hp.learningRateRange || [1e-5, 5e-4]);
             setBatchSize(hp.batchSizeRange || [2, 8]);
             setEpochs(hp.epochsRange || [1, 10]);
             setWeightDecay(hp.weightDecayRange || [0.001, 0.1]);
+            setLoraR(hp.loraRRange || [8, 64]);
+            setLoraAlpha(hp.loraAlphaRange || [16, 128]);
+            setLoraDropout(hp.loraDropoutRange || [0.02, 0.3]);
           }
           setIsAnimating(false);
         }, 100);
@@ -423,10 +478,11 @@ export default function HyperparameterConfiguration() {
     max: number,
     step: number,
     format?: (val: number) => string,
-    tooltipKey?: keyof typeof tooltips
+    tooltipKey?: keyof ReturnType<typeof getTooltips>
   ) => {
     const formatValue = format || ((val: number) => val.toString());
     const fieldId = `slider-${label.toLowerCase().replace(/\s+/g, '-')}`;
+    const showBatchWarning = label === 'Batch Size' && isBatchSizeHighWarning();
     
     return (
       <div className="space-y-3">
@@ -440,7 +496,18 @@ export default function HyperparameterConfiguration() {
                   onMouseEnter={(e) => e.stopPropagation()}
                 />
                 <div className="absolute left-0 top-6 w-64 p-2 bg-gray-800 text-white text-xs rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity z-10 pointer-events-none">
-                  {tooltips[tooltipKey]}
+                  {getTooltips()[tooltipKey]}
+                </div>
+              </div>
+            )}
+            {showBatchWarning && (
+              <div className="group relative">
+                <AlertTriangle 
+                  className="h-4 w-4 text-yellow-500 cursor-help" 
+                  onMouseEnter={(e) => e.stopPropagation()}
+                />
+                <div className="absolute left-0 top-6 w-64 p-2 bg-gray-800 text-white text-xs rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity z-10 pointer-events-none">
+                  Batch size exceeds recommended value ({memorySoftLimit}). Consider lowering to prevent memory issues.
                 </div>
               </div>
             )}
@@ -452,7 +519,7 @@ export default function HyperparameterConfiguration() {
           <input
             type="range"
             min={min}
-            max={max}
+            max={Math.max(max, Array.isArray(value) ? Math.max(...value) : (value as number))} // Allow slider to extend beyond max if manual value exceeds it
             step={step}
             value={value as number}
             onChange={(e) => {
@@ -466,7 +533,19 @@ export default function HyperparameterConfiguration() {
           />
         ) : (
           <div className="space-y-4">
-            <div className="relative">
+            {/* Dual Range Slider */}
+            <div className="relative h-6 flex items-center">
+              {/* Background track */}
+              <div className="absolute w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg"></div>
+              {/* Active range track */}
+              <div 
+                className="absolute h-2 bg-blue-500 rounded-lg"
+                style={{
+                  left: `${((value as number[])[0] - min) / (max - min) * 100}%`,
+                  width: `${((value as number[])[1] - (value as number[])[0]) / (max - min) * 100}%`
+                }}
+              ></div>
+              {/* Minimum range slider */}
               <input
                 type="range"
                 min={min}
@@ -476,26 +555,16 @@ export default function HyperparameterConfiguration() {
                 onChange={(e) => {
                   const newMin = parseFloat(e.target.value);
                   const currentMax = (value as number[])[1];
-                  
-                  if (newMin < currentMax - step) {
+                  if (newMin < currentMax) {
                     setValue([newMin, currentMax]);
-                  } else {
-                    // Push max when min approaches
-                    const newMax = Math.min(max, newMin + step * 2);
-                    setValue([newMin, newMax]);
-                  }
-                  
-                  if (label === 'Batch Size') {
-                    checkBatchSizeWarning(newMin);
+                    if (label === 'Batch Size') {
+                      checkBatchSizeWarning(newMin);
+                    }
                   }
                 }}
-                className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer slider range-min transition-all duration-300 ease-out"
+                className="absolute w-full h-2 bg-transparent rounded-lg appearance-none cursor-pointer slider range-min z-20"
               />
-              <span className="absolute -bottom-6 left-0 text-xs text-gray-500 dark:text-gray-400">
-                Min: {formatValue((value as number[])[0])}
-              </span>
-            </div>
-            <div className="relative">
+              {/* Maximum range slider */}
               <input
                 type="range"
                 min={min}
@@ -505,24 +574,69 @@ export default function HyperparameterConfiguration() {
                 onChange={(e) => {
                   const newMax = parseFloat(e.target.value);
                   const currentMin = (value as number[])[0];
-                  
-                  if (newMax > currentMin + step) {
+                  if (newMax > currentMin) {
                     setValue([currentMin, newMax]);
-                  } else {
-                    // Push min when max approaches
-                    const newMin = Math.max(min, newMax - step * 2);
-                    setValue([newMin, newMax]);
-                  }
-                  
-                  if (label === 'Batch Size') {
-                    checkBatchSizeWarning(newMax);
+                    if (label === 'Batch Size') {
+                      checkBatchSizeWarning(newMax);
+                    }
                   }
                 }}
-                className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer slider range-max transition-all duration-300 ease-out"
+                className="absolute w-full h-2 bg-transparent rounded-lg appearance-none cursor-pointer slider range-max z-10"
               />
-              <span className="absolute -bottom-6 right-0 text-xs text-gray-500 dark:text-gray-400">
-                Max: {formatValue((value as number[])[1])}
-              </span>
+            </div>
+            
+            {/* Dual Input Boxes for Range */}
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <label className="text-xs text-gray-500 dark:text-gray-400">Minimum</label>
+                <input
+                  type="number"
+                  min={min}
+                  max={(value as number[])[1] - step}
+                  step={step}
+                  value={(value as number[])[0]}
+                  onChange={(e) => {
+                    const newMin = parseFloat(e.target.value) || min;
+                    const currentMax = (value as number[])[1];
+                    
+                    if (newMin < currentMax) {
+                      setValue([newMin, currentMax]);
+                      if (label === 'Batch Size') {
+                        checkBatchSizeWarning(newMin);
+                      }
+                    }
+                  }}
+                  className="w-full px-3 py-2 text-sm border border-gray-200 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 focus:outline-none focus:border-blue-500 transition-colors"
+                  placeholder="Min"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-xs text-gray-500 dark:text-gray-400">Maximum</label>
+                <input
+                  type="number"
+                  min={(value as number[])[0] + step}
+                  step={step}
+                  value={(value as number[])[1]}
+                  onChange={(e) => {
+                    const newMax = parseFloat(e.target.value) || max;
+                    const currentMin = (value as number[])[0];
+                    
+                    if (newMax > currentMin) {
+                      setValue([currentMin, newMax]);
+                      if (label === 'Batch Size') {
+                        checkBatchSizeWarning(newMax);
+                      }
+                    }
+                  }}
+                  className="w-full px-3 py-2 text-sm border border-gray-200 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 focus:outline-none focus:border-blue-500 transition-colors"
+                  placeholder="Max"
+                />
+              </div>
+            </div>
+            
+            {/* Range Preview */}
+            <div className="text-xs text-gray-500 dark:text-gray-400 text-center">
+              Range: {formatValue((value as number[])[0])} - {formatValue((value as number[])[1])}
             </div>
           </div>
         )}
@@ -660,7 +774,7 @@ export default function HyperparameterConfiguration() {
                 className="px-3 py-2 text-sm bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded hover:bg-blue-200 dark:hover:bg-blue-800 border border-blue-300 dark:border-blue-700 transition-colors"
                 onClick={suggestBestConfig}
               >
-                Suggest Best
+                Suggest
               </button>
             </div>
             <div className={`grid grid-cols-1 md:grid-cols-2 gap-8 ${mode === 'Automated' ? 'space-y-4' : ''} ${isAnimating ? 'animate-pulse' : ''} transition-all duration-500`}>
@@ -733,10 +847,11 @@ export default function HyperparameterConfiguration() {
                       onChange={(e) => setModeLogic(e.target.value)}
                       className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     >
-                      <option>Bayesian Optimization</option>
-                      <option>Grid Search</option>
-                      <option>Random Search</option>
-                      <option>Hyperband</option>
+                      <option>Biased Random</option>
+                      <option>CRv1</option>
+                      <option>Bayesian</option>
+                      <option>Grid (deprecated)</option>
+                      <option>Random (deprecated)</option>
                     </select>
                   </div>
                   
@@ -769,251 +884,50 @@ export default function HyperparameterConfiguration() {
             )}
           </div>
 
-          {/* LoRA Parameters */}
-          {adapterMethod === 'LoRA' && (
+          {/* LoRA/QLoRA/LoFTQ Parameters */}
+          {(adapterMethod === 'LoRA' || adapterMethod === 'QLoRA' || adapterMethod === 'LoFTQ') && (
             <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">
-                LoRA Configuration
+                {adapterMethod} Configuration
               </h3>
-              <div className={`grid grid-cols-1 md:grid-cols-3 gap-6 ${isAnimating ? 'animate-pulse' : ''} transition-all duration-500`}>
-                {/* LoRA R */}
-                <div className="space-y-3">
-                  <div className="flex justify-between items-center">
-                    <div className="flex items-center gap-2">
-                      <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                        Rank (r)
-                      </label>
-                      <div className="group relative">
-                        <HelpCircle 
-                          className="h-4 w-4 text-gray-400 cursor-help" 
-                          onMouseEnter={(e) => e.stopPropagation()}
-                        />
-                        <div className="absolute left-0 top-6 w-64 p-2 bg-gray-800 text-white text-xs rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity z-10 pointer-events-none">
-                          {tooltips['Rank (r)']}
-                        </div>
-                      </div>
-                    </div>
-                    <span 
-                      className="text-sm text-gray-500 dark:text-gray-400 cursor-pointer hover:text-gray-700 dark:hover:text-gray-300 px-2 py-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                      onClick={() => handleStartEdit('lora-r', loraR)}
-                    >
-                      {editingField === 'lora-r' ? (
-                        <input
-                          type="number"
-                          value={editingValue}
-                          onChange={(e) => setEditingValue(e.target.value)}
-                          onBlur={() => {
-                            const newValue = Math.max(8, Math.min(128, parseInt(editingValue) || 8));
-                            setLoraR(newValue);
-                            setEditingField(null);
-                            setEditingValue('');
-                          }}
-                          onKeyDown={(e) => {
-                            if (e.key === 'Enter') {
-                              const newValue = Math.max(8, Math.min(128, parseInt(editingValue) || 8));
-                              setLoraR(newValue);
-                              setEditingField(null);
-                              setEditingValue('');
-                            } else if (e.key === 'Escape') {
-                              setEditingField(null);
-                              setEditingValue('');
-                            }
-                          }}
-                          className="text-sm bg-white dark:bg-gray-800 border border-blue-500 rounded px-2 py-1 text-gray-700 dark:text-gray-300 outline-none w-16 text-center"
-                          autoFocus
-                          min="8"
-                          max="128"
-                          step="8"
-                        />
-                      ) : (
-                        loraR
-                      )}
-                    </span>
-                  </div>
-                  <div className="flex gap-2">
-                    {loraPresets.r.map((preset) => (
-                      <button
-                        key={preset}
-                        onClick={() => setLoraR(preset)}
-                        className={`px-3 py-1 text-xs rounded-md border transition-colors ${
-                          loraR === preset
-                            ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300'
-                            : 'border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-400 hover:border-gray-300 dark:hover:border-gray-500'
-                        }`}
-                      >
-                        {preset}
-                      </button>
-                    ))}
-                  </div>
-                  <input
-                    type="range"
-                    min={8}
-                    max={128}
-                    step={8}
-                    value={loraR}
-                    onChange={(e) => setLoraR(parseInt(e.target.value))}
-                    className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer slider transition-all duration-300 ease-out"
-                  />
+              <div className={`grid grid-cols-1 md:grid-cols-3 gap-6 ${mode === 'Automated' ? 'space-y-4' : ''} ${isAnimating ? 'animate-pulse' : ''} transition-all duration-500`}>
+                <div className={mode === 'Automated' ? 'pb-8' : ''}>
+                  {renderSlider(
+                    'Rank (r)',
+                    loraR,
+                    setLoraR,
+                    8,
+                    128,
+                    8,
+                    undefined,
+                    'Rank (r)'
+                  )}
                 </div>
-
-                {/* LoRA Alpha */}
-                <div className="space-y-3">
-                  <div className="flex justify-between items-center">
-                    <div className="flex items-center gap-2">
-                      <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                        Alpha
-                      </label>
-                      <div className="group relative">
-                        <HelpCircle 
-                          className="h-4 w-4 text-gray-400 cursor-help" 
-                          onMouseEnter={(e) => e.stopPropagation()}
-                        />
-                        <div className="absolute left-0 top-6 w-64 p-2 bg-gray-800 text-white text-xs rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity z-10 pointer-events-none">
-                          {tooltips['Alpha']}
-                        </div>
-                      </div>
-                    </div>
-                    <span 
-                      className="text-sm text-gray-500 dark:text-gray-400 cursor-pointer hover:text-gray-700 dark:hover:text-gray-300 px-2 py-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                      onClick={() => handleStartEdit('lora-alpha', loraAlpha)}
-                    >
-                      {editingField === 'lora-alpha' ? (
-                        <input
-                          type="number"
-                          value={editingValue}
-                          onChange={(e) => setEditingValue(e.target.value)}
-                          onBlur={() => {
-                            const newValue = Math.max(16, Math.min(256, parseInt(editingValue) || 16));
-                            setLoraAlpha(newValue);
-                            setEditingField(null);
-                            setEditingValue('');
-                          }}
-                          onKeyDown={(e) => {
-                            if (e.key === 'Enter') {
-                              const newValue = Math.max(16, Math.min(256, parseInt(editingValue) || 16));
-                              setLoraAlpha(newValue);
-                              setEditingField(null);
-                              setEditingValue('');
-                            } else if (e.key === 'Escape') {
-                              setEditingField(null);
-                              setEditingValue('');
-                            }
-                          }}
-                          className="text-sm bg-white dark:bg-gray-800 border border-blue-500 rounded px-2 py-1 text-gray-700 dark:text-gray-300 outline-none w-16 text-center"
-                          autoFocus
-                          min="16"
-                          max="256"
-                          step="16"
-                        />
-                      ) : (
-                        loraAlpha
-                      )}
-                    </span>
-                  </div>
-                  <div className="flex gap-2">
-                    {loraPresets.alpha.map((preset) => (
-                      <button
-                        key={preset}
-                        onClick={() => setLoraAlpha(preset)}
-                        className={`px-3 py-1 text-xs rounded-md border transition-colors ${
-                          loraAlpha === preset
-                            ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300'
-                            : 'border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-400 hover:border-gray-300 dark:hover:border-gray-500'
-                        }`}
-                      >
-                        {preset}
-                      </button>
-                    ))}
-                  </div>
-                  <input
-                    type="range"
-                    min={16}
-                    max={256}
-                    step={16}
-                    value={loraAlpha}
-                    onChange={(e) => setLoraAlpha(parseInt(e.target.value))}
-                    className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer slider transition-all duration-300 ease-out"
-                  />
+                
+                <div className={mode === 'Automated' ? 'pb-8' : ''}>
+                  {renderSlider(
+                    'Alpha',
+                    loraAlpha,
+                    setLoraAlpha,
+                    16,
+                    256,
+                    16,
+                    undefined,
+                    'Alpha'
+                  )}
                 </div>
-
-                {/* LoRA Dropout */}
-                <div className="space-y-3">
-                  <div className="flex justify-between items-center">
-                    <div className="flex items-center gap-2">
-                      <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                        Dropout
-                      </label>
-                      <div className="group relative">
-                        <HelpCircle 
-                          className="h-4 w-4 text-gray-400 cursor-help" 
-                          onMouseEnter={(e) => e.stopPropagation()}
-                        />
-                        <div className="absolute left-0 top-6 w-64 p-2 bg-gray-800 text-white text-xs rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity z-10 pointer-events-none">
-                          {tooltips['Dropout']}
-                        </div>
-                      </div>
-                    </div>
-                    <span 
-                      className="text-sm text-gray-500 dark:text-gray-400 cursor-pointer hover:text-gray-700 dark:hover:text-gray-300 px-2 py-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                      onClick={() => handleStartEdit('lora-dropout', loraDropout)}
-                    >
-                      {editingField === 'lora-dropout' ? (
-                        <input
-                          type="number"
-                          value={editingValue}
-                          onChange={(e) => setEditingValue(e.target.value)}
-                          onBlur={() => {
-                            const newValue = Math.max(0.01, Math.min(0.5, parseFloat(editingValue) || 0.01));
-                            setLoraDropout(newValue);
-                            setEditingField(null);
-                            setEditingValue('');
-                          }}
-                          onKeyDown={(e) => {
-                            if (e.key === 'Enter') {
-                              const newValue = Math.max(0.01, Math.min(0.5, parseFloat(editingValue) || 0.01));
-                              setLoraDropout(newValue);
-                              setEditingField(null);
-                              setEditingValue('');
-                            } else if (e.key === 'Escape') {
-                              setEditingField(null);
-                              setEditingValue('');
-                            }
-                          }}
-                          className="text-sm bg-white dark:bg-gray-800 border border-blue-500 rounded px-2 py-1 text-gray-700 dark:text-gray-300 outline-none w-16 text-center"
-                          autoFocus
-                          min="0.01"
-                          max="0.5"
-                          step="0.01"
-                        />
-                      ) : (
-                        loraDropout.toFixed(2)
-                      )}
-                    </span>
-                  </div>
-                  <div className="flex gap-2">
-                    {loraPresets.dropout.map((preset) => (
-                      <button
-                        key={preset}
-                        onClick={() => setLoraDropout(preset)}
-                        className={`px-3 py-1 text-xs rounded-md border transition-colors ${
-                          loraDropout === preset
-                            ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300'
-                            : 'border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-400 hover:border-gray-300 dark:hover:border-gray-500'
-                        }`}
-                      >
-                        {preset}
-                      </button>
-                    ))}
-                  </div>
-                  <input
-                    type="range"
-                    min={0.01}
-                    max={0.5}
-                    step={0.01}
-                    value={loraDropout}
-                    onChange={(e) => setLoraDropout(parseFloat(e.target.value))}
-                    className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer slider transition-all duration-300 ease-out"
-                  />
+                
+                <div className={mode === 'Automated' ? 'pb-8' : ''}>
+                  {renderSlider(
+                    'Dropout',
+                    loraDropout,
+                    setLoraDropout,
+                    0.01,
+                    0.5,
+                    0.01,
+                    (val) => val.toFixed(2),
+                    'Dropout'
+                  )}
                 </div>
               </div>
             </div>
@@ -1044,16 +958,18 @@ export default function HyperparameterConfiguration() {
           cursor: pointer;
           border: 2px solid white;
           box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-          transition: all 0.1s ease;
+          transition: all 0.2s ease;
         }
         
         .slider::-webkit-slider-thumb:hover {
           transform: scale(1.1);
           box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+          background: #2563eb;
         }
         
         .slider::-webkit-slider-thumb:active {
           transform: scale(1.05);
+          background: #1d4ed8;
         }
         
         .slider::-moz-range-thumb {
@@ -1064,51 +980,105 @@ export default function HyperparameterConfiguration() {
           cursor: pointer;
           border: 2px solid white;
           box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-          transition: all 0.1s ease;
+          transition: all 0.2s ease;
+          -moz-appearance: none;
         }
         
         .slider::-moz-range-thumb:hover {
           transform: scale(1.1);
           box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+          background: #2563eb;
         }
         
         .slider::-moz-range-thumb:active {
           transform: scale(1.05);
+          background: #1d4ed8;
         }
         
         .range-min::-webkit-slider-thumb {
           background: #10b981;
         }
         
+        .range-min::-webkit-slider-thumb:hover {
+          background: #059669;
+        }
+        
+        .range-min::-webkit-slider-thumb:active {
+          background: #047857;
+        }
+        
         .range-max::-webkit-slider-thumb {
           background: #ef4444;
+        }
+        
+        .range-max::-webkit-slider-thumb:hover {
+          background: #dc2626;
+        }
+        
+        .range-max::-webkit-slider-thumb:active {
+          background: #b91c1c;
         }
         
         .range-min::-moz-range-thumb {
           background: #10b981;
         }
         
+        .range-min::-moz-range-thumb:hover {
+          background: #059669;
+        }
+        
+        .range-min::-moz-range-thumb:active {
+          background: #047857;
+        }
+        
         .range-max::-moz-range-thumb {
           background: #ef4444;
+        }
+        
+        .range-max::-moz-range-thumb:hover {
+          background: #dc2626;
+        }
+        
+        .range-max::-moz-range-thumb:active {
+          background: #b91c1c;
         }
         
         /* Ensure smooth dragging */
         .slider {
           outline: none;
           -webkit-appearance: none;
+          -moz-appearance: none;
           user-select: none;
           touch-action: pan-x;
+          background: transparent;
         }
         
         .slider:focus {
           outline: none;
+          box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
         }
         
         .slider::-webkit-slider-track {
           background: transparent;
+          border-radius: 4px;
+          height: 8px;
         }
         
         .slider::-moz-range-track {
+          background: transparent;
+          border-radius: 4px;
+          height: 8px;
+          border: none;
+        }
+        
+        /* Hide default track for dual range sliders */
+        .range-min::-webkit-slider-track,
+        .range-max::-webkit-slider-track {
+          background: transparent;
+        }
+        
+        .range-min::-moz-range-track,
+        .range-max::-moz-range-track {
           background: transparent;
         }
       `}</style>

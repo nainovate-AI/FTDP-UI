@@ -72,7 +72,7 @@ export const ToastNotification: React.FC<ToastProps> = ({
 
   return (
     <div
-      className={`fixed top-4 right-4 z-50 p-4 border rounded-lg shadow-lg transform transition-all duration-300 ease-in-out max-w-sm ${
+      className={`p-4 border rounded-lg shadow-lg transform transition-all duration-300 ease-in-out max-w-sm ${
         isVisible ? 'translate-x-0 opacity-100' : 'translate-x-full opacity-0'
       } ${getTypeStyles()}`}
     >
@@ -114,21 +114,16 @@ interface ToastContainerProps {
 
 export const ToastContainer: React.FC<ToastContainerProps> = ({ toasts, onRemove }) => {
   return (
-    <div className="fixed top-4 right-4 z-50 space-y-2">
-      {toasts.map((toast, index) => (
-        <div
+    <div className="fixed top-4 right-4 z-50 flex flex-col gap-2">
+      {toasts.map((toast) => (
+        <ToastNotification
           key={toast.id}
-          style={{ top: `${index * 80}px` }}
-          className="relative"
-        >
-          <ToastNotification
-            id={toast.id}
-            message={toast.message}
-            type={toast.type}
-            duration={toast.duration}
-            onClose={onRemove}
-          />
-        </div>
+          id={toast.id}
+          message={toast.message}
+          type={toast.type}
+          duration={toast.duration}
+          onClose={onRemove}
+        />
       ))}
     </div>
   );

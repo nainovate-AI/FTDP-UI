@@ -63,9 +63,9 @@
       "batchSizeRange": [2, 16],
       "epochsRange": [1, 10],
       "weightDecayRange": [0.001, 0.1],
-      "loraR": 16,
-      "loraAlpha": 32,
-      "loraDropout": 0.1,
+      "loraRRange": [8, 32],
+      "loraAlphaRange": [16, 64],
+      "loraDropoutRange": [0.05, 0.15],
       "configuredAt": "2025-06-29T12:00:00.000Z"
     },
     "01000058c0004000w0002000f002000001e": {
@@ -79,9 +79,9 @@
       "batchSizeRange": [4, 32],
       "epochsRange": [2, 15],
       "weightDecayRange": [0.0005, 0.2],
-      "loraR": 32,
-      "loraAlpha": 64,
-      "loraDropout": 0.05,
+      "loraRRange": [16, 64],
+      "loraAlphaRange": [32, 128],
+      "loraDropoutRange": [0.02, 0.1],
       "configuredAt": "2025-06-29T12:00:00.000Z"
     },
     "01000508c0008000o000300080018000n": {
@@ -95,9 +95,9 @@
       "batchSizeRange": [8, 24],
       "epochsRange": [3, 8],
       "weightDecayRange": [0.005, 0.05],
-      "loraR": 24,
-      "loraAlpha": 48,
-      "loraDropout": 0.08,
+      "loraRRange": [16, 48],
+      "loraAlphaRange": [32, 96],
+      "loraDropoutRange": [0.05, 0.12],
       "configuredAt": "2025-06-29T12:00:00.000Z"
     },
     "0100000gdw00060014000100100014003e": {
@@ -111,9 +111,9 @@
       "batchSizeRange": [6, 20],
       "epochsRange": [1, 12],
       "weightDecayRange": [0.002, 0.08],
-      "loraR": 20,
-      "loraAlpha": 40,
-      "loraDropout": 0.12,
+      "loraRRange": [12, 40],
+      "loraAlphaRange": [24, 80],
+      "loraDropoutRange": [0.08, 0.18],
       "configuredAt": "2025-06-29T12:00:00.000Z"
     }
   },
