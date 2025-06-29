@@ -42,6 +42,10 @@ export default function HyperparameterConfiguration() {
   // Batch size warning debouncing
   const [lastBatchWarningTime, setLastBatchWarningTime] = useState(0);
 
+  // Editing states for inline editing
+  const [editingField, setEditingField] = useState<string | null>(null);
+  const [editingValue, setEditingValue] = useState<string>('');
+
   // Memory calculation for batch size soft limit
   const calculateMemorySoftLimit = () => {
     // Rough estimation: 4GB = batch size 8, 8GB = batch size 16, etc.
@@ -149,6 +153,91 @@ export default function HyperparameterConfiguration() {
       setLastBatchWarningTime(now);
       addToast(`Batch size ${batchValue} may cause Out of Memory issues. Recommended max: ${memorySoftLimit}`, 'warning');
     }
+  };
+
+  // Handle inline editing for single values
+  const handleStartEdit = (fieldId: string, currentValue: number | number[]) => {
+    setEditingField(fieldId);
+    if (Array.isArray(currentValue)) {
+      setEditingValue(`${currentValue[0]}-${currentValue[1]}`);
+    } else {
+      setEditingValue(currentValue.toString());
+    }
+  };
+
+  const handleFinishEdit = (
+    setValue: (val: number | number[]) => void,
+    min: number,
+    max: number,
+    step: number,
+    isRange: boolean = false
+  ) => {
+    if (isRange) {
+      const parts = editingValue.split('-').map(p => parseFloat(p.trim()));
+      if (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1])) {
+        const newMin = Math.max(min, Math.min(parts[0], parts[1] - step));
+        const newMax = Math.min(max, Math.max(parts[1], parts[0] + step));
+        
+        // Smooth animation for range values
+        setValue([newMin, newMax]);
+      }
+    } else {
+      const newValue = parseFloat(editingValue);
+      if (!isNaN(newValue)) {
+        const clampedValue = Math.max(min, Math.min(max, newValue));
+        
+        // Smooth animation for single values
+        setValue(clampedValue);
+      }
+    }
+    setEditingField(null);
+    setEditingValue('');
+  };
+
+  const renderEditableValue = (
+    fieldId: string,
+    value: number | number[],
+    setValue: (val: number | number[]) => void,
+    min: number,
+    max: number,
+    step: number,
+    formatValue: (val: number) => string
+  ) => {
+    const isRange = Array.isArray(value);
+    const isEditing = editingField === fieldId;
+
+    if (isEditing) {
+      return (
+        <input
+          type="text"
+          value={editingValue}
+          onChange={(e) => setEditingValue(e.target.value)}
+          onBlur={() => handleFinishEdit(setValue, min, max, step, isRange)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              handleFinishEdit(setValue, min, max, step, isRange);
+            } else if (e.key === 'Escape') {
+              setEditingField(null);
+              setEditingValue('');
+            }
+          }}
+          className="text-sm bg-white dark:bg-gray-800 border border-blue-500 rounded px-2 py-1 text-gray-700 dark:text-gray-300 outline-none w-24 text-center"
+          autoFocus
+        />
+      );
+    }
+
+    return (
+      <span 
+        className="text-sm text-gray-500 dark:text-gray-400 cursor-pointer hover:text-gray-700 dark:hover:text-gray-300 px-2 py-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+        onClick={() => handleStartEdit(fieldId, value)}
+      >
+        {isRange 
+          ? `${formatValue((value as number[])[0])} - ${formatValue((value as number[])[1])}`
+          : formatValue(value as number)
+        }
+      </span>
+    );
   };
 
   // Handle manual value input with validation
@@ -279,13 +368,13 @@ export default function HyperparameterConfiguration() {
       if (!configRes.ok) return;
       const configData = await configRes.json();
       
-      // Get the best config alias for current mode
-      let bestAlias = mode === 'Manual' ? configData.best_config_uid_manual : configData.best_config_uid_automated;
+      // Get the best config UID based on current mode
+      const bestUidKey = mode === 'Manual' ? 'best_config_uid_manual' : 'best_config_uid_automated';
+      let bestUid = configData[bestUidKey];
       
-      // Resolve alias to actual UID if it's an alias
-      let bestUid = bestAlias;
-      if (configData.aliases && configData.aliases[bestAlias]) {
-        bestUid = configData.aliases[bestAlias];
+      // Check if the UID is an alias and resolve it
+      if (bestUid && configData.aliases && configData.aliases[bestUid]) {
+        bestUid = configData.aliases[bestUid];
       }
       
       if (bestUid && configData.configs[bestUid]) {
@@ -296,14 +385,14 @@ export default function HyperparameterConfiguration() {
         setTimeout(() => {
           setOutputDirectory(hp.outputDirectory || './fine_tuned_model');
           setAdapterMethod(hp.adapterMethod || 'LoRA');
-          setMode(hp.mode || 'Manual');
           setModeLogic(hp.modeLogic || 'Bayesian Optimization');
           setSearchLimit(hp.searchLimit || 50);
           setTargetLoss(hp.targetLoss || 0.1);
           setLoraR(hp.loraR || 16);
           setLoraAlpha(hp.loraAlpha || 32);
           setLoraDropout(hp.loraDropout || 0.1);
-          if (hp.mode === 'Manual') {
+          
+          if (mode === 'Manual') {
             setLearningRate(hp.learningRate || 2e-4);
             setBatchSize(hp.batchSize || 4);
             setEpochs(hp.epochs || 3);
@@ -317,12 +406,12 @@ export default function HyperparameterConfiguration() {
           setIsAnimating(false);
         }, 100);
         
-        addToast(`Suggested best hyperparameters loaded (${bestAlias})`, 'info');
+        addToast(`Best ${mode.toLowerCase()} configuration loaded successfully`, 'info');
       } else {
-        addToast('No best config found for this mode', 'warning');
+        addToast(`No best ${mode.toLowerCase()} configuration found`, 'warning');
       }
     } catch (error) {
-      addToast('Failed to load best config', 'error');
+      addToast('Failed to load best configuration', 'error');
     }
   };
 
@@ -337,6 +426,7 @@ export default function HyperparameterConfiguration() {
     tooltipKey?: keyof typeof tooltips
   ) => {
     const formatValue = format || ((val: number) => val.toString());
+    const fieldId = `slider-${label.toLowerCase().replace(/\s+/g, '-')}`;
     
     return (
       <div className="space-y-3">
@@ -345,81 +435,17 @@ export default function HyperparameterConfiguration() {
             {label}
             {tooltipKey && (
               <div className="group relative">
-                <HelpCircle className="h-4 w-4 text-gray-400 cursor-help" />
-                <div className="absolute left-0 top-6 w-64 p-2 bg-gray-800 text-white text-xs rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity z-10">
+                <HelpCircle 
+                  className="h-4 w-4 text-gray-400 cursor-help" 
+                  onMouseEnter={(e) => e.stopPropagation()}
+                />
+                <div className="absolute left-0 top-6 w-64 p-2 bg-gray-800 text-white text-xs rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity z-10 pointer-events-none">
                   {tooltips[tooltipKey]}
                 </div>
               </div>
             )}
-            {label === 'Learning Rate' && (
-              <button
-                type="button"
-                className="ml-2 px-2 py-1 text-xs bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded hover:bg-blue-200 dark:hover:bg-blue-800 border border-blue-300 dark:border-blue-700"
-                onClick={suggestBestConfig}
-              >
-                Suggest
-              </button>
-            )}
           </label>
-          <span 
-            className="text-sm text-gray-500 dark:text-gray-400 cursor-pointer hover:text-gray-700 dark:hover:text-gray-300 px-2 py-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-            onClick={(event) => {
-              const input = document.createElement('input');
-              input.type = 'number';
-              input.className = 'text-sm bg-transparent border-b border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 outline-none w-20';
-              
-              if (Array.isArray(value)) {
-                // For range values, create two inputs
-                const container = document.createElement('div');
-                container.className = 'flex items-center gap-2';
-                
-                const minInput = input.cloneNode() as HTMLInputElement;
-                const maxInput = input.cloneNode() as HTMLInputElement;
-                
-                minInput.value = value[0].toString();
-                maxInput.value = value[1].toString();
-                minInput.step = step.toString();
-                maxInput.step = step.toString();
-                
-                minInput.addEventListener('blur', () => {
-                  const newMin = Math.max(min, Math.min(parseFloat(minInput.value) || min, value[1] - step));
-                  setValue([newMin, value[1]]);
-                  container.replaceWith(document.createTextNode(`${formatValue(newMin)} - ${formatValue(value[1])}`));
-                });
-                
-                maxInput.addEventListener('blur', () => {
-                  const newMax = Math.min(max, Math.max(parseFloat(maxInput.value) || max, value[0] + step));
-                  setValue([value[0], newMax]);
-                  container.replaceWith(document.createTextNode(`${formatValue(value[0])} - ${formatValue(newMax)}`));
-                });
-                
-                container.appendChild(minInput);
-                container.appendChild(document.createTextNode(' - '));
-                container.appendChild(maxInput);
-                
-                (event.target as HTMLElement).replaceWith(container);
-                minInput.focus();
-              } else {
-                // For single values
-                input.value = (value as number).toString();
-                input.step = step.toString();
-                
-                input.addEventListener('blur', () => {
-                  const newValue = Math.max(min, Math.min(max, parseFloat(input.value) || min));
-                  setValue(newValue);
-                  input.replaceWith(document.createTextNode(formatValue(newValue)));
-                });
-                
-                (event.target as HTMLElement).replaceWith(input);
-                input.focus();
-              }
-            }}
-          >
-            {Array.isArray(value) 
-              ? `${formatValue(value[0])} - ${formatValue(value[1])}`
-              : formatValue(value)
-            }
-          </span>
+          {renderEditableValue(fieldId, value, setValue, min, max, step, formatValue)}
         </div>
         
         {mode === 'Manual' ? (
@@ -436,7 +462,7 @@ export default function HyperparameterConfiguration() {
                 checkBatchSizeWarning(newValue);
               }
             }}
-            className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer slider"
+            className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer slider transition-all duration-300 ease-out"
           />
         ) : (
           <div className="space-y-4">
@@ -463,7 +489,7 @@ export default function HyperparameterConfiguration() {
                     checkBatchSizeWarning(newMin);
                   }
                 }}
-                className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer slider range-min"
+                className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer slider range-min transition-all duration-300 ease-out"
               />
               <span className="absolute -bottom-6 left-0 text-xs text-gray-500 dark:text-gray-400">
                 Min: {formatValue((value as number[])[0])}
@@ -492,7 +518,7 @@ export default function HyperparameterConfiguration() {
                     checkBatchSizeWarning(newMax);
                   }
                 }}
-                className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer slider range-max"
+                className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer slider range-max transition-all duration-300 ease-out"
               />
               <span className="absolute -bottom-6 right-0 text-xs text-gray-500 dark:text-gray-400">
                 Max: {formatValue((value as number[])[1])}
@@ -625,9 +651,18 @@ export default function HyperparameterConfiguration() {
 
           {/* Training Parameters */}
           <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">
-              Training Parameters
-            </h3>
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                Training Parameters
+              </h3>
+              <button
+                type="button"
+                className="px-3 py-2 text-sm bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded hover:bg-blue-200 dark:hover:bg-blue-800 border border-blue-300 dark:border-blue-700 transition-colors"
+                onClick={suggestBestConfig}
+              >
+                Suggest Best
+              </button>
+            </div>
             <div className={`grid grid-cols-1 md:grid-cols-2 gap-8 ${mode === 'Automated' ? 'space-y-4' : ''} ${isAnimating ? 'animate-pulse' : ''} transition-all duration-500`}>
               <div className={mode === 'Automated' ? 'pb-8' : ''}>
                 {renderSlider(
@@ -749,41 +784,50 @@ export default function HyperparameterConfiguration() {
                         Rank (r)
                       </label>
                       <div className="group relative">
-                        <HelpCircle className="h-4 w-4 text-gray-400 cursor-help" />
-                        <div className="absolute left-0 top-6 w-64 p-2 bg-gray-800 text-white text-xs rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity z-10">
+                        <HelpCircle 
+                          className="h-4 w-4 text-gray-400 cursor-help" 
+                          onMouseEnter={(e) => e.stopPropagation()}
+                        />
+                        <div className="absolute left-0 top-6 w-64 p-2 bg-gray-800 text-white text-xs rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity z-10 pointer-events-none">
                           {tooltips['Rank (r)']}
                         </div>
                       </div>
                     </div>
                     <span 
                       className="text-sm text-gray-500 dark:text-gray-400 cursor-pointer hover:text-gray-700 dark:hover:text-gray-300 px-2 py-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                      onClick={(event) => {
-                        const input = document.createElement('input');
-                        input.type = 'number';
-                        input.value = loraR.toString();
-                        input.min = '8';
-                        input.max = '128';
-                        input.step = '8';
-                        input.className = 'text-sm bg-transparent border-b border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 outline-none w-16 text-center';
-                        
-                        input.addEventListener('blur', () => {
-                          const newValue = Math.max(8, Math.min(128, parseInt(input.value) || 8));
-                          setLoraR(newValue);
-                          input.replaceWith(document.createTextNode(newValue.toString()));
-                        });
-                        
-                        input.addEventListener('keydown', (e) => {
-                          if (e.key === 'Enter') {
-                            input.blur();
-                          }
-                        });
-                        
-                        (event.target as HTMLElement).replaceWith(input);
-                        input.focus();
-                        input.select();
-                      }}
+                      onClick={() => handleStartEdit('lora-r', loraR)}
                     >
-                      {loraR}
+                      {editingField === 'lora-r' ? (
+                        <input
+                          type="number"
+                          value={editingValue}
+                          onChange={(e) => setEditingValue(e.target.value)}
+                          onBlur={() => {
+                            const newValue = Math.max(8, Math.min(128, parseInt(editingValue) || 8));
+                            setLoraR(newValue);
+                            setEditingField(null);
+                            setEditingValue('');
+                          }}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                              const newValue = Math.max(8, Math.min(128, parseInt(editingValue) || 8));
+                              setLoraR(newValue);
+                              setEditingField(null);
+                              setEditingValue('');
+                            } else if (e.key === 'Escape') {
+                              setEditingField(null);
+                              setEditingValue('');
+                            }
+                          }}
+                          className="text-sm bg-white dark:bg-gray-800 border border-blue-500 rounded px-2 py-1 text-gray-700 dark:text-gray-300 outline-none w-16 text-center"
+                          autoFocus
+                          min="8"
+                          max="128"
+                          step="8"
+                        />
+                      ) : (
+                        loraR
+                      )}
                     </span>
                   </div>
                   <div className="flex gap-2">
@@ -808,7 +852,7 @@ export default function HyperparameterConfiguration() {
                     step={8}
                     value={loraR}
                     onChange={(e) => setLoraR(parseInt(e.target.value))}
-                    className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer slider"
+                    className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer slider transition-all duration-300 ease-out"
                   />
                 </div>
 
@@ -820,41 +864,50 @@ export default function HyperparameterConfiguration() {
                         Alpha
                       </label>
                       <div className="group relative">
-                        <HelpCircle className="h-4 w-4 text-gray-400 cursor-help" />
-                        <div className="absolute left-0 top-6 w-64 p-2 bg-gray-800 text-white text-xs rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity z-10">
+                        <HelpCircle 
+                          className="h-4 w-4 text-gray-400 cursor-help" 
+                          onMouseEnter={(e) => e.stopPropagation()}
+                        />
+                        <div className="absolute left-0 top-6 w-64 p-2 bg-gray-800 text-white text-xs rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity z-10 pointer-events-none">
                           {tooltips['Alpha']}
                         </div>
                       </div>
                     </div>
                     <span 
                       className="text-sm text-gray-500 dark:text-gray-400 cursor-pointer hover:text-gray-700 dark:hover:text-gray-300 px-2 py-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                      onClick={(event) => {
-                        const input = document.createElement('input');
-                        input.type = 'number';
-                        input.value = loraAlpha.toString();
-                        input.min = '16';
-                        input.max = '256';
-                        input.step = '16';
-                        input.className = 'text-sm bg-transparent border-b border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 outline-none w-16 text-center';
-                        
-                        input.addEventListener('blur', () => {
-                          const newValue = Math.max(16, Math.min(256, parseInt(input.value) || 16));
-                          setLoraAlpha(newValue);
-                          input.replaceWith(document.createTextNode(newValue.toString()));
-                        });
-                        
-                        input.addEventListener('keydown', (e) => {
-                          if (e.key === 'Enter') {
-                            input.blur();
-                          }
-                        });
-                        
-                        (event.target as HTMLElement).replaceWith(input);
-                        input.focus();
-                        input.select();
-                      }}
+                      onClick={() => handleStartEdit('lora-alpha', loraAlpha)}
                     >
-                      {loraAlpha}
+                      {editingField === 'lora-alpha' ? (
+                        <input
+                          type="number"
+                          value={editingValue}
+                          onChange={(e) => setEditingValue(e.target.value)}
+                          onBlur={() => {
+                            const newValue = Math.max(16, Math.min(256, parseInt(editingValue) || 16));
+                            setLoraAlpha(newValue);
+                            setEditingField(null);
+                            setEditingValue('');
+                          }}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                              const newValue = Math.max(16, Math.min(256, parseInt(editingValue) || 16));
+                              setLoraAlpha(newValue);
+                              setEditingField(null);
+                              setEditingValue('');
+                            } else if (e.key === 'Escape') {
+                              setEditingField(null);
+                              setEditingValue('');
+                            }
+                          }}
+                          className="text-sm bg-white dark:bg-gray-800 border border-blue-500 rounded px-2 py-1 text-gray-700 dark:text-gray-300 outline-none w-16 text-center"
+                          autoFocus
+                          min="16"
+                          max="256"
+                          step="16"
+                        />
+                      ) : (
+                        loraAlpha
+                      )}
                     </span>
                   </div>
                   <div className="flex gap-2">
@@ -879,7 +932,7 @@ export default function HyperparameterConfiguration() {
                     step={16}
                     value={loraAlpha}
                     onChange={(e) => setLoraAlpha(parseInt(e.target.value))}
-                    className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer slider"
+                    className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer slider transition-all duration-300 ease-out"
                   />
                 </div>
 
@@ -891,41 +944,50 @@ export default function HyperparameterConfiguration() {
                         Dropout
                       </label>
                       <div className="group relative">
-                        <HelpCircle className="h-4 w-4 text-gray-400 cursor-help" />
-                        <div className="absolute left-0 top-6 w-64 p-2 bg-gray-800 text-white text-xs rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity z-10">
+                        <HelpCircle 
+                          className="h-4 w-4 text-gray-400 cursor-help" 
+                          onMouseEnter={(e) => e.stopPropagation()}
+                        />
+                        <div className="absolute left-0 top-6 w-64 p-2 bg-gray-800 text-white text-xs rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity z-10 pointer-events-none">
                           {tooltips['Dropout']}
                         </div>
                       </div>
                     </div>
                     <span 
                       className="text-sm text-gray-500 dark:text-gray-400 cursor-pointer hover:text-gray-700 dark:hover:text-gray-300 px-2 py-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                      onClick={(event) => {
-                        const input = document.createElement('input');
-                        input.type = 'number';
-                        input.value = loraDropout.toFixed(2);
-                        input.min = '0.01';
-                        input.max = '0.5';
-                        input.step = '0.01';
-                        input.className = 'text-sm bg-transparent border-b border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 outline-none w-16 text-center';
-                        
-                        input.addEventListener('blur', () => {
-                          const newValue = Math.max(0.01, Math.min(0.5, parseFloat(input.value) || 0.01));
-                          setLoraDropout(newValue);
-                          input.replaceWith(document.createTextNode(newValue.toFixed(2)));
-                        });
-                        
-                        input.addEventListener('keydown', (e) => {
-                          if (e.key === 'Enter') {
-                            input.blur();
-                          }
-                        });
-                        
-                        (event.target as HTMLElement).replaceWith(input);
-                        input.focus();
-                        input.select();
-                      }}
+                      onClick={() => handleStartEdit('lora-dropout', loraDropout)}
                     >
-                      {loraDropout.toFixed(2)}
+                      {editingField === 'lora-dropout' ? (
+                        <input
+                          type="number"
+                          value={editingValue}
+                          onChange={(e) => setEditingValue(e.target.value)}
+                          onBlur={() => {
+                            const newValue = Math.max(0.01, Math.min(0.5, parseFloat(editingValue) || 0.01));
+                            setLoraDropout(newValue);
+                            setEditingField(null);
+                            setEditingValue('');
+                          }}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                              const newValue = Math.max(0.01, Math.min(0.5, parseFloat(editingValue) || 0.01));
+                              setLoraDropout(newValue);
+                              setEditingField(null);
+                              setEditingValue('');
+                            } else if (e.key === 'Escape') {
+                              setEditingField(null);
+                              setEditingValue('');
+                            }
+                          }}
+                          className="text-sm bg-white dark:bg-gray-800 border border-blue-500 rounded px-2 py-1 text-gray-700 dark:text-gray-300 outline-none w-16 text-center"
+                          autoFocus
+                          min="0.01"
+                          max="0.5"
+                          step="0.01"
+                        />
+                      ) : (
+                        loraDropout.toFixed(2)
+                      )}
                     </span>
                   </div>
                   <div className="flex gap-2">
@@ -950,7 +1012,7 @@ export default function HyperparameterConfiguration() {
                     step={0.01}
                     value={loraDropout}
                     onChange={(e) => setLoraDropout(parseFloat(e.target.value))}
-                    className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer slider"
+                    className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer slider transition-all duration-300 ease-out"
                   />
                 </div>
               </div>
