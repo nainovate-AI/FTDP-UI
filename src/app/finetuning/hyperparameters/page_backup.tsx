@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from 'react';
 import * as hash from 'object-hash';
 import { useRouter } from 'next/navigation';
-import { HelpCircle } from 'lucide-react';
 import { ThemeToggle } from '../../../components/ThemeToggle';
 import { ProgressStepper } from '../../../components/dataset-selection/ProgressStepper';
 import { NavigationButtons } from '../../../components/model-selection/NavigationButtons';
@@ -36,32 +35,6 @@ export default function HyperparameterConfiguration() {
   const [loraAlpha, setLoraAlpha] = useState(32);
   const [loraDropout, setLoraDropout] = useState(0.1);
 
-  // Animation states for smooth transitions
-  const [isAnimating, setIsAnimating] = useState(false);
-  
-  // Batch size warning debouncing
-  const [lastBatchWarningTime, setLastBatchWarningTime] = useState(0);
-
-  // Memory calculation for batch size soft limit
-  const calculateMemorySoftLimit = () => {
-    // Rough estimation: 4GB = batch size 8, 8GB = batch size 16, etc.
-    const availableMemoryGB = (navigator as any).deviceMemory || 4; // Default to 4GB if not available
-    return Math.max(Math.min(Math.floor(availableMemoryGB * 2), 32), 8); // Minimum 8, cap at 32
-  };
-
-  const memorySoftLimit = calculateMemorySoftLimit();
-
-  // Tooltip definitions for parameters
-  const tooltips = {
-    'Learning Rate': 'Controls how much the model parameters change during training. Lower values lead to more stable but slower learning.',
-    'Batch Size': 'Number of training examples processed together. Higher values can speed up training but require more memory.',
-    'Epochs': 'Number of complete passes through the training dataset. More epochs can improve accuracy but may cause overfitting.',
-    'Weight Decay': 'Regularization technique that prevents overfitting by penalizing large weights.',
-    'Rank (r)': 'The rank of LoRA adaptation matrices. Higher values allow more expressiveness but increase parameters.',
-    'Alpha': 'Scaling factor for LoRA updates. Higher values make LoRA updates more prominent.',
-    'Dropout': 'Randomly sets some neurons to zero during training to prevent overfitting.'
-  };
-
   // Load config from metadata UID and hyperparameter-config.json
   useEffect(() => {
     const loadHyperparameters = async () => {
@@ -71,13 +44,7 @@ export default function HyperparameterConfiguration() {
         if (metaRes.ok && configRes.ok) {
           const metadata = await metaRes.json();
           const configData = await configRes.json();
-          let uid = metadata.hyperparameters?.uid;
-          
-          // Check if UID is an alias first
-          if (uid && configData.aliases && configData.aliases[uid]) {
-            uid = configData.aliases[uid];
-          }
-          
+          const uid = metadata.hyperparameters?.uid;
           if (uid && configData.configs[uid]) {
             const hp = configData.configs[uid];
             setOutputDirectory(hp.outputDirectory || './fine_tuned_model');
@@ -109,77 +76,15 @@ export default function HyperparameterConfiguration() {
     loadHyperparameters();
   }, []);
 
-  // Helper to encode hyperparameters into symmetric cipher
+  // Helper to encode mode and adapter method
   const encodeUID = (config: any) => {
     const modeMap: Record<string, string> = { Manual: '00', Automated: '01' };
     const adapterMap: Record<string, string> = { LoRA: '00', QLoRA: '01', LoFTQ: '02' };
-    
     const mm = modeMap[String(config.mode)] || '00';
     const aa = adapterMap[String(config.adapterMethod)] || '00';
-    
-    if (config.mode === 'Manual') {
-      // Manual: MMAALLLLBBBBEEEERRRRDDDD
-      const lr = Math.round((config.learningRate || 2e-4) * 1000000).toString(36).padStart(4, '0');
-      const bs = (config.batchSize || 4).toString(36).padStart(4, '0');
-      const ep = (config.epochs || 3).toString(36).padStart(4, '0');
-      const rk = (config.loraR || 16).toString(36).padStart(4, '0');
-      const dr = Math.round((config.loraDropout || 0.1) * 1000).toString(36).padStart(4, '0');
-      return `${mm}${aa}${lr}${bs}${ep}${rk}${dr}`;
-    } else {
-      // Automated: MMAARRRRRRRRBBBBBBBBEEEEEEEE...
-      const lrRange = config.learningRateRange || [1e-5, 5e-4];
-      const bsRange = config.batchSizeRange || [2, 8];
-      const epRange = config.epochsRange || [1, 10];
-      const lrMin = Math.round(lrRange[0] * 1000000).toString(36).padStart(4, '0');
-      const lrMax = Math.round(lrRange[1] * 1000000).toString(36).padStart(4, '0');
-      const bsMin = bsRange[0].toString(36).padStart(4, '0');
-      const bsMax = bsRange[1].toString(36).padStart(4, '0');
-      const epMin = epRange[0].toString(36).padStart(4, '0');
-      const epMax = epRange[1].toString(36).padStart(4, '0');
-      const rk = (config.loraR || 16).toString(36).padStart(4, '0');
-      const dr = Math.round((config.loraDropout || 0.1) * 1000).toString(36).padStart(4, '0');
-      return `${mm}${aa}${lrMin}${lrMax}${bsMin}${bsMax}${epMin}${epMax}${rk}${dr}`;
-    }
-  };
-
-  // Handle batch size warning for both manual and automated modes with debouncing
-  const checkBatchSizeWarning = (batchValue: number) => {
-    const now = Date.now();
-    if (batchValue > memorySoftLimit && now - lastBatchWarningTime > 2000) { // Only show warning every 2 seconds
-      setLastBatchWarningTime(now);
-      addToast(`Batch size ${batchValue} may cause Out of Memory issues. Recommended max: ${memorySoftLimit}`, 'warning');
-    }
-  };
-
-  // Handle manual value input with validation
-  const handleManualValueChange = (
-    value: string,
-    setValue: (val: number | number[]) => void,
-    currentValue: number | number[],
-    min: number,
-    max: number,
-    step: number,
-    paramName: string
-  ) => {
-    const numValue = parseFloat(value);
-    if (isNaN(numValue)) return;
-    
-    if (Array.isArray(currentValue)) {
-      // For range sliders, don't change the implementation here
-      return;
-    } else {
-      // Check if value exceeds recommended limits
-      if (numValue > max) {
-        addToast(`${paramName} value (${numValue}) exceeds recommended maximum (${max}). This may cause issues.`, 'warning');
-      }
-      
-      // Special handling for batch size
-      if (paramName === 'Batch Size' && numValue > memorySoftLimit) {
-        addToast(`Batch size ${numValue} may cause Out of Memory issues. Recommended max: ${memorySoftLimit}`, 'warning');
-      }
-      
-      setValue(numValue);
-    }
+    // Use a short hash of the config for uniqueness
+    const hashPart = hash.MD5(config).slice(0, 8);
+    return `${mm}-${aa}-${hashPart}`;
   };
 
   // Save config to hyperparameter-config.json and UID to metadata.json
@@ -272,52 +177,36 @@ export default function HyperparameterConfiguration() {
     }
   };
 
-  // Suggest best config for current mode with smooth animation
+  // Suggest best config for current mode
   const suggestBestConfig = async () => {
     try {
       const configRes = await fetch('/src/data/hyperparameter-config.json');
       if (!configRes.ok) return;
       const configData = await configRes.json();
-      
-      // Get the best config alias for current mode
-      let bestAlias = mode === 'Manual' ? configData.best_config_uid_manual : configData.best_config_uid_automated;
-      
-      // Resolve alias to actual UID if it's an alias
-      let bestUid = bestAlias;
-      if (configData.aliases && configData.aliases[bestAlias]) {
-        bestUid = configData.aliases[bestAlias];
-      }
-      
+      const bestUid = mode === 'Manual' ? configData.best_config_uid_manual : configData.best_config_uid_automated;
       if (bestUid && configData.configs[bestUid]) {
-        setIsAnimating(true);
         const hp = configData.configs[bestUid];
-        
-        // Animate values smoothly
-        setTimeout(() => {
-          setOutputDirectory(hp.outputDirectory || './fine_tuned_model');
-          setAdapterMethod(hp.adapterMethod || 'LoRA');
-          setMode(hp.mode || 'Manual');
-          setModeLogic(hp.modeLogic || 'Bayesian Optimization');
-          setSearchLimit(hp.searchLimit || 50);
-          setTargetLoss(hp.targetLoss || 0.1);
-          setLoraR(hp.loraR || 16);
-          setLoraAlpha(hp.loraAlpha || 32);
-          setLoraDropout(hp.loraDropout || 0.1);
-          if (hp.mode === 'Manual') {
-            setLearningRate(hp.learningRate || 2e-4);
-            setBatchSize(hp.batchSize || 4);
-            setEpochs(hp.epochs || 3);
-            setWeightDecay(hp.weightDecay || 0.01);
-          } else {
-            setLearningRate(hp.learningRateRange || [1e-5, 5e-4]);
-            setBatchSize(hp.batchSizeRange || [2, 8]);
-            setEpochs(hp.epochsRange || [1, 10]);
-            setWeightDecay(hp.weightDecayRange || [0.001, 0.1]);
-          }
-          setIsAnimating(false);
-        }, 100);
-        
-        addToast(`Suggested best hyperparameters loaded (${bestAlias})`, 'info');
+        setOutputDirectory(hp.outputDirectory || './fine_tuned_model');
+        setAdapterMethod(hp.adapterMethod || 'LoRA');
+        setMode(hp.mode || 'Manual');
+        setModeLogic(hp.modeLogic || 'Bayesian Optimization');
+        setSearchLimit(hp.searchLimit || 50);
+        setTargetLoss(hp.targetLoss || 0.1);
+        setLoraR(hp.loraR || 16);
+        setLoraAlpha(hp.loraAlpha || 32);
+        setLoraDropout(hp.loraDropout || 0.1);
+        if (hp.mode === 'Manual') {
+          setLearningRate(hp.learningRate || 2e-4);
+          setBatchSize(hp.batchSize || 4);
+          setEpochs(hp.epochs || 3);
+          setWeightDecay(hp.weightDecay || 0.01);
+        } else {
+          setLearningRate(hp.learningRateRange || [1e-5, 5e-4]);
+          setBatchSize(hp.batchSizeRange || [2, 8]);
+          setEpochs(hp.epochsRange || [1, 10]);
+          setWeightDecay(hp.weightDecayRange || [0.001, 0.1]);
+        }
+        addToast('Suggested best hyperparameters loaded', 'info');
       } else {
         addToast('No best config found for this mode', 'warning');
       }
@@ -333,24 +222,15 @@ export default function HyperparameterConfiguration() {
     min: number,
     max: number,
     step: number,
-    format?: (val: number) => string,
-    tooltipKey?: keyof typeof tooltips
+    format?: (val: number) => string
   ) => {
     const formatValue = format || ((val: number) => val.toString());
     
     return (
       <div className="space-y-3">
         <div className="flex justify-between items-center">
-          <label className="text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center gap-2">
+          <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
             {label}
-            {tooltipKey && (
-              <div className="group relative">
-                <HelpCircle className="h-4 w-4 text-gray-400 cursor-help" />
-                <div className="absolute left-0 top-6 w-64 p-2 bg-gray-800 text-white text-xs rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity z-10">
-                  {tooltips[tooltipKey]}
-                </div>
-              </div>
-            )}
             {label === 'Learning Rate' && (
               <button
                 type="button"
@@ -361,60 +241,7 @@ export default function HyperparameterConfiguration() {
               </button>
             )}
           </label>
-          <span 
-            className="text-sm text-gray-500 dark:text-gray-400 cursor-pointer hover:text-gray-700 dark:hover:text-gray-300 px-2 py-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-            onClick={(event) => {
-              const input = document.createElement('input');
-              input.type = 'number';
-              input.className = 'text-sm bg-transparent border-b border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 outline-none w-20';
-              
-              if (Array.isArray(value)) {
-                // For range values, create two inputs
-                const container = document.createElement('div');
-                container.className = 'flex items-center gap-2';
-                
-                const minInput = input.cloneNode() as HTMLInputElement;
-                const maxInput = input.cloneNode() as HTMLInputElement;
-                
-                minInput.value = value[0].toString();
-                maxInput.value = value[1].toString();
-                minInput.step = step.toString();
-                maxInput.step = step.toString();
-                
-                minInput.addEventListener('blur', () => {
-                  const newMin = Math.max(min, Math.min(parseFloat(minInput.value) || min, value[1] - step));
-                  setValue([newMin, value[1]]);
-                  container.replaceWith(document.createTextNode(`${formatValue(newMin)} - ${formatValue(value[1])}`));
-                });
-                
-                maxInput.addEventListener('blur', () => {
-                  const newMax = Math.min(max, Math.max(parseFloat(maxInput.value) || max, value[0] + step));
-                  setValue([value[0], newMax]);
-                  container.replaceWith(document.createTextNode(`${formatValue(value[0])} - ${formatValue(newMax)}`));
-                });
-                
-                container.appendChild(minInput);
-                container.appendChild(document.createTextNode(' - '));
-                container.appendChild(maxInput);
-                
-                (event.target as HTMLElement).replaceWith(container);
-                minInput.focus();
-              } else {
-                // For single values
-                input.value = (value as number).toString();
-                input.step = step.toString();
-                
-                input.addEventListener('blur', () => {
-                  const newValue = Math.max(min, Math.min(max, parseFloat(input.value) || min));
-                  setValue(newValue);
-                  input.replaceWith(document.createTextNode(formatValue(newValue)));
-                });
-                
-                (event.target as HTMLElement).replaceWith(input);
-                input.focus();
-              }
-            }}
-          >
+          <span className="text-sm text-gray-500 dark:text-gray-400">
             {Array.isArray(value) 
               ? `${formatValue(value[0])} - ${formatValue(value[1])}`
               : formatValue(value)
@@ -429,17 +256,11 @@ export default function HyperparameterConfiguration() {
             max={max}
             step={step}
             value={value as number}
-            onChange={(e) => {
-              const newValue = parseFloat(e.target.value);
-              setValue(newValue);
-              if (label === 'Batch Size') {
-                checkBatchSizeWarning(newValue);
-              }
-            }}
+            onChange={(e) => setValue(parseFloat(e.target.value))}
             className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer slider"
           />
         ) : (
-          <div className="space-y-4">
+          <div className="relative space-y-4">
             <div className="relative">
               <input
                 type="range"
@@ -451,16 +272,13 @@ export default function HyperparameterConfiguration() {
                   const newMin = parseFloat(e.target.value);
                   const currentMax = (value as number[])[1];
                   
-                  if (newMin < currentMax - step) {
+                  if (newMin < currentMax) {
+                    // Normal case: maintain gap
                     setValue([newMin, currentMax]);
                   } else {
-                    // Push max when min approaches
-                    const newMax = Math.min(max, newMin + step * 2);
+                    // Min slider approaches max: push max slider maintaining 1 step gap
+                    const newMax = Math.min(max, newMin + step);
                     setValue([newMin, newMax]);
-                  }
-                  
-                  if (label === 'Batch Size') {
-                    checkBatchSizeWarning(newMin);
                   }
                 }}
                 className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer slider range-min"
@@ -480,16 +298,13 @@ export default function HyperparameterConfiguration() {
                   const newMax = parseFloat(e.target.value);
                   const currentMin = (value as number[])[0];
                   
-                  if (newMax > currentMin + step) {
+                  if (newMax > currentMin) {
+                    // Normal case: maintain gap
                     setValue([currentMin, newMax]);
                   } else {
-                    // Push min when max approaches
-                    const newMin = Math.max(min, newMax - step * 2);
+                    // Max slider approaches min: push min slider maintaining 1 step gap
+                    const newMin = Math.max(min, newMax - step);
                     setValue([newMin, newMax]);
-                  }
-                  
-                  if (label === 'Batch Size') {
-                    checkBatchSizeWarning(newMax);
                   }
                 }}
                 className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer slider range-max"
@@ -628,7 +443,7 @@ export default function HyperparameterConfiguration() {
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">
               Training Parameters
             </h3>
-            <div className={`grid grid-cols-1 md:grid-cols-2 gap-8 ${mode === 'Automated' ? 'space-y-4' : ''} ${isAnimating ? 'animate-pulse' : ''} transition-all duration-500`}>
+            <div className={`grid grid-cols-1 md:grid-cols-2 gap-8 ${mode === 'Automated' ? 'space-y-4' : ''}`}>
               <div className={mode === 'Automated' ? 'pb-8' : ''}>
                 {renderSlider(
                   'Learning Rate',
@@ -637,8 +452,7 @@ export default function HyperparameterConfiguration() {
                   1e-6,
                   1e-3,
                   1e-6,
-                  (val) => val.toExponential(1),
-                  'Learning Rate'
+                  (val) => val.toExponential(1)
                 )}
               </div>
               
@@ -649,9 +463,7 @@ export default function HyperparameterConfiguration() {
                   setBatchSize,
                   1,
                   32,
-                  1,
-                  undefined,
-                  'Batch Size'
+                  1
                 )}
               </div>
               
@@ -662,9 +474,7 @@ export default function HyperparameterConfiguration() {
                   setEpochs,
                   1,
                   20,
-                  1,
-                  undefined,
-                  'Epochs'
+                  1
                 )}
               </div>
               
@@ -676,8 +486,7 @@ export default function HyperparameterConfiguration() {
                   0.001,
                   0.5,
                   0.001,
-                  (val) => val.toFixed(3),
-                  'Weight Decay'
+                  (val) => val.toFixed(3)
                 )}
               </div>
             </div>
@@ -740,49 +549,14 @@ export default function HyperparameterConfiguration() {
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">
                 LoRA Configuration
               </h3>
-              <div className={`grid grid-cols-1 md:grid-cols-3 gap-6 ${isAnimating ? 'animate-pulse' : ''} transition-all duration-500`}>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {/* LoRA R */}
                 <div className="space-y-3">
                   <div className="flex justify-between items-center">
-                    <div className="flex items-center gap-2">
-                      <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                        Rank (r)
-                      </label>
-                      <div className="group relative">
-                        <HelpCircle className="h-4 w-4 text-gray-400 cursor-help" />
-                        <div className="absolute left-0 top-6 w-64 p-2 bg-gray-800 text-white text-xs rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity z-10">
-                          {tooltips['Rank (r)']}
-                        </div>
-                      </div>
-                    </div>
-                    <span 
-                      className="text-sm text-gray-500 dark:text-gray-400 cursor-pointer hover:text-gray-700 dark:hover:text-gray-300 px-2 py-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                      onClick={(event) => {
-                        const input = document.createElement('input');
-                        input.type = 'number';
-                        input.value = loraR.toString();
-                        input.min = '8';
-                        input.max = '128';
-                        input.step = '8';
-                        input.className = 'text-sm bg-transparent border-b border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 outline-none w-16 text-center';
-                        
-                        input.addEventListener('blur', () => {
-                          const newValue = Math.max(8, Math.min(128, parseInt(input.value) || 8));
-                          setLoraR(newValue);
-                          input.replaceWith(document.createTextNode(newValue.toString()));
-                        });
-                        
-                        input.addEventListener('keydown', (e) => {
-                          if (e.key === 'Enter') {
-                            input.blur();
-                          }
-                        });
-                        
-                        (event.target as HTMLElement).replaceWith(input);
-                        input.focus();
-                        input.select();
-                      }}
-                    >
+                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                      Rank (r)
+                    </label>
+                    <span className="text-sm text-gray-500 dark:text-gray-400">
                       {loraR}
                     </span>
                   </div>
@@ -815,45 +589,10 @@ export default function HyperparameterConfiguration() {
                 {/* LoRA Alpha */}
                 <div className="space-y-3">
                   <div className="flex justify-between items-center">
-                    <div className="flex items-center gap-2">
-                      <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                        Alpha
-                      </label>
-                      <div className="group relative">
-                        <HelpCircle className="h-4 w-4 text-gray-400 cursor-help" />
-                        <div className="absolute left-0 top-6 w-64 p-2 bg-gray-800 text-white text-xs rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity z-10">
-                          {tooltips['Alpha']}
-                        </div>
-                      </div>
-                    </div>
-                    <span 
-                      className="text-sm text-gray-500 dark:text-gray-400 cursor-pointer hover:text-gray-700 dark:hover:text-gray-300 px-2 py-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                      onClick={(event) => {
-                        const input = document.createElement('input');
-                        input.type = 'number';
-                        input.value = loraAlpha.toString();
-                        input.min = '16';
-                        input.max = '256';
-                        input.step = '16';
-                        input.className = 'text-sm bg-transparent border-b border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 outline-none w-16 text-center';
-                        
-                        input.addEventListener('blur', () => {
-                          const newValue = Math.max(16, Math.min(256, parseInt(input.value) || 16));
-                          setLoraAlpha(newValue);
-                          input.replaceWith(document.createTextNode(newValue.toString()));
-                        });
-                        
-                        input.addEventListener('keydown', (e) => {
-                          if (e.key === 'Enter') {
-                            input.blur();
-                          }
-                        });
-                        
-                        (event.target as HTMLElement).replaceWith(input);
-                        input.focus();
-                        input.select();
-                      }}
-                    >
+                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                      Alpha
+                    </label>
+                    <span className="text-sm text-gray-500 dark:text-gray-400">
                       {loraAlpha}
                     </span>
                   </div>
@@ -886,45 +625,10 @@ export default function HyperparameterConfiguration() {
                 {/* LoRA Dropout */}
                 <div className="space-y-3">
                   <div className="flex justify-between items-center">
-                    <div className="flex items-center gap-2">
-                      <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                        Dropout
-                      </label>
-                      <div className="group relative">
-                        <HelpCircle className="h-4 w-4 text-gray-400 cursor-help" />
-                        <div className="absolute left-0 top-6 w-64 p-2 bg-gray-800 text-white text-xs rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity z-10">
-                          {tooltips['Dropout']}
-                        </div>
-                      </div>
-                    </div>
-                    <span 
-                      className="text-sm text-gray-500 dark:text-gray-400 cursor-pointer hover:text-gray-700 dark:hover:text-gray-300 px-2 py-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                      onClick={(event) => {
-                        const input = document.createElement('input');
-                        input.type = 'number';
-                        input.value = loraDropout.toFixed(2);
-                        input.min = '0.01';
-                        input.max = '0.5';
-                        input.step = '0.01';
-                        input.className = 'text-sm bg-transparent border-b border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 outline-none w-16 text-center';
-                        
-                        input.addEventListener('blur', () => {
-                          const newValue = Math.max(0.01, Math.min(0.5, parseFloat(input.value) || 0.01));
-                          setLoraDropout(newValue);
-                          input.replaceWith(document.createTextNode(newValue.toFixed(2)));
-                        });
-                        
-                        input.addEventListener('keydown', (e) => {
-                          if (e.key === 'Enter') {
-                            input.blur();
-                          }
-                        });
-                        
-                        (event.target as HTMLElement).replaceWith(input);
-                        input.focus();
-                        input.select();
-                      }}
-                    >
+                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                      Dropout
+                    </label>
+                    <span className="text-sm text-gray-500 dark:text-gray-400">
                       {loraDropout.toFixed(2)}
                     </span>
                   </div>

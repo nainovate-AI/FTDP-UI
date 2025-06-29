@@ -2,6 +2,42 @@
 
 All notable changes to the AI Fine-tuning Dashboard will be documented in this file.
 
+## [1.0.3] - 2025-06-29
+
+### 🚀 Major Features
+
+#### Hyperparameter Configuration System
+- **UID-based Config Storage**: Hyperparameter configs are now stored in `hyperparameter-config.json` under a short UID encoding mode and adapter method. Only the UID is stored in `metadata.json`.
+- **Best Config Suggestion**: Added `best_config_uid_manual` and `best_config_uid_automated` to `hyperparameter-config.json`. A "Suggest" button beside Training Parameters loads the best config for the current mode.
+- **UID Decoding**: UID format and decoding instructions are documented in `hyperparameter-config.txt`.
+- **Config Hashing**: UID includes a short hash of the config for uniqueness.
+
+### 🔧 Bug Fixes
+
+#### Range Slider Push Logic
+- **Fixed Min/Max Slider Interaction**: In automated mode, minimum and maximum sliders now properly "push" each other when they get too close, maintaining a minimum gap of one step for smooth user experience.
+- **Manual Input Push Logic**: Manual value input fields also implement the same pushing behavior to ensure consistency across all input methods.
+
+### 🧩 UI/UX Improvements
+
+- **Smooth Range Sliders**: Sliders for automated mode now allow the min and max to "push" each other with a minimum 1-step gap, never blocking, for a fluid experience.
+- **Animated Suggestion**: When the "Suggest" button is clicked, sliders and values animate smoothly to the suggested config instead of jumping instantly.
+- **Tooltips for All Parameters**: Added tooltips beside every training and LoRA parameter for better user guidance.
+- **Batch Size Smart Warning**: Batch size slider now has a soft limit based on available memory (minimum 8, max 32). If exceeded, a toast warns the user about potential Out Of Memory issues in both manual and automated modes.
+- **Streamlined Automated UI**: In automated mode, removed duplicate min/max value displays below sliders, keeping only the editable values at the top for cleaner interface.
+- **Simplified Suggest Button**: Renamed from "Suggest Best" to just "Suggest" for cleaner appearance.
+
+### 🛠️ Technical Enhancements
+
+- **Config Decoupling**: All hyperparameter values are now managed in a single config file, referenced by UID, for easier experiment tracking and reproducibility.
+- **TypeScript Improvements**: Fixed all type errors for UID encoding and config management.
+- **API Integration Ready**: All config and metadata changes are compatible with backend API endpoints.
+
+### 📝 Developer Experience
+
+- **UID System Documentation**: Added `hyperparameter-config.txt` with full UID encoding/decoding scheme for future reference.
+- **Changelog Updated**: All new features and improvements are documented in this changelog.
+
 ## [1.0.2] - 2025-06-26
 
 ### 🚀 Major Features

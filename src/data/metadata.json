@@ -4,7 +4,7 @@
   "finetuningSession": {
     "id": "session_1750912194926",
     "createdAt": "2025-06-26T04:29:54.926Z",
-    "lastModified": "2025-06-29T17:03:21.301Z",
+    "lastModified": "2025-06-29T17:28:08.912Z",
     "status": "dataset_selection"
   },
   "dataset": {
@@ -26,21 +26,8 @@
     "validationSplit": null
   },
   "hyperparameters": {
-    "_comment": "Hyperparameter configuration for fine-tuning",
-    "outputDirectory": "./fine_tuned_model",
-    "adapterMethod": "LoRA",
-    "mode": "Manual",
-    "modeLogic": "Bayesian Optimization",
-    "searchLimit": 50,
-    "targetLoss": 0.1,
-    "learningRate": 0.0002,
-    "batchSize": 4,
-    "epochs": 3,
-    "weightDecay": 0.01,
-    "loraR": 16,
-    "loraAlpha": 32,
-    "loraDropout": 0.1,
-    "configuredAt": null
+    "_comment": "Hyperparameter UID for fine-tuning. See hyperparameter-config.json for config details.",
+    "uid": null
   },
   "deployment": {
     "_comment": "Deployment configuration will be added in deployment step",
