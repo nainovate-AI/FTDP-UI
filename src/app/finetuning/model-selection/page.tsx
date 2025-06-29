@@ -12,6 +12,8 @@ import {
   HuggingFaceSearch
 } from '../../../components/model-selection';
 import { useModelManagement } from '../../../hooks';
+import { useToast } from '../../../hooks/useToast';
+import { ToastContainer } from '../../../components/common/ToastNotification';
 import { updateModelSelection } from '../../../utils/modelUtils';
 import type { Model } from '../../../types';
 
@@ -20,6 +22,7 @@ export default function ModelSelection() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All Models');
   const [selectedProvider, setSelectedProvider] = useState('All Providers');
+  const { toasts, removeToast, showSuccess, showError, showWarning } = useToast();
 
   const handleModelSelect = async (model: Model) => {
     await updateModelSelection(model);
@@ -38,7 +41,6 @@ export default function ModelSelection() {
     handleModelSelect: _handleModelSelect,
     getFilteredModels,
     loadModels,
-    forceReconnect,
   } = useModelManagement();
 
   const filteredModels = getFilteredModels(searchTerm, selectedCategory, selectedProvider);
@@ -49,16 +51,16 @@ export default function ModelSelection() {
 
   const handleNext = () => {
     if (selectedModel) {
-      router.push('/finetuning/training');
+      router.push('/finetuning/hyperparameters');
     }
   };
 
   const steps = [
-    'Dataset',
-    'Model', 
-    'Training',
-    'Review',
-    'Deploy'
+    'Data Upload',
+    'Model Selection', 
+    'Hyperparameters',
+    'Fine-tuning',
+    'Deployment'
   ];
 
   return (
@@ -79,33 +81,6 @@ export default function ModelSelection() {
           <p className="text-lg text-gray-600 dark:text-gray-400">
             Choose the base model for your fine-tuning job
           </p>
-          
-          {/* Backend Status Indicator */}
-          <div className="mt-4 flex items-center justify-center gap-4">
-            {isUsingBackend ? (
-              <div className="inline-flex items-center px-3 py-1 bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-200 rounded-full text-sm">
-                <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
-                Backend Connected - Full functionality available
-              </div>
-            ) : (
-              <div className="inline-flex items-center px-3 py-1 bg-yellow-100 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-200 rounded-full text-sm">
-                <div className="w-2 h-2 bg-yellow-500 rounded-full mr-2"></div>
-                Using local data - Start Python backend for search functionality
-              </div>
-            )}
-            
-            {/* Refresh Button */}
-            <button
-              onClick={() => forceReconnect()}
-              className="inline-flex items-center px-3 py-1 bg-blue-100 dark:bg-blue-900/20 text-blue-800 dark:text-blue-200 rounded-full text-sm hover:bg-blue-200 dark:hover:bg-blue-900/30 transition-colors"
-              title="Reconnect to backend and refresh model list"
-            >
-              <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-              </svg>
-              Reconnect
-            </button>
-          </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
@@ -141,6 +116,9 @@ export default function ModelSelection() {
                     models={filteredModels}
                     selectedModel={selectedModel}
                     onModelSelect={handleModelSelect}
+                    showWarning={showWarning}
+                    showSuccess={showSuccess}
+                    showError={showError}
                   />
                 )}
               </div>
@@ -148,7 +126,11 @@ export default function ModelSelection() {
 
             {/* HuggingFace Search Section */}
             <div className="mt-8">
-              <HuggingFaceSearch />
+              <HuggingFaceSearch 
+                showSuccess={showSuccess}
+                showError={showError}
+                showWarning={showWarning}
+              />
             </div>
           </div>
 
@@ -165,9 +147,12 @@ export default function ModelSelection() {
           onBack={handleBack}
           onNext={handleNext}
           canProceed={!!selectedModel}
-          nextLabel="Continue to Training"
-          backLabel="Back to Dataset Selection"
+          nextLabel="Continue to Hyperparameters"
+          backLabel="Back to Data Upload"
         />
+        
+        {/* Global Toast Notifications */}
+        <ToastContainer toasts={toasts} onRemove={removeToast} />
       </div>
     </div>
   );

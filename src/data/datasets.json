@@ -537,5 +537,117 @@
     ],
     "id": "1750852227218",
     "lastModified": "2025-06-25"
+  },
+  {
+    "name": "test_dataset",
+    "description": "Uploaded dataset from test_dataset.csv",
+    "format": "CSV",
+    "taskType": "Question Answering",
+    "samples": 5,
+    "size": "0.5 KB",
+    "tags": [
+      "conversational",
+      "technical",
+      "nainovate"
+    ],
+    "inputColumn": "input",
+    "targetColumn": "output",
+    "columns": [
+      "input",
+      "output",
+      "confidence",
+      "source"
+    ],
+    "preview": [
+      {
+        "input": "This product is amazing!",
+        "output": "positive",
+        "confidence": "0.95",
+        "source": "review"
+      },
+      {
+        "input": "I hate this service.",
+        "output": "negative",
+        "confidence": "0.89",
+        "source": "feedback"
+      },
+      {
+        "input": "The quality is okay.",
+        "output": "neutral",
+        "confidence": "0.76",
+        "source": "review"
+      },
+      {
+        "input": "Best purchase ever!",
+        "output": "positive",
+        "confidence": "0.92",
+        "source": "review"
+      },
+      {
+        "input": "Could be better.",
+        "output": "neutral",
+        "confidence": "0.68",
+        "source": "feedback"
+      }
+    ],
+    "id": "1751023766790",
+    "uid": "dataset_1751023766790_b0zqofldb",
+    "lastModified": "2025-06-27",
+    "filePath": "/uploads/datasets/test_dataset_1751023766790.csv",
+    "originalFileName": "test_dataset.csv"
+  },
+  {
+    "name": "test_dataset",
+    "description": "Uploaded dataset from test_dataset.csv",
+    "format": "CSV",
+    "taskType": "Text Classification",
+    "samples": 5,
+    "size": "0.5 KB",
+    "tags": [],
+    "inputColumn": "input",
+    "targetColumn": "output",
+    "columns": [
+      "input",
+      "output",
+      "confidence",
+      "source"
+    ],
+    "preview": [
+      {
+        "input": "This product is amazing!",
+        "output": "positive",
+        "confidence": "0.95",
+        "source": "review"
+      },
+      {
+        "input": "I hate this service.",
+        "output": "negative",
+        "confidence": "0.89",
+        "source": "feedback"
+      },
+      {
+        "input": "The quality is okay.",
+        "output": "neutral",
+        "confidence": "0.76",
+        "source": "review"
+      },
+      {
+        "input": "Best purchase ever!",
+        "output": "positive",
+        "confidence": "0.92",
+        "source": "review"
+      },
+      {
+        "input": "Could be better.",
+        "output": "neutral",
+        "confidence": "0.68",
+        "source": "feedback"
+      }
+    ],
+    "id": "1751024962146",
+    "uid": "dataset_1751024962146_f6qd9i7dp",
+    "lastModified": "2025-06-27",
+    "filePath": "/uploads/datasets/test_dataset_1751024962146.csv",
+    "originalFileName": "test_dataset.csv"
   }
 ]

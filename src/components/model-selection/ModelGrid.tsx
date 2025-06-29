@@ -7,12 +7,18 @@ interface ModelGridProps {
   models: Model[];
   selectedModel: Model | null;
   onModelSelect: (model: Model) => void;
+  showWarning?: (message: string) => void;
+  showSuccess?: (message: string) => void;
+  showError?: (message: string) => void;
 }
 
 export const ModelGrid: React.FC<ModelGridProps> = ({
   models,
   selectedModel,
   onModelSelect,
+  showWarning,
+  showSuccess,
+  showError
 }) => {
   const { removeModel } = useModelManagement();
 
@@ -50,6 +56,9 @@ export const ModelGrid: React.FC<ModelGridProps> = ({
           onModelSelect={onModelSelect}
           onModelRemove={removeModel}
           showRemoveButton={true}
+          showWarning={showWarning}
+          showSuccess={showSuccess}
+          showError={showError}
         />
       ))}
     </div>

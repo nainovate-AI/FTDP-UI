@@ -149,7 +149,7 @@ class ModelSelection:
                 if match:
                     return f"{match.group(1)}B"
         
-        return "See model card"
+        return "Unknown"
 
     @staticmethod
     def _map_category(pipeline_tag: str) -> str:
@@ -254,7 +254,7 @@ class ModelSelection:
             "provider": model_id.split("/")[0] if "/" in model_id else "HuggingFace",
             "category": "Text Generation",
             "description": f"Model from HuggingFace: {model_id}",
-            "parameters": "See model card",
+            "parameters": "Unknown",
             "contextLength": 2048,
             "license": "Unknown",
             "downloadSize": "Unknown",

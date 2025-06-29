@@ -4,19 +4,19 @@
   "finetuningSession": {
     "id": "session_1750912194926",
     "createdAt": "2025-06-26T04:29:54.926Z",
-    "lastModified": "2025-06-26T13:08:47.820Z",
+    "lastModified": "2025-06-29T17:03:21.301Z",
     "status": "dataset_selection"
   },
   "dataset": {
-    "uid": "dataset_1750943327820_nc580f08m",
-    "name": "4",
-    "selectedAt": "2025-06-26T13:08:47.820Z"
+    "uid": "dataset_1751023766790_b0zqofldb",
+    "name": "test_dataset",
+    "selectedAt": "2025-06-29T15:53:20.124Z"
   },
   "model": {
-    "uid": "1004690835",
-    "baseModel": "uer/gpt2-chinese-cluecorpussmall",
-    "modelName": "gpt2-chinese-cluecorpussmall",
-    "provider": "uer"
+    "uid": "22770353",
+    "baseModel": "openai-community/gpt2",
+    "modelName": "gpt2",
+    "provider": "OpenAI"
   },
   "training": {
     "_comment": "Training configuration will be added in training setup step",
@@ -24,6 +24,23 @@
     "batchSize": null,
     "learningRate": null,
     "validationSplit": null
+  },
+  "hyperparameters": {
+    "_comment": "Hyperparameter configuration for fine-tuning",
+    "outputDirectory": "./fine_tuned_model",
+    "adapterMethod": "LoRA",
+    "mode": "Manual",
+    "modeLogic": "Bayesian Optimization",
+    "searchLimit": 50,
+    "targetLoss": 0.1,
+    "learningRate": 0.0002,
+    "batchSize": 4,
+    "epochs": 3,
+    "weightDecay": 0.01,
+    "loraR": 16,
+    "loraAlpha": 32,
+    "loraDropout": 0.1,
+    "configuredAt": null
   },
   "deployment": {
     "_comment": "Deployment configuration will be added in deployment step",

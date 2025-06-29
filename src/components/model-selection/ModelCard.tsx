@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useModelManagement } from '../../hooks';
+import { ConfirmationDialog } from '../common/ConfirmationDialog';
 import type { Model } from '../../types';
 
 interface ModelCardProps {
@@ -8,6 +9,9 @@ interface ModelCardProps {
   onModelSelect: (model: Model) => void;
   onModelRemove?: (modelId: string) => void;
   showRemoveButton?: boolean;
+  showWarning?: (message: string) => void;
+  showSuccess?: (message: string) => void;
+  showError?: (message: string) => void;
 }
 
 export const ModelCard: React.FC<ModelCardProps> = ({
@@ -15,8 +19,12 @@ export const ModelCard: React.FC<ModelCardProps> = ({
   selectedModel,
   onModelSelect,
   onModelRemove,
-  showRemoveButton = false
+  showRemoveButton = false,
+  showWarning,
+  showSuccess,
+  showError
 }) => {
+  const [showRemoveDialog, setShowRemoveDialog] = useState(false);
   const isSelected = selectedModel?.id === model.id;
   const isFromHuggingFace = model.provider === 'HuggingFace' || 
                            model.id.includes('/') ||
@@ -24,8 +32,24 @@ export const ModelCard: React.FC<ModelCardProps> = ({
 
   const handleRemove = (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (onModelRemove && confirm(`Are you sure you want to remove "${model.name}" from your collection?`)) {
-      onModelRemove(model.id);
+    setShowRemoveDialog(true);
+  };
+
+  const confirmRemove = async () => {
+    if (onModelRemove) {
+      try {
+        setShowRemoveDialog(false);
+        showWarning?.(`Removing "${model.name}" from your collection...`);
+        onModelRemove(model.id);
+        showSuccess?.(`Successfully removed "${model.name}" from your collection!`);
+        
+        // Auto-reload page after removal
+        setTimeout(() => {
+          window.location.reload();
+        }, 1500);
+      } catch (error) {
+        showError?.(`Failed to remove "${model.name}". Please try again.`);
+      }
     }
   };
 
@@ -125,6 +149,18 @@ export const ModelCard: React.FC<ModelCardProps> = ({
           </div>
         )}
       </div>
+
+      {/* Confirmation Dialog */}
+      <ConfirmationDialog
+        isOpen={showRemoveDialog}
+        title="Remove Model"
+        message={`Are you sure you want to remove "${model.name}" from your collection? This action cannot be undone.`}
+        confirmText="Remove"
+        cancelText="Cancel"
+        type="danger"
+        onConfirm={confirmRemove}
+        onCancel={() => setShowRemoveDialog(false)}
+      />
     </div>
   );
 };

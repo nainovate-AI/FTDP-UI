@@ -1,14 +1,27 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useModelManagement } from '../../hooks';
+import { ConfirmationDialog } from '../common/ConfirmationDialog';
 
 interface HuggingFaceSearchProps {
   onModelAdd?: (model: any) => void;
+  showSuccess?: (message: string) => void;
+  showError?: (message: string) => void;
+  showWarning?: (message: string) => void;
 }
 
-export const HuggingFaceSearch: React.FC<HuggingFaceSearchProps> = ({ onModelAdd }) => {
+export const HuggingFaceSearch: React.FC<HuggingFaceSearchProps> = ({ 
+  onModelAdd, 
+  showSuccess, 
+  showError, 
+  showWarning 
+}) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [addingModels, setAddingModels] = useState<Set<string>>(new Set());
-  const [successMessage, setSuccessMessage] = useState<string>('');
+  const [confirmationDialog, setConfirmationDialog] = useState<{
+    isOpen: boolean;
+    model: any;
+  }>({ isOpen: false, model: null });
+  const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   
   const { 
     searchResults, 
@@ -20,14 +33,37 @@ export const HuggingFaceSearch: React.FC<HuggingFaceSearchProps> = ({ onModelAdd
     isUsingBackend 
   } = useModelManagement();
 
+  // Auto-search with 3-second delay
+  useEffect(() => {
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+    }
+
+    if (searchQuery.trim().length >= 3) {
+      searchTimeoutRef.current = setTimeout(() => {
+        handleSearch();
+      }, 3000);
+    }
+
+    return () => {
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current);
+      }
+    };
+  }, [searchQuery]);
+
   const handleSearch = async () => {
     if (searchQuery.trim()) {
-      setSuccessMessage('');
       await searchHuggingFaceModels(searchQuery, 10);
     }
   };
 
   const handleAddModel = async (searchModel: any) => {
+    // Show confirmation dialog first
+    setConfirmationDialog({ isOpen: true, model: searchModel });
+  };
+
+  const confirmAddModel = async (searchModel: any) => {
     const modelId = searchModel.id;
     
     // Check if already adding this model
@@ -36,26 +72,32 @@ export const HuggingFaceSearch: React.FC<HuggingFaceSearchProps> = ({ onModelAdd
     }
     
     setAddingModels(prev => new Set(prev).add(modelId));
-    setSuccessMessage('');
+    setConfirmationDialog({ isOpen: false, model: null });
     
     try {
       // Check if model already exists
       const exists = await checkModelExists(modelId);
       if (exists) {
-        alert(`Model "${searchModel.name}" already exists in your collection!`);
+        showWarning?.(`Model "${searchModel.name}" already exists in your collection!`);
         return;
       }
       
       const success = await addModelFromSearch(searchModel);
       if (success) {
-        setSuccessMessage(`Successfully added "${searchModel.name}" to your collection!`);
+        showSuccess?.(`Successfully added "${searchModel.name}" to your collection!`);
         if (onModelAdd) {
           onModelAdd(searchModel);
         }
         
-        // Clear success message after 3 seconds
-        setTimeout(() => setSuccessMessage(''), 3000);
+        // Auto-reload page after addition
+        setTimeout(() => {
+          window.location.reload();
+        }, 2000);
+      } else {
+        showError?.(`Failed to add "${searchModel.name}". Please try again.`);
       }
+    } catch (error) {
+      showError?.(`Error adding model: ${error instanceof Error ? error.message : 'Unknown error'}`);
     } finally {
       setAddingModels(prev => {
         const newSet = new Set(prev);
@@ -81,7 +123,9 @@ export const HuggingFaceSearch: React.FC<HuggingFaceSearchProps> = ({ onModelAdd
       {!isUsingBackend && (
         <div className="mb-4 p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
           <p className="text-sm text-yellow-800 dark:text-yellow-200">
-            <span className="inline-block w-4 h-4 mr-2">⚠</span>Using local data. Search will attempt to connect to backend.
+            <svg className="inline-block w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+            </svg>Using local data. Search will attempt to connect to backend.
           </p>
         </div>
       )}
@@ -97,6 +141,11 @@ export const HuggingFaceSearch: React.FC<HuggingFaceSearchProps> = ({ onModelAdd
             onKeyPress={handleKeyPress}
             className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
           />
+          {searchQuery.trim() && searchQuery.trim().length >= 3 && !isSearching && (
+            <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-xs text-gray-500 dark:text-gray-400">
+              Auto-search in 3s
+            </div>
+          )}
         </div>
         <button
           onClick={handleSearch}
@@ -106,13 +155,6 @@ export const HuggingFaceSearch: React.FC<HuggingFaceSearchProps> = ({ onModelAdd
           {isSearching ? 'Searching...' : 'Search'}
         </button>
       </div>
-
-      {/* Success Message */}
-      {successMessage && (
-        <div className="mb-4 p-3 bg-green-100 dark:bg-green-900 border border-green-300 dark:border-green-700 rounded-lg">
-          <p className="text-green-800 dark:text-green-200 text-sm">{successMessage}</p>
-        </div>
-      )}
 
       {/* Error Message */}
       {error && (
@@ -195,9 +237,31 @@ export const HuggingFaceSearch: React.FC<HuggingFaceSearchProps> = ({ onModelAdd
       {/* Empty state */}
       {!isSearching && searchResults.length === 0 && searchQuery && (
         <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-          No models found for "{searchQuery}". Try a different search term.
+          {searchQuery.trim().length < 3 ? (
+            <div>
+              <p>Type at least 3 characters to search models.</p>
+              <p className="text-xs mt-1">Auto-search will begin after 3 seconds of inactivity.</p>
+            </div>
+          ) : (
+            <div>
+              <p>No models found for "{searchQuery}".</p>
+              <p className="text-xs mt-1">Try a different search term or wait for auto-search.</p>
+            </div>
+          )}
         </div>
       )}
+
+      {/* Confirmation Dialog */}
+      <ConfirmationDialog
+        isOpen={confirmationDialog.isOpen}
+        title="Add External Model"
+        message={`Are you sure you want to add "${confirmationDialog.model?.name}" from HuggingFace? This model is from an external source and may not have been verified by our team.`}
+        confirmText="Add Model"
+        cancelText="Cancel"
+        type="warning"
+        onConfirm={() => confirmAddModel(confirmationDialog.model)}
+        onCancel={() => setConfirmationDialog({ isOpen: false, model: null })}
+      />
     </div>
   );
 };
