@@ -221,8 +221,8 @@ export default function JobReview() {
       
       addToast(`Finetuning job "${jobMetadata.name}" created successfully!`, 'success');
       
-      // Navigate to training/monitoring screen
-      router.push('/finetuning/training');
+      // Navigate to success screen with job UID
+      router.push(`/finetuning/success?jobUid=${result.jobUid}`);
       
     } catch (err) {
       console.error('Error creating job:', err);

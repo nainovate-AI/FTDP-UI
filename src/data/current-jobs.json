@@ -1,0 +1,277 @@
+{
+  "_comment": "Current active jobs - only one running at a time, rest are queued",
+  "_note": "This data should be synchronized with the dashboard displays",
+  "_lastUpdated": "2025-06-30T10:30:00.000Z",
+  "jobs": [
+    {
+      "uid": "job_1719742200_running",
+      "name": "GPT-3.5 Customer Support Assistant",
+      "description": "Fine-tuning GPT-3.5 for specialized customer support responses with company-specific knowledge",
+      "status": "running",
+      "priority": "high",
+      "createdAt": "2025-06-30T08:30:00.000Z",
+      "startedAt": "2025-06-30T08:45:00.000Z",
+      "estimatedCompletion": "2025-06-30T12:30:00.000Z",
+      "progress": 65,
+      "model": {
+        "uid": "openai/gpt-3.5-turbo",
+        "name": "GPT-3.5 Turbo",
+        "provider": "OpenAI",
+        "version": "3.5-turbo-0613"
+      },
+      "dataset": {
+        "uid": "dataset_customer_support_v2",
+        "name": "Customer Support Conversations v2",
+        "size": "2.8 GB",
+        "samples": 15420,
+        "format": "jsonl"
+      },
+      "hyperparameters": {
+        "uid": "hyper_001_optimal",
+        "epochs": 3,
+        "batchSize": 16,
+        "learningRate": 5e-5,
+        "warmupSteps": 100,
+        "validationSplit": 0.1,
+        "maxLength": 512
+      },
+      "metrics": {
+        "currentEpoch": 2,
+        "totalEpochs": 3,
+        "currentLoss": 0.245,
+        "validationLoss": 0.289,
+        "accuracy": 0.923,
+        "f1Score": 0.918
+      },
+      "resources": {
+        "gpuType": "A100-40GB",
+        "gpuCount": 2,
+        "memoryUsage": "32.5 GB",
+        "estimatedCost": 24.75
+      },
+      "tags": ["customer-service", "chatbot", "support", "production"],
+      "owner": {
+        "userId": "user_alex_chen",
+        "email": "alex.chen@company.com",
+        "department": "AI Engineering"
+      },
+      "configuration": {
+        "saveCheckpoints": true,
+        "checkpointInterval": 500,
+        "enableEarlyStop": true,
+        "patience": 3,
+        "monitorMetric": "validation_loss"
+      }
+    },
+    {
+      "uid": "job_1719739800_queued_1",
+      "name": "BERT Sentiment Classifier v3",
+      "description": "Training BERT for enhanced sentiment analysis with multilingual support",
+      "status": "queued",
+      "priority": "medium",
+      "createdAt": "2025-06-30T07:50:00.000Z",
+      "queuePosition": 1,
+      "estimatedStart": "2025-06-30T12:30:00.000Z",
+      "model": {
+        "uid": "bert-base-multilingual",
+        "name": "BERT Base Multilingual",
+        "provider": "Hugging Face",
+        "version": "bert-base-multilingual-cased"
+      },
+      "dataset": {
+        "uid": "dataset_multilingual_sentiment",
+        "name": "Multilingual Sentiment Dataset",
+        "size": "1.2 GB",
+        "samples": 8750,
+        "format": "csv"
+      },
+      "hyperparameters": {
+        "uid": "hyper_002_balanced",
+        "epochs": 5,
+        "batchSize": 32,
+        "learningRate": 2e-5,
+        "warmupSteps": 500,
+        "validationSplit": 0.15,
+        "maxLength": 256
+      },
+      "resources": {
+        "gpuType": "V100-32GB",
+        "gpuCount": 1,
+        "estimatedDuration": "3.5 hours",
+        "estimatedCost": 18.20
+      },
+      "tags": ["sentiment", "classification", "multilingual", "nlp"],
+      "owner": {
+        "userId": "user_sarah_kim",
+        "email": "sarah.kim@company.com",
+        "department": "Data Science"
+      },
+      "configuration": {
+        "saveCheckpoints": true,
+        "checkpointInterval": 1000,
+        "enableEarlyStop": true,
+        "patience": 2,
+        "monitorMetric": "f1_score"
+      }
+    },
+    {
+      "uid": "job_1719738000_queued_2",
+      "name": "CodeLlama Code Assistant",
+      "description": "Specialized fine-tuning for Python code generation and debugging assistance",
+      "status": "queued",
+      "priority": "low",
+      "createdAt": "2025-06-30T07:20:00.000Z",
+      "queuePosition": 2,
+      "estimatedStart": "2025-06-30T16:00:00.000Z",
+      "model": {
+        "uid": "codellama/CodeLlama-7b-Python",
+        "name": "CodeLlama 7B Python",
+        "provider": "Meta",
+        "version": "CodeLlama-7b-Python-hf"
+      },
+      "dataset": {
+        "uid": "dataset_python_code_snippets",
+        "name": "Python Code Snippets & Documentation",
+        "size": "850 MB",
+        "samples": 12300,
+        "format": "jsonl"
+      },
+      "hyperparameters": {
+        "uid": "hyper_003_code_specific",
+        "epochs": 4,
+        "batchSize": 8,
+        "learningRate": 1e-4,
+        "warmupSteps": 200,
+        "validationSplit": 0.1,
+        "maxLength": 1024
+      },
+      "resources": {
+        "gpuType": "A100-40GB",
+        "gpuCount": 1,
+        "estimatedDuration": "5 hours",
+        "estimatedCost": 31.50
+      },
+      "tags": ["coding", "python", "assistant", "debugging"],
+      "owner": {
+        "userId": "user_mike_rodriguez",
+        "email": "mike.rodriguez@company.com",
+        "department": "Engineering"
+      },
+      "configuration": {
+        "saveCheckpoints": true,
+        "checkpointInterval": 750,
+        "enableEarlyStop": false,
+        "monitorMetric": "perplexity"
+      }
+    },
+    {
+      "uid": "job_1719736200_queued_3",
+      "name": "RoBERTa Financial Text Analysis",
+      "description": "Training RoBERTa for financial document analysis and risk assessment",
+      "status": "queued",
+      "priority": "high",
+      "createdAt": "2025-06-30T06:50:00.000Z",
+      "queuePosition": 3,
+      "estimatedStart": "2025-06-30T21:00:00.000Z",
+      "model": {
+        "uid": "roberta-base",
+        "name": "RoBERTa Base",
+        "provider": "Facebook",
+        "version": "roberta-base"
+      },
+      "dataset": {
+        "uid": "dataset_financial_reports",
+        "name": "Financial Reports & Analysis",
+        "size": "3.1 GB",
+        "samples": 18900,
+        "format": "jsonl"
+      },
+      "hyperparameters": {
+        "uid": "hyper_004_financial",
+        "epochs": 6,
+        "batchSize": 16,
+        "learningRate": 3e-5,
+        "warmupSteps": 300,
+        "validationSplit": 0.2,
+        "maxLength": 512
+      },
+      "resources": {
+        "gpuType": "A100-80GB",
+        "gpuCount": 2,
+        "estimatedDuration": "8 hours",
+        "estimatedCost": 67.20
+      },
+      "tags": ["finance", "analysis", "risk-assessment", "documents"],
+      "owner": {
+        "userId": "user_emma_wilson",
+        "email": "emma.wilson@company.com",
+        "department": "Financial Analysis"
+      },
+      "configuration": {
+        "saveCheckpoints": true,
+        "checkpointInterval": 500,
+        "enableEarlyStop": true,
+        "patience": 3,
+        "monitorMetric": "validation_accuracy"
+      }
+    },
+    {
+      "uid": "job_1719734400_created",
+      "name": "T5 Text Summarization Model",
+      "description": "Fine-tuning T5 for automatic document summarization in legal contexts",
+      "status": "created",
+      "priority": "medium",
+      "createdAt": "2025-06-30T06:20:00.000Z",
+      "model": {
+        "uid": "google/t5-base",
+        "name": "T5 Base",
+        "provider": "Google",
+        "version": "t5-base"
+      },
+      "dataset": {
+        "uid": "dataset_legal_documents",
+        "name": "Legal Document Summaries",
+        "size": "1.8 GB",
+        "samples": 9500,
+        "format": "jsonl"
+      },
+      "hyperparameters": {
+        "uid": "hyper_005_summarization",
+        "epochs": 4,
+        "batchSize": 16,
+        "learningRate": 5e-4,
+        "warmupSteps": 1000,
+        "validationSplit": 0.15,
+        "maxLength": 1024
+      },
+      "resources": {
+        "gpuType": "V100-32GB",
+        "gpuCount": 2,
+        "estimatedDuration": "6 hours",
+        "estimatedCost": 42.80
+      },
+      "tags": ["summarization", "legal", "documents", "t5"],
+      "owner": {
+        "userId": "user_david_lee",
+        "email": "david.lee@company.com",
+        "department": "Legal Tech"
+      },
+      "configuration": {
+        "saveCheckpoints": true,
+        "checkpointInterval": 1000,
+        "enableEarlyStop": true,
+        "patience": 2,
+        "monitorMetric": "rouge_score"
+      }
+    }
+  ],
+  "statistics": {
+    "totalActiveJobs": 5,
+    "runningJobs": 1,
+    "queuedJobs": 3,
+    "createdJobs": 1,
+    "totalEstimatedCost": 184.45,
+    "totalEstimatedDuration": "25.5 hours",
+    "queueWaitTime": "average 4.2 hours"
+  }
+}

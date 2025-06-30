@@ -1,4 +1,63 @@
 {
-  "jobs": [],
+  "jobs": [
+    {
+      "uid": "job_1751265876809_17447e86",
+      "name": "test",
+      "description": "",
+      "tags": [],
+      "status": "created",
+      "createdAt": "2025-06-30T06:44:36.492Z",
+      "lastModified": "2025-06-30T12:14:36.000Z",
+      "configuration": {
+        "model": {
+          "uid": "openai-community/gpt2",
+          "baseModel": "openai-community/gpt2",
+          "modelName": "gpt2",
+          "provider": "OpenAI"
+        },
+        "dataset": {
+          "uid": "dataset_1751023766790_b0zqofldb",
+          "name": "test_dataset",
+          "selectedAt": "2025-06-29T15:53:20.124Z"
+        },
+        "hyperparameters": {
+          "uid": "0000005k00040003000g002s",
+          "outputDirectory": "./fine_tuned_model",
+          "adapterMethod": "LoRA",
+          "mode": "Manual",
+          "learningRate": 0.0002,
+          "batchSize": 4,
+          "epochs": 3,
+          "weightDecay": 0.01,
+          "loraR": 16,
+          "loraAlpha": 32,
+          "loraDropout": 0.1,
+          "modeLogic": "Biased Random",
+          "searchLimit": 50,
+          "targetLoss": 0.1
+        }
+      },
+      "modelSaving": {
+        "type": "local",
+        "localPath": "./ft/job_1751263764326",
+        "isLocalPathCustom": false,
+        "huggingfaceRepo": "",
+        "isPrivateRepo": false
+      },
+      "training": {
+        "startedAt": null,
+        "completedAt": null,
+        "progress": 0,
+        "logs": [],
+        "metrics": {}
+      },
+      "results": {
+        "finalModelPath": null,
+        "huggingfaceRepo": null,
+        "checkpoints": [],
+        "performance": {}
+      }
+    }
+  ],
   "_comment": "This file stores completed finetuning job records with their configurations and metadata"
 }

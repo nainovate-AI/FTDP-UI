@@ -1,0 +1,243 @@
+'use client'
+
+import React, { useState, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { CheckCircle, ArrowRight, PlayCircle, Home } from 'lucide-react';
+import { ThemeToggle } from '../../../components/ThemeToggle';
+import { ProgressStepper } from '../../../components/dataset-selection/ProgressStepper';
+import { JobCard, ToastContainer } from '../../../components/common';
+import { useToast } from '../../../hooks/useToast';
+
+interface Job {
+  uid: string;
+  name: string;
+  status: 'created' | 'queued' | 'running' | 'completed' | 'failed';
+  priority?: 'high' | 'medium' | 'low';
+  createdAt: string;
+  model?: string;
+  dataset?: string;
+  description?: string;
+  tags?: string[];
+}
+
+export default function Success() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const { toasts, addToast, removeToast } = useToast();
+  
+  const [currentJobs, setCurrentJobs] = useState<Job[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [createdJobUid, setCreatedJobUid] = useState<string | null>(null);
+  const [showAnimation, setShowAnimation] = useState(false);
+
+  // Get job UID from URL params if available
+  const jobUid = searchParams?.get('jobUid');
+
+  const steps = [
+    'Data Upload',
+    'Model Selection', 
+    'Hyperparameters',
+    'Job Review',
+    'Success'
+  ];
+
+  // Load current jobs from backend
+  useEffect(() => {
+    const loadJobs = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch('http://localhost:8000/api/jobs');
+        if (response.ok) {
+          const jobsData = await response.json();
+          const jobs = jobsData.jobs || [];
+          
+          // Filter for active jobs (not completed or failed)
+          const activeJobs = jobs.filter((job: Job) => 
+            ['created', 'queued', 'running'].includes(job.status)
+          ).slice(0, 6); // Limit to 6 jobs for display
+          
+          setCurrentJobs(activeJobs);
+        }
+      } catch (error) {
+        console.error('Error loading jobs:', error);
+        // Use mock data if API fails
+        const mockJobs: Job[] = [
+          {
+            uid: 'mock-1',
+            name: 'GPT-3.5 Custom Chatbot',
+            status: 'running',
+            priority: 'high',
+            createdAt: new Date(Date.now() - 3600000).toISOString(), // 1 hour ago
+            model: 'gpt-3.5-turbo',
+            dataset: 'customer-support',
+            tags: ['chatbot', 'customer-service'],
+          },
+          {
+            uid: 'mock-2',
+            name: 'BERT Text Classifier',
+            status: 'queued',
+            priority: 'medium',
+            createdAt: new Date(Date.now() - 1800000).toISOString(), // 30 min ago
+            model: 'bert-base-uncased',
+            dataset: 'sentiment-analysis',
+            tags: ['classification', 'nlp'],
+          },
+          {
+            uid: 'mock-3',
+            name: 'Code Assistant v2',
+            status: 'created',
+            priority: 'low',
+            createdAt: new Date().toISOString(),
+            model: 'codellama-7b',
+            dataset: 'code-snippets',
+            tags: ['coding', 'assistant'],
+          }
+        ];
+        setCurrentJobs(mockJobs);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadJobs();
+    
+    // Set the created job UID if provided
+    if (jobUid) {
+      setCreatedJobUid(jobUid);
+    }
+
+    // Trigger success animation
+    setTimeout(() => setShowAnimation(true), 100);
+  }, [jobUid]);
+
+  const handleViewJobProgress = () => {
+    if (createdJobUid) {
+      router.push(`/finetuning/training/${createdJobUid}`);
+    } else {
+      router.push('/finetuning/training');
+    }
+  };
+
+  const handleReturnHome = () => {
+    router.push('/');
+  };
+
+  const handleViewJob = (uid: string) => {
+    router.push(`/finetuning/training/${uid}`);
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <div className="max-w-4xl mx-auto px-6 py-8">
+        <ThemeToggle />
+        
+        <ProgressStepper 
+          currentStep={5} 
+          steps={steps} 
+        />
+
+        {/* Success Section */}
+        <div className="text-center mb-12">
+          {/* Success Icon with Animation */}
+          <div className="flex justify-center mb-6">
+            <div className={`transition-all duration-1000 ease-out ${
+              showAnimation ? 'scale-100 opacity-100 animate-bounce-in' : 'scale-50 opacity-0'
+            }`}>
+              <div className="relative">
+                <CheckCircle className="w-24 h-24 text-green-500" />
+                {/* Subtle pulse ring */}
+                <div className={`absolute inset-0 rounded-full border-4 border-green-500 ${
+                  showAnimation ? 'animate-ping' : ''
+                }`} style={{ animationDelay: '0.5s', animationDuration: '2s' }}></div>
+              </div>
+            </div>
+          </div>
+
+          {/* Success Message */}
+          <div className={`transition-all duration-1000 delay-300 ease-out ${
+            showAnimation ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
+          }`}>
+            <h1 className="text-4xl font-bold text-gray-900 dark:text-gray-100 mb-4">
+              Job Created Successfully
+            </h1>
+            <p className="text-xl text-gray-600 dark:text-gray-400 mb-8">
+              Your fine-tuning job has been queued and will start shortly.
+            </p>
+          </div>
+
+          {/* Action Buttons */}
+          <div className={`transition-all duration-1000 delay-500 ease-out ${
+            showAnimation ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
+          }`}>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+              <button
+                onClick={handleViewJobProgress}
+                className="flex items-center px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-medium transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+              >
+                <PlayCircle className="w-5 h-5 mr-2" />
+                View Job Progress
+                <ArrowRight className="w-5 h-5 ml-2" />
+              </button>
+              
+              <button
+                onClick={handleReturnHome}
+                className="flex items-center px-8 py-4 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-900 dark:text-gray-100 rounded-xl font-medium transition-all duration-200"
+              >
+                <Home className="w-5 h-5 mr-2" />
+                Return to Home
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Current Jobs Section */}
+        <div className={`transition-all duration-1000 delay-700 ease-out ${
+          showAnimation ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
+        }`}>
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+            <div className="p-6 border-b border-gray-200 dark:border-gray-700">
+              <div className="flex items-center justify-between">
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                  Current Jobs
+                </h2>
+                <span className="text-sm text-gray-500 dark:text-gray-400">
+                  {currentJobs.length} active
+                </span>
+              </div>
+            </div>
+
+            <div className="p-6">
+              {loading ? (
+                <div className="flex justify-center py-8">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                </div>
+              ) : currentJobs.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {currentJobs.map((job) => (
+                    <JobCard
+                      key={job.uid}
+                      job={job}
+                      onClick={handleViewJob}
+                      compact={true}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-8">
+                  <div className="text-gray-500 dark:text-gray-400 mb-2">
+                    No active jobs found
+                  </div>
+                  <p className="text-sm text-gray-400 dark:text-gray-500">
+                    Your new job will appear here once it starts processing
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <ToastContainer toasts={toasts} onRemove={removeToast} />
+    </div>
+  );
+}
