@@ -2,6 +2,53 @@
 
 All notable changes to the AI Fine-tuning Dashboard will be documented in this file.
 
+## [1.0.4] - 2025-07-01
+
+### 🚀 Major Features
+
+#### Training Dashboard Redesign
+- **New All-Jobs Dashboard**: Created comprehensive training dashboard at `/finetuning/dashboard/all-jobs` with real-time monitoring
+- **Clean Stage Progress Stepper**: Redesigned vertical stage progression with simplified numbered circles and connecting lines
+- **Right Panel Layout**: Moved "Currently Running" and "Queue" sections to a dedicated right sidebar for better organization
+- **Consolidated Navigation**: All "Back to Dashboard" buttons now route to the detailed dashboard for consistent user flow
+
+### 🧹 Code Cleanup
+
+#### Legacy File Removal
+- **Removed Old Training Pages**: Eliminated deprecated `/finetuning/training` directory and associated files that were replaced by new dashboard system
+- **Streamlined Routes**: Cleaned up duplicate functionality and routing to reduce code complexity
+
+### 🔧 Bug Fixes
+
+#### Value Display Improvements  
+- **Rounded Temperature Values**: GPU and CPU temperatures now display as whole numbers (e.g., "70°C" instead of "70.24339195803965°C")
+- **Rounded Progress Percentages**: All progress bars and percentage displays now show rounded values for cleaner UI
+- **Fixed Value Overflow**: Prevented long decimal numbers from overflowing their display containers
+
+#### Priority System Removal
+- **Removed Priority Tags**: Eliminated "high priority", "medium priority", etc. tags from job displays for cleaner interface
+- **Updated Data Models**: Removed priority field from Job type definition and all JSON data files
+- **Cleaner Job Cards**: Simplified job card displays by removing priority indicators
+
+### 🧩 UI/UX Improvements
+
+#### Dashboard Layout Enhancements
+- **Three-Column Stats**: Added clean statistics overview showing Active Jobs, In Queue, and Completed counts
+- **Stage Progress Visualization**: New horizontal stage stepper with clear visual states (completed ✅, active 🔄, pending ⚪)
+- **Responsive Design**: Improved layout adaptation for different screen sizes
+- **Consistent Typography**: Standardized spacing and font weights across all dashboard components
+
+#### Navigation Improvements
+- **Unified Job Navigation**: All job cards across dashboards now properly route to individual job detail screens
+- **Updated Success Page**: Success page navigation now points to the new all-jobs dashboard
+- **Card Layout Navigation**: Updated CardCentricLayout "View All Jobs" button to route to new dashboard
+
+### 📝 Technical Enhancements
+
+- **Data Consistency**: Synchronized job data structures across all JSON files
+- **Type Safety**: Updated TypeScript interfaces to remove deprecated priority field
+- **Performance**: Optimized dashboard loading with better state management
+
 ## [1.0.3] - 2025-06-29
 
 ### 🚀 Major Features

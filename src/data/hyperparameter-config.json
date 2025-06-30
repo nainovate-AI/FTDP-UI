@@ -215,6 +215,43 @@
       "loraAlpha": 32,
       "loraDropout": 0.1,
       "configuredAt": "2025-06-29T22:20:46.962Z"
+    },
+    "010000rk00rl000500060001000a000g002s": {
+      "outputDirectory": "./fine_tuned_model",
+      "adapterMethod": "LoRA",
+      "mode": "Automated",
+      "modeLogic": "CRv1",
+      "searchLimit": 50,
+      "targetLoss": 0.1,
+      "learningRateRange": [
+        0.000992,
+        0.000993
+      ],
+      "batchSizeRange": [
+        5,
+        6
+      ],
+      "epochsRange": [
+        1,
+        10
+      ],
+      "weightDecayRange": [
+        0.001,
+        0.1
+      ],
+      "loraRRange": [
+        8,
+        64
+      ],
+      "loraAlphaRange": [
+        96,
+        128
+      ],
+      "loraDropoutRange": [
+        0.26,
+        0.27
+      ],
+      "configuredAt": "2025-06-30T19:10:37.717Z"
     }
   },
   "aliases": {

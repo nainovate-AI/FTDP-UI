@@ -62,9 +62,9 @@ export default function Success() {
 
   const handleViewJobProgress = () => {
     if (createdJobUid) {
-      router.push(`/finetuning/training/${createdJobUid}`);
+      router.push(`/job/${createdJobUid}`);
     } else {
-      router.push('/finetuning/training');
+      router.push('/finetuning/dashboard/all-jobs');
     }
   };
 
@@ -73,7 +73,7 @@ export default function Success() {
   };
 
   const handleViewJob = (uid: string) => {
-    router.push(`/finetuning/training/${uid}`);
+    router.push(`/job/${uid}`);
   };
 
   return (

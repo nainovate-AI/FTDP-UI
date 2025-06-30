@@ -380,19 +380,22 @@ class JobConfiguration:
             return {"jobs": []}
     
     @classmethod
-    def get_job_by_uid(cls, uid: str) -> Optional[Dict[str, Any]]:
-        """Get a specific job by UID"""
+    def load_json_file(cls, filename: str) -> Dict[str, Any]:
+        """Load JSON file from data directory - public method for main.py"""
         try:
-            jobs_data = cls.get_all_jobs()
-            jobs = jobs_data.get('jobs', [])
+            # Map common filenames to their paths
+            path_mapping = {
+                "current-jobs.json": "../../src/data/current-jobs.json",
+                "past-jobs.json": "../../src/data/past-jobs.json",
+                "metadata.json": cls.METADATA_PATH,
+                "hyperparameter-config.json": cls.HYPERPARAMETER_CONFIG_PATH,
+                "datasets.json": cls.DATASETS_PATH,
+                "models.json": cls.MODELS_PATH,
+                "jobs.json": cls.JOBS_PATH
+            }
             
-            for job in jobs:
-                if job.get('uid') == uid:
-                    return job
-            
-            logger.warning(f"Job UID not found: {uid}")
-            return None
-            
+            file_path = path_mapping.get(filename, f"../../src/data/{filename}")
+            return cls._load_json_file(file_path)
         except Exception as e:
-            logger.error(f"Error getting job for UID {uid}: {str(e)}")
-            return None
+            logger.error(f"Error loading {filename}: {str(e)}")
+            return {"jobs": [], "statistics": {}}

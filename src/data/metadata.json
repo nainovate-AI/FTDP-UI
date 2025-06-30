@@ -4,19 +4,19 @@
   "finetuningSession": {
     "id": "session_1750912194926",
     "createdAt": "2025-06-26T04:29:54.926Z",
-    "lastModified": "2025-06-29T17:28:08.912Z",
+    "lastModified": "2025-06-30T19:09:49.310Z",
     "status": "hyperparameters_configured"
   },
   "dataset": {
-    "uid": "dataset_1751023766790_b0zqofldb",
+    "uid": "dataset_1751024962146_f6qd9i7dp",
     "name": "test_dataset",
-    "selectedAt": "2025-06-29T15:53:20.124Z"
+    "selectedAt": "2025-06-30T19:09:24.886Z"
   },
   "model": {
-    "uid": "openai-community/gpt2",
-    "baseModel": "openai-community/gpt2",
-    "modelName": "gpt2",
-    "provider": "OpenAI"
+    "uid": "1966449920",
+    "baseModel": "stabilityai/stablelm-3b-4e1t",
+    "modelName": "StableLM 3B 4E1T",
+    "provider": "Stability AI"
   },
   "training": {
     "_comment": "Training configuration will be added in training setup step",
@@ -26,7 +26,7 @@
     "validationSplit": null
   },
   "hyperparameters": {
-    "uid": "0000005k00040003000g002s"
+    "uid": "010000rk00rl000500060001000a000g002s"
   },
   "deployment": {
     "_comment": "Deployment configuration will be added in deployment step",

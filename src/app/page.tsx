@@ -149,7 +149,7 @@ export default function Home() {
           </div>
           
           {/* Quick Actions */}
-          <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
             <Link 
               href="/finetuning/dataset-selection"
               className="group bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl p-6 hover:shadow-xl transition-all duration-300 hover:scale-105"
@@ -165,16 +165,30 @@ export default function Home() {
               </div>
             </Link>
             <Link 
-              href="/finetuning/dashboard/minimal"
+              href="/dashboard"
               className="group bg-gradient-to-r from-green-600 to-teal-600 text-white rounded-xl p-6 hover:shadow-xl transition-all duration-300 hover:scale-105"
             >
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="text-lg font-semibold mb-2">View Dashboard</h3>
+                  <h3 className="text-lg font-semibold mb-2">Training Dashboard</h3>
                   <p className="text-green-100">Monitor your training progress</p>
                 </div>
                 <svg className="w-8 h-8 text-green-200 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+              </div>
+            </Link>
+            <Link 
+              href="/finetuning/dashboard/minimal"
+              className="group bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl p-6 hover:shadow-xl transition-all duration-300 hover:scale-105"
+            >
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-lg font-semibold mb-2">Minimal Dashboard</h3>
+                  <p className="text-purple-100">Lightweight dashboard view</p>
+                </div>
+                <svg className="w-8 h-8 text-purple-200 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z" />
                 </svg>
               </div>
             </Link>

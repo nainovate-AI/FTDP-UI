@@ -1,9 +1,11 @@
 'use client'
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { mockStats, mockJobs } from '../../types';
+import { mockStats } from '../../types';
 import { ThemeToggle } from '../ThemeToggle';
+import { JobCard } from '../common/JobCard';
+import { loadCurrentJobs, loadPastJobs, Job } from '../../utils/jobUtils';
 
 interface CardCentricLayoutProps {
   children?: React.ReactNode;
@@ -19,6 +21,28 @@ interface CardCentricLayoutProps {
 export const CardCentricLayout: React.FC<CardCentricLayoutProps> = ({ children }) => {
   const router = useRouter();
   const currentJobsScrollRef = useRef<HTMLDivElement>(null);
+  const [currentJobs, setCurrentJobs] = useState<Job[]>([]);
+  const [pastJobs, setPastJobs] = useState<Job[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadJobs = async () => {
+      try {
+        const [current, past] = await Promise.all([
+          loadCurrentJobs(),
+          loadPastJobs()
+        ]);
+        setCurrentJobs(current);
+        setPastJobs(past);
+      } catch (error) {
+        console.error('Error loading jobs:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadJobs();
+  }, []);
 
   const handleBackToDashboard = () => {
     router.push('/finetuning/dashboard/minimal');
@@ -28,9 +52,12 @@ export const CardCentricLayout: React.FC<CardCentricLayoutProps> = ({ children }
     router.push('/finetuning/dataset-selection');
   };
 
+  const handleJobClick = (uid: string) => {
+    router.push(`/job/${uid}`);
+  };
+
   const handleViewAllJobs = () => {
-    // TODO: Navigate to all jobs page or expand view
-    console.log('View all jobs');
+    router.push('/finetuning/dashboard/all-jobs');
   };
 
   const scrollCurrentJobs = (direction: 'left' | 'right') => {
@@ -47,8 +74,6 @@ export const CardCentricLayout: React.FC<CardCentricLayoutProps> = ({ children }
       });
     }
   };
-
-  const currentJobs = mockJobs.filter(job => job.status === 'running' || job.status === 'pending');
 
   if (children) {
     return (
@@ -143,7 +168,11 @@ export const CardCentricLayout: React.FC<CardCentricLayoutProps> = ({ children }
             className="flex gap-6 overflow-x-auto scrollbar-hide pb-4 px-12"
           >
             {currentJobs.map((job) => (
-              <div key={job.id} className="cards-job-item rounded-xl p-6 transition-all duration-300 hover:-translate-y-0.5 flex-shrink-0 w-80 md:w-96">
+              <div 
+                key={job.uid} 
+                className="cards-job-item rounded-xl p-6 transition-all duration-300 hover:-translate-y-0.5 flex-shrink-0 w-80 md:w-96 cursor-pointer"
+                onClick={() => handleJobClick(job.uid)}
+              >
                 <div className="flex justify-between items-start mb-4">
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                     {job.name}
@@ -158,13 +187,13 @@ export const CardCentricLayout: React.FC<CardCentricLayoutProps> = ({ children }
                 </div>
                 
                 <div className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
-                  <div>Model: {job.model}</div>
-                  <div>Dataset: {job.dataset}</div>
-                  <div>Started: {new Date(job.startTime).toLocaleDateString()}</div>
-                  {job.accuracy && <div>Accuracy: {job.accuracy}%</div>}
+                  <div>Model: {typeof job.model === 'object' ? job.model?.name : job.model}</div>
+                  <div>Dataset: {typeof job.dataset === 'object' ? job.dataset?.name : job.dataset}</div>
+                  <div>Started: {new Date(job.createdAt).toLocaleDateString()}</div>
+                  {job.metrics?.accuracy && <div>Accuracy: {job.metrics.accuracy}%</div>}
                 </div>
                 
-                {job.progress > 0 && (
+                {job.progress && job.progress > 0 && (
                   <div className="mt-4">
                     <div className="flex justify-between text-sm mb-1">
                       <span>Progress</span>
@@ -198,8 +227,12 @@ export const CardCentricLayout: React.FC<CardCentricLayoutProps> = ({ children }
             </button>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {mockJobs.filter(job => job.status === 'completed' || job.status === 'failed').map((job) => (
-              <div key={job.id} className="cards-job-item rounded-xl p-6 transition-all duration-300 hover:-translate-y-0.5">
+            {pastJobs.map((job) => (
+              <div 
+                key={job.uid} 
+                className="cards-job-item rounded-xl p-6 transition-all duration-300 hover:-translate-y-0.5 cursor-pointer"
+                onClick={() => handleJobClick(job.uid)}
+              >
                 <div className="flex justify-between items-start mb-4">
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                     {job.name}
@@ -214,13 +247,13 @@ export const CardCentricLayout: React.FC<CardCentricLayoutProps> = ({ children }
                 </div>
                 
                 <div className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
-                  <div>Model: {job.model}</div>
-                  <div>Dataset: {job.dataset}</div>
-                  <div>Started: {new Date(job.startTime).toLocaleDateString()}</div>
-                  {job.accuracy && <div>Accuracy: {job.accuracy}%</div>}
+                  <div>Model: {typeof job.model === 'object' ? job.model?.name : job.model}</div>
+                  <div>Dataset: {typeof job.dataset === 'object' ? job.dataset?.name : job.dataset}</div>
+                  <div>Started: {new Date(job.createdAt).toLocaleDateString()}</div>
+                  {job.metrics?.accuracy && <div>Accuracy: {job.metrics.accuracy}%</div>}
                 </div>
                 
-                {job.progress > 0 && (
+                {job.progress && job.progress > 0 && (
                   <div className="mt-4">
                     <div className="flex justify-between text-sm mb-1">
                       <span>Progress</span>
