@@ -1,18 +1,6 @@
 import React from 'react';
 import { ExternalLink, Clock, Tag } from 'lucide-react';
-
-interface Job {
-  uid: string;
-  name: string;
-  status: 'created' | 'queued' | 'running' | 'completed' | 'failed';
-  priority?: 'high' | 'medium' | 'low';
-  createdAt: string;
-  model?: string;
-  dataset?: string;
-  description?: string;
-  tags?: string[];
-  progress?: number;
-}
+import { Job } from '../../utils/jobUtils';
 
 interface JobCardProps {
   job: Job;
@@ -88,10 +76,10 @@ export const JobCard: React.FC<JobCardProps> = ({
         compact ? 'text-xs' : 'text-sm'
       }`}>
         {job.model && (
-          <div>Model: {job.model}</div>
+          <div>Model: {typeof job.model === 'string' ? job.model : job.model.name}</div>
         )}
         {job.dataset && (
-          <div>Dataset: {job.dataset}</div>
+          <div>Dataset: {typeof job.dataset === 'string' ? job.dataset : job.dataset.name}</div>
         )}
         <div className="flex items-center">
           <Clock className="w-3 h-3 mr-1" />

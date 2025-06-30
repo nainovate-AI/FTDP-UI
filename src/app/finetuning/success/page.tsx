@@ -2,23 +2,12 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { CheckCircle, ArrowRight, PlayCircle, Home } from 'lucide-react';
+import { ArrowRight, PlayCircle, Home } from 'lucide-react';
 import { ThemeToggle } from '../../../components/ThemeToggle';
 import { ProgressStepper } from '../../../components/dataset-selection/ProgressStepper';
-import { JobCard, ToastContainer } from '../../../components/common';
+import { JobCard, ToastContainer, DrawingCheckmark } from '../../../components/common';
 import { useToast } from '../../../hooks/useToast';
-
-interface Job {
-  uid: string;
-  name: string;
-  status: 'created' | 'queued' | 'running' | 'completed' | 'failed';
-  priority?: 'high' | 'medium' | 'low';
-  createdAt: string;
-  model?: string;
-  dataset?: string;
-  description?: string;
-  tags?: string[];
-}
+import { loadCurrentJobs, getActiveJobs, Job } from '../../../utils/jobUtils';
 
 export default function Success() {
   const router = useRouter();
@@ -41,59 +30,20 @@ export default function Success() {
     'Success'
   ];
 
-  // Load current jobs from backend
+  // Load current jobs from backend or local data
   useEffect(() => {
     const loadJobs = async () => {
       try {
         setLoading(true);
-        const response = await fetch('http://localhost:8000/api/jobs');
-        if (response.ok) {
-          const jobsData = await response.json();
-          const jobs = jobsData.jobs || [];
-          
-          // Filter for active jobs (not completed or failed)
-          const activeJobs = jobs.filter((job: Job) => 
-            ['created', 'queued', 'running'].includes(job.status)
-          ).slice(0, 6); // Limit to 6 jobs for display
-          
-          setCurrentJobs(activeJobs);
-        }
+        
+        // Use the utility function to load current jobs
+        const allCurrentJobs = await loadCurrentJobs();
+        const activeJobs = getActiveJobs(allCurrentJobs).slice(0, 6);
+        
+        setCurrentJobs(activeJobs);
       } catch (error) {
         console.error('Error loading jobs:', error);
-        // Use mock data if API fails
-        const mockJobs: Job[] = [
-          {
-            uid: 'mock-1',
-            name: 'GPT-3.5 Custom Chatbot',
-            status: 'running',
-            priority: 'high',
-            createdAt: new Date(Date.now() - 3600000).toISOString(), // 1 hour ago
-            model: 'gpt-3.5-turbo',
-            dataset: 'customer-support',
-            tags: ['chatbot', 'customer-service'],
-          },
-          {
-            uid: 'mock-2',
-            name: 'BERT Text Classifier',
-            status: 'queued',
-            priority: 'medium',
-            createdAt: new Date(Date.now() - 1800000).toISOString(), // 30 min ago
-            model: 'bert-base-uncased',
-            dataset: 'sentiment-analysis',
-            tags: ['classification', 'nlp'],
-          },
-          {
-            uid: 'mock-3',
-            name: 'Code Assistant v2',
-            status: 'created',
-            priority: 'low',
-            createdAt: new Date().toISOString(),
-            model: 'codellama-7b',
-            dataset: 'code-snippets',
-            tags: ['coding', 'assistant'],
-          }
-        ];
-        setCurrentJobs(mockJobs);
+        setCurrentJobs([]);
       } finally {
         setLoading(false);
       }
@@ -138,19 +88,16 @@ export default function Success() {
 
         {/* Success Section */}
         <div className="text-center mb-12">
-          {/* Success Icon with Animation */}
+          {/* Success Icon with Custom Drawing Animation */}
           <div className="flex justify-center mb-6">
-            <div className={`transition-all duration-1000 ease-out ${
-              showAnimation ? 'scale-100 opacity-100 animate-bounce-in' : 'scale-50 opacity-0'
-            }`}>
-              <div className="relative">
-                <CheckCircle className="w-24 h-24 text-green-500" />
-                {/* Subtle pulse ring */}
-                <div className={`absolute inset-0 rounded-full border-4 border-green-500 ${
-                  showAnimation ? 'animate-ping' : ''
-                }`} style={{ animationDelay: '0.5s', animationDuration: '2s' }}></div>
-              </div>
-            </div>
+            <DrawingCheckmark 
+              size={72} 
+              strokeWidth={5}
+              delay={showAnimation ? 0 : 1000}
+              className={`transition-all duration-1000 ease-out ${
+                showAnimation ? 'scale-100 opacity-100' : 'scale-50 opacity-0'
+              }`}
+            />
           </div>
 
           {/* Success Message */}
