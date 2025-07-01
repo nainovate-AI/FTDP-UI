@@ -16,14 +16,14 @@ if errorlevel 1 (
 REM Check if we're in the right directory
 if not exist "main.py" (
     echo ❌ Please run this script from the python-backend directory
-    echo    Expected files: main.py, training_monitor_api.py
+    echo    Expected files: main.py, mock_training_api.py
     pause
     exit /b 1
 )
 
-if not exist "training_monitor_api.py" (
+if not exist "mock_training_api.py" (
     echo ❌ Please run this script from the python-backend directory
-    echo    Expected files: main.py, training_monitor_api.py
+    echo    Expected files: main.py, mock_training_api.py
     pause
     exit /b 1
 )
@@ -44,17 +44,17 @@ REM Wait a moment for the first service to initialize
 timeout /t 3 /nobreak >nul
 
 echo 🌐 Starting Training Monitor API on port 8001...
-start "Training-Monitor-API" python training_monitor_api.py
+start "Mock-Training-API" python mock_training_api.py
 
 echo.
 echo 🎉 Backend services started successfully!
 echo =================================================
 echo 📊 Job Management API:    http://localhost:8000
-echo 📈 Training Monitor API:   http://localhost:8001
+echo 📈 Mock Training API:     http://localhost:8001
 echo.
 echo 📖 Available endpoints:
 echo    • Job Management:    http://localhost:8000/docs
-echo    • Training Monitor:  http://localhost:8001/docs
+echo    • Mock Training:     http://localhost:8001/docs
 echo.
 echo 🛑 To stop services, close the terminal windows or press Ctrl+C in each
 echo 📝 Check the terminal windows for live logs

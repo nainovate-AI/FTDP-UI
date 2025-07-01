@@ -1,14 +1,18 @@
 #!/usr/bin/env python3
 """
-FastAPI CSV Preview Server Startup Script
+Nainovate AI Backend Startup Script
 
-This script initializes the FastAPI server for CSV file preview functionality.
+This script initializes both FastAPI servers:
+- Job Management API (port 8000)
+- Mock Training API (port 8001)
 It handles dependency installation and server startup using uv.
 """
 
 import subprocess
 import sys
 import os
+import time
+import threading
 from pathlib import Path
 
 def setup_environment():
@@ -41,16 +45,10 @@ def setup_environment():
         print(f"❌ Failed to install dependencies: {e}")
         sys.exit(1)
 
-def start_server():
-    """Start the FastAPI server"""
-    print("🌟 Starting FastAPI server...")
-    print("📍 Server will be available at: http://127.0.0.1:8000")
-    print("📋 API documentation: http://127.0.0.1:8000/docs")
-    print("🔗 Health check: http://127.0.0.1:8000/api/health")
-    print("\n🛑 Press Ctrl+C to stop the server\n")
-    
+def start_job_management_api():
+    """Start the Job Management API (port 8000)"""
+    print("🌟 Starting Job Management API...")
     try:
-        # Start server using uv
         subprocess.run([
             "uv", "run", "uvicorn", "main:app",
             "--host", "127.0.0.1",
@@ -59,9 +57,54 @@ def start_server():
             "--log-level", "info"
         ], check=True)
     except KeyboardInterrupt:
-        print("\n🛑 Server stopped by user")
+        print("\n🛑 Job Management API stopped by user")
     except subprocess.CalledProcessError as e:
-        print(f"❌ Server failed to start: {e}")
+        print(f"❌ Job Management API failed to start: {e}")
+
+def start_mock_training_api():
+    """Start the Mock Training API (port 8001)"""
+    print("🌟 Starting Mock Training API...")
+    try:
+        subprocess.run([
+            "uv", "run", "uvicorn", "mock_training_api:app",
+            "--host", "0.0.0.0",
+            "--port", "8001",
+            "--reload",
+            "--log-level", "info"
+        ], check=True)
+    except KeyboardInterrupt:
+        print("\n� Mock Training API stopped by user")
+    except subprocess.CalledProcessError as e:
+        print(f"❌ Mock Training API failed to start: {e}")
+
+def start_servers():
+    """Start both servers in separate threads"""
+    print("🌟 Starting both API servers...")
+    print("📍 Job Management API: http://127.0.0.1:8000")
+    print("📍 Mock Training API: http://127.0.0.1:8001")
+    print("📋 API documentation:")
+    print("   • Job Management: http://127.0.0.1:8000/docs")
+    print("   • Mock Training: http://127.0.0.1:8001/docs")
+    print("🔗 Health checks:")
+    print("   • Job Management: http://127.0.0.1:8000/api/health")
+    print("   • Mock Training: http://127.0.0.1:8001/")
+    print("\n🛑 Press Ctrl+C to stop both servers\n")
+    
+    try:
+        # Start Job Management API in a separate thread
+        job_thread = threading.Thread(target=start_job_management_api, daemon=True)
+        job_thread.start()
+        
+        # Wait a moment for the first service to initialize
+        time.sleep(3)
+        
+        # Start Mock Training API in the main thread
+        start_mock_training_api()
+        
+    except KeyboardInterrupt:
+        print("\n🛑 Both servers stopped by user")
+    except Exception as e:
+        print(f"❌ Failed to start servers: {e}")
         sys.exit(1)
 
 def main():
@@ -75,7 +118,7 @@ def main():
     
     # Setup and start
     setup_environment()
-    start_server()
+    start_servers()
 
 if __name__ == "__main__":
     main()

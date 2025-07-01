@@ -13,9 +13,9 @@ if ! command -v python &> /dev/null; then
 fi
 
 # Check if we're in the right directory
-if [ ! -f "main.py" ] || [ ! -f "training_monitor_api.py" ]; then
+if [ ! -f "main.py" ] || [ ! -f "mock_training_api.py" ]; then
     echo "❌ Please run this script from the python-backend directory"
-    echo "   Expected files: main.py, training_monitor_api.py"
+    echo "   Expected files: main.py, mock_training_api.py"
     exit 1
 fi
 
@@ -48,17 +48,17 @@ start_service "Job-Management-API" "main.py" "8000"
 sleep 2
 
 # Start Training Monitor API (Port 8001)
-start_service "Training-Monitor-API" "training_monitor_api.py" "8001"
+start_service "Mock-Training-API" "mock_training_api.py" "8001"
 
 echo ""
 echo "🎉 Backend services started successfully!"
 echo "================================================="
 echo "📊 Job Management API:    http://localhost:8000"
-echo "📈 Training Monitor API:   http://localhost:8001"
+echo "📈 Mock Training API:      http://localhost:8001"
 echo ""
 echo "📖 Available endpoints:"
 echo "   • Job Management:    http://localhost:8000/docs"
-echo "   • Training Monitor:  http://localhost:8001/docs"
+echo "   • Mock Training:     http://localhost:8001/docs"
 echo ""
 echo "🛑 To stop all services, run: ./stop-backend.sh"
 echo "📝 Check logs with: tail -f logs/backend.log"
@@ -97,7 +97,7 @@ stop_service "Training-Monitor-API"
 # Clean up any remaining Python processes on our ports
 echo "🧹 Cleaning up any remaining processes..."
 pkill -f "main.py" 2>/dev/null || true
-pkill -f "training_monitor_api.py" 2>/dev/null || true
+pkill -f "mock_training_api.py" 2>/dev/null || true
 
 echo ""
 echo "✅ All backend services stopped successfully!"

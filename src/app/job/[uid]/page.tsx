@@ -58,17 +58,16 @@ ChartJS.register(
 );
 
 interface TrainingData {
-  timestamp: number;
+  iteration: number;
   epoch: number;
-  step: number;
   train_loss: number;
   validation_loss: number;
   learning_rate: number;
-  batch_size: number;
+  accuracy: number;
 }
 
 interface ResourceData {
-  timestamp: number;
+  iteration: number;
   cpu_percent: number;
   ram_used_gb: number;
   ram_total_gb: number;
@@ -117,6 +116,15 @@ export default function JobDetailsPage() {
   const [trainingData, setTrainingData] = useState<TrainingData[]>([]);
   const [resourceData, setResourceData] = useState<ResourceData[]>([]);
   const [error, setError] = useState<string | null>(null);
+  
+  // Training mode and dynamic hyperparameters
+  const [trainingMode, setTrainingMode] = useState<'manual' | 'automated'>('manual');
+  const [currentHyperparameters, setCurrentHyperparameters] = useState<any>({
+    learning_rate: 5e-5,
+    batch_size: 16,
+    warmup_steps: 500,
+    weight_decay: 0.01
+  });
   
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const logsEndRef = useRef<HTMLDivElement>(null);
@@ -186,7 +194,7 @@ export default function JobDetailsPage() {
         
         if (foundJob) {
           setJob(foundJob);
-          setIsLive(foundJob.status === 'running' && !foundJob.isHistorical);
+          setIsLive(foundJob.status === 'running');
           
           // Update stages based on job status
           updateStagesFromJob(foundJob);
@@ -207,14 +215,13 @@ export default function JobDetailsPage() {
   }, [jobUid]);
 
   // Mock job data generator with better UID handling
-  const getMockJobData = async (uid: string) => {
+  const getMockJobData = async (uid: string): Promise<Job> => {
     // Base job data
-    let jobData = {
+    let jobData: Job = {
       uid,
       name: 'GPT-3.5 Customer Support Assistant',
       description: 'Fine-tuning GPT-3.5 for specialized customer support responses with company-specific knowledge',
-      status: 'running' as const,
-      priority: 'high' as const,
+      status: 'running',
       progress: 75,
       createdAt: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(),
       startedAt: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
@@ -222,13 +229,15 @@ export default function JobDetailsPage() {
       model: {
         uid: 'openai/gpt-3.5-turbo',
         name: 'GPT-3.5 Turbo',
-        provider: 'OpenAI'
+        provider: 'OpenAI',
+        version: '1.0.0'
       },
       dataset: {
         uid: 'dataset_customer_support_v2',
         name: 'Customer Support Conversations v2',
         size: '2.8 GB',
-        samples: 15420
+        samples: 15420,
+        format: 'jsonl'
       },
       metrics: {
         currentEpoch: 2,
@@ -249,8 +258,7 @@ export default function JobDetailsPage() {
         email: 'alex.chen@company.com',
         department: 'AI Engineering'
       },
-      tags: ['customer-service', 'chatbot', 'support', 'production'],
-      isHistorical: false
+      tags: ['customer-service', 'chatbot', 'support', 'production']
     };
 
     // Customize based on UID patterns
@@ -264,13 +272,15 @@ export default function JobDetailsPage() {
         model: {
           uid: 'bert-base-multilingual',
           name: 'BERT Base Multilingual',
-          provider: 'Hugging Face'
+          provider: 'Hugging Face',
+          version: '1.0.0'
         },
         dataset: {
           uid: 'dataset_multilingual_sentiment',
           name: 'Multilingual Sentiment Dataset',
           size: '1.2 GB',
-          samples: 8750
+          samples: 8750,
+          format: 'csv'
         },
         metrics: {
           currentEpoch: 0,
@@ -305,13 +315,15 @@ export default function JobDetailsPage() {
         model: {
           uid: 'openai/gpt-3.5-turbo',
           name: 'GPT-3.5 Turbo',
-          provider: 'OpenAI'
+          provider: 'OpenAI',
+          version: '1.0.0'
         },
         dataset: {
           uid: 'dataset_tech_docs_v3',
           name: 'Technical Documentation Corpus v3',
           size: '3.2 GB',
-          samples: 18500
+          samples: 18500,
+          format: 'jsonl'
         },
         finalMetrics: {
           finalLoss: 0.183,
@@ -324,16 +336,16 @@ export default function JobDetailsPage() {
         resources: {
           gpuType: 'A100-40GB',
           gpuCount: 2,
-          totalCost: 35.40,
-          peakMemoryUsage: '38.2 GB'
+          memoryUsage: '38.2 GB',
+          estimatedCost: 35.40
         },
-        deployment: {
+        deploymentInfo: {
           status: 'deployed',
           endpoint: 'api.company.com/models/gpt35-techdocs-v1',
-          version: 'v1.0.0'
+          modelVersion: 'v1.0.0',
+          deployedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString()
         },
-        tags: ['documentation', 'technical-writing', 'qa', 'deployed'],
-        isHistorical: true
+        tags: ['documentation', 'technical-writing', 'qa', 'deployed']
       };
     } else if (uid.includes('failed') || uid.includes('llama')) {
       jobData = {
@@ -348,13 +360,15 @@ export default function JobDetailsPage() {
         model: {
           uid: 'meta/llama2-7b',
           name: 'LLaMA 2 7B',
-          provider: 'Meta'
+          provider: 'Meta',
+          version: '1.0.0'
         },
         dataset: {
           uid: 'dataset_legal_docs_v2',
           name: 'Legal Document Analysis Dataset v2',
           size: '4.1 GB',
-          samples: 8900
+          samples: 8900,
+          format: 'jsonl'
         },
         errorDetails: {
           errorCode: 'CUDA_OUT_OF_MEMORY',
@@ -364,11 +378,10 @@ export default function JobDetailsPage() {
         resources: {
           gpuType: 'V100-32GB',
           gpuCount: 1,
-          totalCost: 12.80,
-          peakMemoryUsage: '31.2 GB'
+          memoryUsage: '31.2 GB',
+          estimatedCost: 12.80
         },
-        tags: ['legal', 'document-analysis', 'failed', 'memory-error'],
-        isHistorical: true
+        tags: ['legal', 'document-analysis', 'failed', 'memory-error']
       };
     }
 
@@ -421,19 +434,57 @@ export default function JobDetailsPage() {
 
   const fetchLiveData = async () => {
     try {
-      const [lossesRes, resourcesRes] = await Promise.all([
+      const [lossesRes, resourcesRes, modeRes] = await Promise.all([
         fetch('http://localhost:8001/api/training/losses?last_n=50'),
-        fetch('http://localhost:8001/api/training/resources?last_n=50')
+        fetch('http://localhost:8001/api/training/resources?last_n=50'),
+        fetch('http://localhost:8001/')
       ]);
 
       if (lossesRes.ok) {
         const losses = await lossesRes.json();
         setTrainingData(losses);
+        
+        // Update job metrics with latest training data
+        if (losses.length > 0 && job) {
+          const latestLoss = losses[losses.length - 1];
+          setJob(prev => prev ? {
+            ...prev,
+            metrics: {
+              ...prev.metrics,
+              currentLoss: latestLoss.train_loss,
+              validationLoss: latestLoss.validation_loss,
+              accuracy: latestLoss.accuracy
+            }
+          } : null);
+        }
       }
 
       if (resourcesRes.ok) {
         const resources = await resourcesRes.json();
         setResourceData(resources);
+      }
+
+      // Get training mode and handle automatic hyperparameter changes
+      if (modeRes.ok) {
+        const modeData = await modeRes.json();
+        const currentMode = modeData.training_mode;
+        setTrainingMode(currentMode);
+        
+        // For automated mode, change hyperparameters every 15-20 seconds
+        if (currentMode === 'automated' && Math.random() > 0.7) {
+          const variations = {
+            learning_rate: [3e-5, 5e-5, 1e-4, 2e-4],
+            batch_size: [8, 16, 32, 64],
+            warmup_steps: [100, 500, 1000],
+            weight_decay: [0.001, 0.01, 0.05, 0.1]
+          };
+          
+          setCurrentHyperparameters((prev: any) => ({
+            ...prev,
+            learning_rate: variations.learning_rate[Math.floor(Math.random() * variations.learning_rate.length)],
+            batch_size: variations.batch_size[Math.floor(Math.random() * variations.batch_size.length)]
+          }));
+        }
       }
 
       // Simulate logs for demo
@@ -455,20 +506,19 @@ export default function JobDetailsPage() {
     
     // Generate mock training curve
     const mockTraining = Array.from({ length: 30 }, (_, i) => ({
-      timestamp: Date.now() - (30 - i) * 60000,
+      iteration: i + 1,
       epoch: Math.floor(i / 10) + 1,
-      step: i + 1,
       train_loss: 2.5 * Math.exp(-i * 0.1) + Math.random() * 0.1,
       validation_loss: 2.7 * Math.exp(-i * 0.08) + Math.random() * 0.1,
       learning_rate: 5e-5,
-      batch_size: 16
+      accuracy: 0.6 + (i * 0.012) + Math.random() * 0.05
     }));
     
     setTrainingData(mockTraining);
     
     // Generate mock resource data
     const mockResources = Array.from({ length: 30 }, (_, i) => ({
-      timestamp: Date.now() - (30 - i) * 60000,
+      iteration: i + 1,
       cpu_percent: 40 + Math.random() * 20,
       ram_used_gb: 25 + Math.random() * 5,
       ram_total_gb: 64,
@@ -517,7 +567,7 @@ export default function JobDetailsPage() {
 
   // Chart configurations
   const lossChartData = {
-    labels: trainingData.map(d => new Date(d.timestamp)),
+    labels: trainingData.map(d => `Iteration ${d.iteration}`),
     datasets: [
       {
         label: 'Training Loss',
@@ -539,7 +589,7 @@ export default function JobDetailsPage() {
   };
 
   const resourceChartData = {
-    labels: resourceData.map(d => new Date(d.timestamp)),
+    labels: resourceData.map(d => `Iteration ${d.iteration}`),
     datasets: [
       {
         label: 'GPU %',
@@ -574,14 +624,10 @@ export default function JobDetailsPage() {
     },
     scales: {
       x: {
-        type: 'time' as const,
-        time: {
-          displayFormats: {
-            second: 'HH:mm:ss'
-          }
-        },
+        type: 'category' as const,
         title: {
-          display: false
+          display: true,
+          text: 'Training Progress'
         },
         grid: {
           display: false
@@ -824,9 +870,10 @@ export default function JobDetailsPage() {
 
         {/* Main Content Grid */}
         <div className="grid grid-cols-1 xl:grid-cols-4 gap-8">
-          {/* Stage Tracker */}
-          <div className="xl:col-span-1">
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 sticky top-8">
+          {/* Left Panel - Stage Tracker and Training Logs */}
+          <div className="xl:col-span-1 space-y-6">
+            {/* Stage Tracker */}
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
               <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-6">Training Stages</h2>
               <div className="space-y-4">
                 {stages.map((stage, index) => (
@@ -856,13 +903,61 @@ export default function JobDetailsPage() {
                 ))}
               </div>
             </div>
+
+            {/* Training Logs Panel */}
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+              <button
+                onClick={() => setLogsVisible(!logsVisible)}
+                className="w-full flex items-center justify-between p-4 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors rounded-t-xl"
+              >
+                <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                  Training Logs
+                </h2>
+                {logsVisible ? (
+                  <ChevronUp className="w-5 h-5 text-gray-500" />
+                ) : (
+                  <ChevronDown className="w-5 h-5 text-gray-500" />
+                )}
+              </button>
+              
+              {logsVisible && (
+                <div className="border-t border-gray-200 dark:border-gray-700 p-4">
+                  <div className="bg-gray-900 dark:bg-gray-950 rounded-lg p-3 h-48 overflow-y-auto font-mono text-xs">
+                    {logs.length > 0 ? (
+                      <>
+                        {logs.map((log, index) => (
+                          <div key={index} className="text-green-400 mb-1">
+                            {log}
+                          </div>
+                        ))}
+                        <div ref={logsEndRef} />
+                      </>
+                    ) : (
+                      <div className="text-gray-500 italic">
+                        {job.status === 'running' ? 'Waiting for logs...' : 'No logs available'}
+                      </div>
+                    )}
+                  </div>
+                  {logs.length > 0 && (
+                    <div className="mt-3 flex justify-end">
+                      <button
+                        onClick={() => setLogs([])}
+                        className="px-3 py-1 text-xs bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                      >
+                        Clear
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Charts and Metrics */}
           <div className="xl:col-span-3 space-y-8">
             {/* Current Status Cards */}
             {job.status === 'running' && job.metrics && (
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
                   <div className="flex items-center">
                     <Activity className="w-5 h-5 text-blue-500 mr-3" />
@@ -898,17 +993,44 @@ export default function JobDetailsPage() {
                     </div>
                   </div>
                 </div>
+              </div>
+            )}
+
+            {/* Training Mode and Hyperparameters */}
+            {job.status === 'running' && (
+              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                    Training Configuration
+                  </h2>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-sm text-gray-600 dark:text-gray-400">Mode:</span>
+                    <span className={`px-3 py-1 rounded-full text-sm font-medium ${
+                      trainingMode === 'automated' 
+                        ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300'
+                        : 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300'
+                    }`}>
+                      {trainingMode === 'automated' ? 'Automated' : 'Manual'}
+                    </span>
+                    {trainingMode === 'automated' && (
+                      <span className="text-xs text-blue-600 dark:text-blue-400 animate-pulse">
+                        ● Dynamic
+                      </span>
+                    )}
+                  </div>
+                </div>
                 
-                <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
-                  <div className="flex items-center">
-                    <Database className="w-5 h-5 text-orange-500 mr-3" />
-                    <div>
-                      <h3 className="font-medium text-gray-900 dark:text-gray-100 text-sm">F1 Score</h3>
-                      <p className="text-gray-600 dark:text-gray-400 text-lg font-semibold">
-                        {job.metrics.f1Score?.toFixed(3) || 'N/A'}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  {Object.entries(currentHyperparameters).map(([key, value]) => (
+                    <div key={key} className="bg-gray-50 dark:bg-gray-700 rounded-lg p-3">
+                      <h3 className="text-sm font-medium text-gray-600 dark:text-gray-400 capitalize">
+                        {key.replace(/_/g, ' ')}
+                      </h3>
+                      <p className="text-gray-900 dark:text-gray-100 font-mono text-sm">
+                        {typeof value === 'number' ? value.toExponential(2) : String(value)}
                       </p>
                     </div>
-                  </div>
+                  ))}
                 </div>
               </div>
             )}
@@ -1046,54 +1168,6 @@ export default function JobDetailsPage() {
                 </div>
               </div>
             )}
-
-            {/* Collapsible Logs Panel */}
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-              <button
-                onClick={() => setLogsVisible(!logsVisible)}
-                className="w-full flex items-center justify-between p-6 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors rounded-t-xl"
-              >
-                <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                  Training Logs
-                </h2>
-                {logsVisible ? (
-                  <ChevronUp className="w-5 h-5 text-gray-500" />
-                ) : (
-                  <ChevronDown className="w-5 h-5 text-gray-500" />
-                )}
-              </button>
-              
-              {logsVisible && (
-                <div className="border-t border-gray-200 dark:border-gray-700 p-6">
-                  <div className="bg-gray-900 dark:bg-gray-950 rounded-lg p-4 h-64 overflow-y-auto font-mono text-sm">
-                    {logs.length > 0 ? (
-                      <>
-                        {logs.map((log, index) => (
-                          <div key={index} className="text-green-400 mb-1">
-                            {log}
-                          </div>
-                        ))}
-                        <div ref={logsEndRef} />
-                      </>
-                    ) : (
-                      <div className="text-gray-500 italic">
-                        {job.status === 'running' ? 'Waiting for logs...' : 'No logs available'}
-                      </div>
-                    )}
-                  </div>
-                  {logs.length > 0 && (
-                    <div className="mt-4 flex justify-end">
-                      <button
-                        onClick={() => setLogs([])}
-                        className="px-4 py-2 text-sm bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
-                      >
-                        Clear Logs
-                      </button>
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
 
             {/* Hyperparameters */}
             {job.hyperparameters && (
