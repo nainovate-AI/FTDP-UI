@@ -32,7 +32,7 @@
           "uid": "hyper_001_optimal",
           "epochs": 3,
           "batchSize": 16,
-          "learningRate": 5e-5,
+          "learningRate": 5e-05,
           "warmupSteps": 100,
           "validationSplit": 0.1,
           "maxLength": 512,
@@ -58,7 +58,12 @@
         "memoryUsage": "32.5 GB",
         "estimatedCost": 24.75
       },
-      "tags": ["customer-service", "chatbot", "support", "production"],
+      "tags": [
+        "customer-service",
+        "chatbot",
+        "support",
+        "production"
+      ],
       "owner": {
         "userId": "user_alex_chen",
         "email": "alex.chen@company.com",
@@ -79,7 +84,10 @@
       "results": {
         "finalModelPath": null,
         "huggingfaceRepo": null,
-        "checkpoints": ["./checkpoints/epoch-1", "./checkpoints/epoch-2"],
+        "checkpoints": [
+          "./checkpoints/epoch-1",
+          "./checkpoints/epoch-2"
+        ],
         "performance": {}
       }
     },
@@ -111,7 +119,7 @@
           "uid": "hyper_002_balanced",
           "epochs": 5,
           "batchSize": 32,
-          "learningRate": 2e-5,
+          "learningRate": 2e-05,
           "warmupSteps": 500,
           "validationSplit": 0.15,
           "maxLength": 256,
@@ -127,9 +135,14 @@
         "gpuType": "V100-32GB",
         "gpuCount": 1,
         "estimatedDuration": "3.5 hours",
-        "estimatedCost": 18.20
+        "estimatedCost": 18.2
       },
-      "tags": ["sentiment", "classification", "multilingual", "nlp"],
+      "tags": [
+        "sentiment",
+        "classification",
+        "multilingual",
+        "nlp"
+      ],
       "owner": {
         "userId": "user_sarah_kim",
         "email": "sarah.kim@company.com",
@@ -175,7 +188,7 @@
           "uid": "hyper_003_summarization",
           "epochs": 4,
           "batchSize": 16,
-          "learningRate": 5e-4,
+          "learningRate": 0.0005,
           "warmupSteps": 1000,
           "validationSplit": 0.15,
           "maxLength": 1024,
@@ -191,9 +204,14 @@
         "gpuType": "V100-32GB",
         "gpuCount": 2,
         "estimatedDuration": "6 hours",
-        "estimatedCost": 42.80
+        "estimatedCost": 42.8
       },
-      "tags": ["summarization", "technical", "documents", "t5"],
+      "tags": [
+        "summarization",
+        "technical",
+        "documents",
+        "t5"
+      ],
       "owner": {
         "userId": "user_david_lee",
         "email": "david.lee@company.com",
@@ -243,7 +261,7 @@
           "uid": "hyper_004_docs",
           "epochs": 3,
           "batchSize": 16,
-          "learningRate": 3e-5,
+          "learningRate": 3e-05,
           "warmupSteps": 200,
           "validationSplit": 0.15,
           "maxLength": 1024,
@@ -266,7 +284,7 @@
       "resources": {
         "gpuType": "A100-40GB",
         "gpuCount": 2,
-        "totalCost": 35.40,
+        "totalCost": 35.4,
         "peakMemoryUsage": "38.2 GB"
       },
       "deployment": {
@@ -275,7 +293,12 @@
         "version": "v1.0.0",
         "deployedAt": "2025-06-28T15:30:00.000Z"
       },
-      "tags": ["documentation", "technical-writing", "qa", "deployed"],
+      "tags": [
+        "documentation",
+        "technical-writing",
+        "qa",
+        "deployed"
+      ],
       "owner": {
         "userId": "user_mike_torres",
         "email": "mike.torres@company.com",
@@ -295,7 +318,11 @@
       "results": {
         "finalModelPath": "./models/gpt35-techdocs-v1",
         "huggingfaceRepo": "nainovate/gpt35-techdocs-v1",
-        "checkpoints": ["./checkpoints/epoch-1", "./checkpoints/epoch-2", "./checkpoints/final"],
+        "checkpoints": [
+          "./checkpoints/epoch-1",
+          "./checkpoints/epoch-2",
+          "./checkpoints/final"
+        ],
         "performance": {
           "bleuScore": 0.67,
           "perplexity": 1.85,
@@ -333,7 +360,7 @@
           "uid": "hyper_005_intent",
           "epochs": 5,
           "batchSize": 32,
-          "learningRate": 2e-5,
+          "learningRate": 2e-05,
           "warmupSteps": 1000,
           "validationSplit": 0.2,
           "maxLength": 128,
@@ -356,7 +383,7 @@
       "resources": {
         "gpuType": "V100-32GB",
         "gpuCount": 1,
-        "totalCost": 28.60,
+        "totalCost": 28.6,
         "peakMemoryUsage": "29.8 GB"
       },
       "deployment": {
@@ -365,7 +392,12 @@
         "testResults": "Passed all validation tests",
         "readyForProduction": true
       },
-      "tags": ["intent-classification", "conversational-ai", "nlp", "tested"],
+      "tags": [
+        "intent-classification",
+        "conversational-ai",
+        "nlp",
+        "tested"
+      ],
       "owner": {
         "userId": "user_anna_wilson",
         "email": "anna.wilson@company.com",
@@ -385,7 +417,12 @@
       "results": {
         "finalModelPath": "./models/bert-intent-v4",
         "huggingfaceRepo": "nainovate/bert-intent-classification-v4",
-        "checkpoints": ["./checkpoints/epoch-1", "./checkpoints/epoch-2", "./checkpoints/epoch-3", "./checkpoints/final"],
+        "checkpoints": [
+          "./checkpoints/epoch-1",
+          "./checkpoints/epoch-2",
+          "./checkpoints/epoch-3",
+          "./checkpoints/final"
+        ],
         "performance": {
           "f1Score": 0.941,
           "precision": 0.939,
@@ -424,7 +461,7 @@
           "uid": "hyper_007_legal",
           "epochs": 4,
           "batchSize": 8,
-          "learningRate": 1e-5,
+          "learningRate": 1e-05,
           "warmupSteps": 800,
           "validationSplit": 0.15,
           "maxLength": 2048,
@@ -446,10 +483,15 @@
       "resources": {
         "gpuType": "V100-32GB",
         "gpuCount": 1,
-        "totalCost": 12.80,
+        "totalCost": 12.8,
         "peakMemoryUsage": "31.2 GB"
       },
-      "tags": ["legal", "document-analysis", "failed", "memory-error"],
+      "tags": [
+        "legal",
+        "document-analysis",
+        "failed",
+        "memory-error"
+      ],
       "owner": {
         "userId": "user_robert_chen",
         "email": "robert.chen@company.com",
@@ -476,7 +518,9 @@
       "results": {
         "finalModelPath": null,
         "huggingfaceRepo": null,
-        "checkpoints": ["./checkpoints/epoch-1-partial"],
+        "checkpoints": [
+          "./checkpoints/epoch-1-partial"
+        ],
         "performance": {}
       }
     },
@@ -510,7 +554,7 @@
           "uid": "hyper_006_financial",
           "epochs": 4,
           "batchSize": 16,
-          "learningRate": 1e-5,
+          "learningRate": 1e-05,
           "warmupSteps": 800,
           "validationSplit": 0.15,
           "maxLength": 256,
@@ -533,7 +577,7 @@
       "resources": {
         "gpuType": "V100-32GB",
         "gpuCount": 1,
-        "totalCost": 31.20,
+        "totalCost": 31.2,
         "peakMemoryUsage": "27.4 GB"
       },
       "deployment": {
@@ -542,7 +586,12 @@
         "version": "v1.0.0",
         "deployedAt": "2025-06-25T18:45:00.000Z"
       },
-      "tags": ["financial", "sentiment", "news", "deployed"],
+      "tags": [
+        "financial",
+        "sentiment",
+        "news",
+        "deployed"
+      ],
       "owner": {
         "userId": "user_lisa_zhang",
         "email": "lisa.zhang@company.com",
@@ -562,13 +611,102 @@
       "results": {
         "finalModelPath": "./models/roberta-financial-sentiment-v3",
         "huggingfaceRepo": "nainovate/roberta-financial-sentiment-v3",
-        "checkpoints": ["./checkpoints/epoch-1", "./checkpoints/epoch-2", "./checkpoints/epoch-3", "./checkpoints/final"],
+        "checkpoints": [
+          "./checkpoints/epoch-1",
+          "./checkpoints/epoch-2",
+          "./checkpoints/epoch-3",
+          "./checkpoints/final"
+        ],
         "performance": {
           "f1Score": 0.925,
           "precision": 0.923,
           "recall": 0.928,
           "inference_speed": "38ms avg"
         }
+      }
+    },
+    {
+      "uid": "job_1751559451590_15c0ef2a",
+      "name": "Test Fine-tuning Job",
+      "description": "Test job created by API test script",
+      "tags": [
+        "test",
+        "api"
+      ],
+      "status": "created",
+      "createdAt": "2025-07-03T12:00:00.000Z",
+      "lastModified": "2025-07-03T21:47:31.000Z",
+      "configuration": {
+        "model": {
+          "uid": "test-model",
+          "name": "Test Model"
+        },
+        "dataset": {
+          "uid": "test-dataset",
+          "name": "Test Dataset"
+        },
+        "hyperparameters": {
+          "uid": "test-config"
+        }
+      },
+      "modelSaving": {
+        "saveModel": true,
+        "modelName": "test-fine-tuned-model"
+      },
+      "training": {
+        "startedAt": null,
+        "completedAt": null,
+        "progress": 0,
+        "logs": [],
+        "metrics": {}
+      },
+      "results": {
+        "finalModelPath": null,
+        "huggingfaceRepo": null,
+        "checkpoints": [],
+        "performance": {}
+      }
+    },
+    {
+      "uid": "job_1751560083942_15c0ef2a",
+      "name": "Test Fine-tuning Job",
+      "description": "Test job created by API test script",
+      "tags": [
+        "test",
+        "api"
+      ],
+      "status": "created",
+      "createdAt": "2025-07-03T12:00:00.000Z",
+      "lastModified": "2025-07-03T21:58:03.000Z",
+      "configuration": {
+        "model": {
+          "uid": "test-model",
+          "name": "Test Model"
+        },
+        "dataset": {
+          "uid": "test-dataset",
+          "name": "Test Dataset"
+        },
+        "hyperparameters": {
+          "uid": "test-config"
+        }
+      },
+      "modelSaving": {
+        "saveModel": true,
+        "modelName": "test-fine-tuned-model"
+      },
+      "training": {
+        "startedAt": null,
+        "completedAt": null,
+        "progress": 0,
+        "logs": [],
+        "metrics": {}
+      },
+      "results": {
+        "finalModelPath": null,
+        "huggingfaceRepo": null,
+        "checkpoints": [],
+        "performance": {}
       }
     }
   ],

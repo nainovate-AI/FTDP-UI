@@ -9,17 +9,23 @@ MODELS_PATH = Path(__file__).parent.parent.parent / "src" / "data" / "models.jso
 
 class ModelSelection:
     @staticmethod
-    def load_models() -> List[Dict[str, Any]]:
+    def load_models() -> Dict[str, Any]:
+        """Load complete models data including models, categories, and providers"""
         if MODELS_PATH.exists():
             with open(MODELS_PATH, "r", encoding="utf-8") as f:
-                data = json.load(f)
-                return data.get("models", [])
-        return []
+                return json.load(f)
+        return {"models": [], "categories": ["All Models"], "providers": ["All Providers"]}
+    
+    @staticmethod
+    def get_models_list() -> List[Dict[str, Any]]:
+        """Get just the models list for internal use"""
+        data = ModelSelection.load_models()
+        return data.get("models", [])
 
     @staticmethod
     def model_exists(model_id: str) -> bool:
         """Check if a model already exists in the collection"""
-        models = ModelSelection.load_models()
+        models = ModelSelection.get_models_list()
         return any(model.get("id") == model_id for model in models)
 
     @staticmethod

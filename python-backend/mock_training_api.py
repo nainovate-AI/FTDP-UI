@@ -80,7 +80,7 @@ def load_csv_data():
         script_dir = os.path.dirname(os.path.abspath(__file__))
         
         # Load manual training metrics
-        manual_training_path = os.path.join(script_dir, "training_metrics_manual.csv")
+        manual_training_path = os.path.join(script_dir, "data", "training_metrics_manual.csv")
         if os.path.exists(manual_training_path):
             df_manual_training = pd.read_csv(manual_training_path)
             training_data_manual = [TrainingLoss(**row) for _, row in df_manual_training.iterrows()]
@@ -89,7 +89,7 @@ def load_csv_data():
             print(f"Manual training metrics CSV not found at: {manual_training_path}")
         
         # Load automated training metrics
-        automated_training_path = os.path.join(script_dir, "training_metrics_automated.csv")
+        automated_training_path = os.path.join(script_dir, "data", "training_metrics_automated.csv")
         if os.path.exists(automated_training_path):
             df_automated_training = pd.read_csv(automated_training_path)
             training_data_automated = [TrainingLoss(**row) for _, row in df_automated_training.iterrows()]
@@ -98,7 +98,7 @@ def load_csv_data():
             print(f"Automated training metrics CSV not found at: {automated_training_path}")
         
         # Load manual resource metrics
-        manual_resources_path = os.path.join(script_dir, "resource_metrics_manual.csv")
+        manual_resources_path = os.path.join(script_dir, "data", "resource_metrics_manual.csv")
         if os.path.exists(manual_resources_path):
             df_manual_resources = pd.read_csv(manual_resources_path)
             resource_data_manual = [ResourceMetrics(**row) for _, row in df_manual_resources.iterrows()]
@@ -107,7 +107,7 @@ def load_csv_data():
             print(f"Manual resource metrics CSV not found at: {manual_resources_path}")
         
         # Load automated resource metrics
-        automated_resources_path = os.path.join(script_dir, "resource_metrics_automated.csv")
+        automated_resources_path = os.path.join(script_dir, "data", "resource_metrics_automated.csv")
         if os.path.exists(automated_resources_path):
             df_automated_resources = pd.read_csv(automated_resources_path)
             resource_data_automated = [ResourceMetrics(**row) for _, row in df_automated_resources.iterrows()]
