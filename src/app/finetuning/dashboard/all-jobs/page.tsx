@@ -11,7 +11,8 @@ import {
   Users,
   Activity,
   Database,
-  ArrowRight
+  ArrowRight,
+  ArrowLeft
 } from 'lucide-react';
 import { ThemeToggle } from '../../../../components/ThemeToggle';
 import { loadCurrentJobs, loadPastJobs, Job } from '../../../../utils/jobUtils';
@@ -56,6 +57,10 @@ export default function AllJobsDashboard() {
 
   const handleJobClick = (uid: string) => {
     router.push(`/job/${uid}`);
+  };
+
+  const handleBackToDetailedDashboard = () => {
+    router.push('/finetuning/dashboard/detailed');
   };
 
   const getStageProgress = (progress: number = 0) => {
@@ -347,6 +352,18 @@ export default function AllJobsDashboard() {
                   ))
                 )}
               </div>
+            </div>
+
+            {/* Back to Detailed Dashboard Button */}
+            <div className="text-center">
+              <button
+                onClick={handleBackToDetailedDashboard}
+                className="bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 px-6 py-3 
+                           rounded-lg font-medium hover:bg-gray-700 dark:hover:bg-gray-300 
+                           transition-colors duration-200 w-full"
+              >
+                Back to Detailed Dashboard
+              </button>
             </div>
           </div>
         </div>

@@ -105,7 +105,7 @@ export default function Home() {
         </div>
 
         {/* Features Grid */}
-        <div className={`py-16 transition-all duration-1000 delay-300 ${mounted ? 'animate-stagger-up' : 'opacity-0'}`}>
+        <div className={`py-24 transition-all duration-1000 delay-300 ${mounted ? 'animate-stagger-up' : 'opacity-0'}`}>
           <div className="max-w-5xl mx-auto">
             <div className="text-center mb-16">
               <h2 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white mb-4">
@@ -128,7 +128,11 @@ export default function Home() {
                       {feature.icon}
                     </div>
                     <div className="flex items-center space-x-2">
-                      <div className={`w-2 h-2 rounded-full ${feature.status === 'Production Ready' ? 'bg-green-500' : 'bg-yellow-500'}`}></div>
+                      <div className={`w-2 h-2 rounded-full ${
+                        feature.status === 'Production Ready' ? 'bg-green-500' : 
+                        feature.status === 'In Development' ? 'bg-yellow-500' : 
+                        'bg-blue-500'
+                      }`}></div>
                       <span className="text-sm text-slate-500 dark:text-slate-400">{feature.status}</span>
                     </div>
                   </div>
@@ -145,7 +149,7 @@ export default function Home() {
         </div>
 
         {/* CTA Section */}
-        <div className={`py-16 transition-all duration-1000 delay-500 ${mounted ? 'animate-fade-scale' : 'opacity-0'}`}>
+        <div className={`py-24 transition-all duration-1000 delay-500 ${mounted ? 'animate-fade-scale' : 'opacity-0'}`}>
           <div className="max-w-4xl mx-auto text-center">
             <div className="p-12 rounded-3xl border border-slate-200 dark:border-slate-800 glass-effect">
               <h2 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white mb-6">
