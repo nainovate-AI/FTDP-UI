@@ -1,6 +1,8 @@
 [
   {
+    "_comment": "This file stores dataset information. In production, this should be replaced with database storage and real API calls",
     "id": "1",
+    "uid": "dataset_legacy_001_customer_support",
     "name": "Customer Support QA Dataset",
     "description": "Customer support questions with detailed answers and troubleshooting steps",
     "size": "2.3 MB",
@@ -8,6 +10,8 @@
     "taskType": "Question Answering",
     "samples": 5420,
     "lastModified": "2025-06-25",
+    "filePath": "/uploads/datasets/customer_support_qa_dataset.csv",
+    "originalFileName": "customer_support_qa_dataset.csv",
     "tags": [
       "factual",
       "customer-service",
@@ -276,5 +280,374 @@
     ],
     "id": "1750847518481",
     "lastModified": "2025-06-25"
+  },
+  {
+    "name": "test2",
+    "description": "Uploaded dataset from FT_medical_3_2 (1).csv",
+    "format": "CSV",
+    "taskType": "Text Classification",
+    "samples": 7,
+    "size": "0.7 KB",
+    "tags": [],
+    "uid": "dataset_test2_valid_columns",
+    "filePath": "/uploads/datasets/FT_medical_3_2_uploaded.csv",
+    "originalFileName": "FT_medical_3_2 (1).csv",
+    "inputColumn": "input",
+    "targetColumn": "output",
+    "columns": [
+      "input",
+      "output",
+      "confidence",
+      "source"
+    ],
+    "preview": [
+      {
+        "input": "This product is amazing!",
+        "output": "positive",
+        "confidence": 0.95,
+        "source": "review"
+      },
+      {
+        "input": "I hate this service.",
+        "output": "negative",
+        "confidence": 0.89,
+        "source": "feedback"
+      },
+      {
+        "input": "The quality is okay.",
+        "output": "neutral",
+        "confidence": 0.76,
+        "source": "review"
+      },
+      {
+        "input": "Best purchase ever!",
+        "output": "positive",
+        "confidence": 0.92,
+        "source": "review"
+      },
+      {
+        "input": "Could be better.",
+        "output": "neutral",
+        "confidence": 0.68,
+        "source": "feedback"
+      },
+      {
+        "input": "Terrible experience.",
+        "output": "negative",
+        "confidence": 0.94,
+        "source": "review"
+      },
+      {
+        "input": "Highly recommended!",
+        "output": "positive",
+        "confidence": 0.87,
+        "source": "review"
+      }
+    ],
+    "id": "1750850431001",
+    "lastModified": "2025-06-25"
+  },
+  {
+    "name": "test3",
+    "description": "Uploaded dataset from FT_medical_3_2 (1).csv",
+    "format": "CSV",
+    "taskType": "Question Answering",
+    "samples": 7,
+    "size": "0.7 KB",
+    "tags": [
+      "context-based"
+    ],
+    "inputColumn": "input",
+    "targetColumn": "output",
+    "columns": [
+      "input",
+      "output",
+      "confidence",
+      "source"
+    ],
+    "preview": [
+      {
+        "input": "This product is amazing!",
+        "output": "positive",
+        "confidence": 0.95,
+        "source": "review"
+      },
+      {
+        "input": "I hate this service.",
+        "output": "negative",
+        "confidence": 0.89,
+        "source": "feedback"
+      },
+      {
+        "input": "The quality is okay.",
+        "output": "neutral",
+        "confidence": 0.76,
+        "source": "review"
+      },
+      {
+        "input": "Best purchase ever!",
+        "output": "positive",
+        "confidence": 0.92,
+        "source": "review"
+      },
+      {
+        "input": "Could be better.",
+        "output": "neutral",
+        "confidence": 0.68,
+        "source": "feedback"
+      },
+      {
+        "input": "Terrible experience.",
+        "output": "negative",
+        "confidence": 0.94,
+        "source": "review"
+      },
+      {
+        "input": "Highly recommended!",
+        "output": "positive",
+        "confidence": 0.87,
+        "source": "review"
+      }
+    ],
+    "id": "1750851519812",
+    "lastModified": "2025-06-25"
+  },
+  {
+    "name": "4",
+    "description": "Uploaded dataset from FT_medical_3_2 (1).csv",
+    "format": "CSV",
+    "taskType": "Text Classification",
+    "samples": 7,
+    "size": "0.7 KB",
+    "tags": [],
+    "inputColumn": "input",
+    "targetColumn": "output",
+    "columns": [
+      "input",
+      "output",
+      "confidence",
+      "source"
+    ],
+    "preview": [
+      {
+        "input": "This product is amazing!",
+        "output": "positive",
+        "confidence": 0.95,
+        "source": "review"
+      },
+      {
+        "input": "I hate this service.",
+        "output": "negative",
+        "confidence": 0.89,
+        "source": "feedback"
+      },
+      {
+        "input": "The quality is okay.",
+        "output": "neutral",
+        "confidence": 0.76,
+        "source": "review"
+      },
+      {
+        "input": "Best purchase ever!",
+        "output": "positive",
+        "confidence": 0.92,
+        "source": "review"
+      },
+      {
+        "input": "Could be better.",
+        "output": "neutral",
+        "confidence": 0.68,
+        "source": "feedback"
+      },
+      {
+        "input": "Terrible experience.",
+        "output": "negative",
+        "confidence": 0.94,
+        "source": "review"
+      },
+      {
+        "input": "Highly recommended!",
+        "output": "positive",
+        "confidence": 0.87,
+        "source": "review"
+      }
+    ],
+    "id": "1750851702932",
+    "lastModified": "2025-06-25"
+  },
+  {
+    "name": "tetet",
+    "description": "Uploaded dataset from FT_medical_3_2 (1).csv",
+    "format": "CSV",
+    "taskType": "Text Classification",
+    "samples": 7,
+    "size": "0.7 KB",
+    "tags": [],
+    "inputColumn": "input",
+    "targetColumn": "output",
+    "columns": [
+      "input",
+      "output",
+      "confidence",
+      "source"
+    ],
+    "preview": [
+      {
+        "input": "This product is amazing!",
+        "output": "positive",
+        "confidence": 0.95,
+        "source": "review"
+      },
+      {
+        "input": "I hate this service.",
+        "output": "negative",
+        "confidence": 0.89,
+        "source": "feedback"
+      },
+      {
+        "input": "The quality is okay.",
+        "output": "neutral",
+        "confidence": 0.76,
+        "source": "review"
+      },
+      {
+        "input": "Best purchase ever!",
+        "output": "positive",
+        "confidence": 0.92,
+        "source": "review"
+      },
+      {
+        "input": "Could be better.",
+        "output": "neutral",
+        "confidence": 0.68,
+        "source": "feedback"
+      },
+      {
+        "input": "Terrible experience.",
+        "output": "negative",
+        "confidence": 0.94,
+        "source": "review"
+      },
+      {
+        "input": "Highly recommended!",
+        "output": "positive",
+        "confidence": 0.87,
+        "source": "review"
+      }
+    ],
+    "id": "1750852227218",
+    "lastModified": "2025-06-25"
+  },
+  {
+    "name": "test_dataset",
+    "description": "Uploaded dataset from test_dataset.csv",
+    "format": "CSV",
+    "taskType": "Question Answering",
+    "samples": 5,
+    "size": "0.5 KB",
+    "tags": [
+      "conversational",
+      "technical",
+      "nainovate"
+    ],
+    "inputColumn": "input",
+    "targetColumn": "output",
+    "columns": [
+      "input",
+      "output",
+      "confidence",
+      "source"
+    ],
+    "preview": [
+      {
+        "input": "This product is amazing!",
+        "output": "positive",
+        "confidence": "0.95",
+        "source": "review"
+      },
+      {
+        "input": "I hate this service.",
+        "output": "negative",
+        "confidence": "0.89",
+        "source": "feedback"
+      },
+      {
+        "input": "The quality is okay.",
+        "output": "neutral",
+        "confidence": "0.76",
+        "source": "review"
+      },
+      {
+        "input": "Best purchase ever!",
+        "output": "positive",
+        "confidence": "0.92",
+        "source": "review"
+      },
+      {
+        "input": "Could be better.",
+        "output": "neutral",
+        "confidence": "0.68",
+        "source": "feedback"
+      }
+    ],
+    "id": "1751023766790",
+    "uid": "dataset_1751023766790_b0zqofldb",
+    "lastModified": "2025-06-27",
+    "filePath": "/uploads/datasets/test_dataset_1751023766790.csv",
+    "originalFileName": "test_dataset.csv"
+  },
+  {
+    "name": "test_dataset",
+    "description": "Uploaded dataset from test_dataset.csv",
+    "format": "CSV",
+    "taskType": "Text Classification",
+    "samples": 5,
+    "size": "0.5 KB",
+    "tags": [],
+    "inputColumn": "input",
+    "targetColumn": "output",
+    "columns": [
+      "input",
+      "output",
+      "confidence",
+      "source"
+    ],
+    "preview": [
+      {
+        "input": "This product is amazing!",
+        "output": "positive",
+        "confidence": "0.95",
+        "source": "review"
+      },
+      {
+        "input": "I hate this service.",
+        "output": "negative",
+        "confidence": "0.89",
+        "source": "feedback"
+      },
+      {
+        "input": "The quality is okay.",
+        "output": "neutral",
+        "confidence": "0.76",
+        "source": "review"
+      },
+      {
+        "input": "Best purchase ever!",
+        "output": "positive",
+        "confidence": "0.92",
+        "source": "review"
+      },
+      {
+        "input": "Could be better.",
+        "output": "neutral",
+        "confidence": "0.68",
+        "source": "feedback"
+      }
+    ],
+    "id": "1751024962146",
+    "uid": "dataset_1751024962146_f6qd9i7dp",
+    "lastModified": "2025-06-27",
+    "filePath": "/uploads/datasets/test_dataset_1751024962146.csv",
+    "originalFileName": "test_dataset.csv"
   }
 ]

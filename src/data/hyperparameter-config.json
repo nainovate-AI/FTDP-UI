@@ -1,0 +1,269 @@
+{
+  "configs": {
+    "00000005k0008000300100002s": {
+      "outputDirectory": "./fine_tuned_model",
+      "adapterMethod": "LoRA",
+      "mode": "Manual",
+      "learningRate": 0.0002,
+      "batchSize": 8,
+      "epochs": 3,
+      "weightDecay": 0.01,
+      "loraR": 16,
+      "loraAlpha": 32,
+      "loraDropout": 0.1,
+      "configuredAt": "2025-06-29T12:00:00.000Z"
+    },
+    "00000008c000g000500200001e": {
+      "outputDirectory": "./fine_tuned_model",
+      "adapterMethod": "LoRA",
+      "mode": "Manual",
+      "learningRate": 0.0003,
+      "batchSize": 16,
+      "epochs": 5,
+      "weightDecay": 0.005,
+      "loraR": 32,
+      "loraAlpha": 64,
+      "loraDropout": 0.05,
+      "configuredAt": "2025-06-29T12:00:00.000Z"
+    },
+    "00000002s0004000a000800046": {
+      "outputDirectory": "./fine_tuned_model",
+      "adapterMethod": "LoRA",
+      "mode": "Manual",
+      "learningRate": 0.0001,
+      "batchSize": 4,
+      "epochs": 10,
+      "weightDecay": 0.02,
+      "loraR": 8,
+      "loraAlpha": 16,
+      "loraDropout": 0.15,
+      "configuredAt": "2025-06-29T12:00:00.000Z"
+    },
+    "0000000dw000w00020040000k": {
+      "outputDirectory": "./fine_tuned_model",
+      "adapterMethod": "LoRA",
+      "mode": "Manual",
+      "learningRate": 0.0005,
+      "batchSize": 32,
+      "epochs": 2,
+      "weightDecay": 0.001,
+      "loraR": 64,
+      "loraAlpha": 128,
+      "loraDropout": 0.02,
+      "configuredAt": "2025-06-29T12:00:00.000Z"
+    },
+    "0100000a05k000200100001000a00100002s": {
+      "outputDirectory": "./fine_tuned_model",
+      "adapterMethod": "LoRA",
+      "mode": "Automated",
+      "modeLogic": "Bayesian Optimization",
+      "searchLimit": 50,
+      "targetLoss": 0.1,
+      "learningRateRange": [
+        1e-05,
+        0.0005
+      ],
+      "batchSizeRange": [
+        2,
+        16
+      ],
+      "epochsRange": [
+        1,
+        10
+      ],
+      "weightDecayRange": [
+        0.001,
+        0.1
+      ],
+      "loraRRange": [
+        8,
+        32
+      ],
+      "loraAlphaRange": [
+        16,
+        64
+      ],
+      "loraDropoutRange": [
+        0.05,
+        0.15
+      ],
+      "configuredAt": "2025-06-29T12:00:00.000Z"
+    },
+    "01000058c0004000w0002000f002000001e": {
+      "outputDirectory": "./fine_tuned_model",
+      "adapterMethod": "LoRA",
+      "mode": "Automated",
+      "modeLogic": "Grid Search",
+      "searchLimit": 100,
+      "targetLoss": 0.05,
+      "learningRateRange": [
+        5e-06,
+        0.0008
+      ],
+      "batchSizeRange": [
+        4,
+        32
+      ],
+      "epochsRange": [
+        2,
+        15
+      ],
+      "weightDecayRange": [
+        0.0005,
+        0.2
+      ],
+      "loraRRange": [
+        16,
+        64
+      ],
+      "loraAlphaRange": [
+        32,
+        128
+      ],
+      "loraDropoutRange": [
+        0.02,
+        0.1
+      ],
+      "configuredAt": "2025-06-29T12:00:00.000Z"
+    },
+    "01000508c0008000o000300080018000n": {
+      "outputDirectory": "./fine_tuned_model",
+      "adapterMethod": "LoRA",
+      "mode": "Automated",
+      "modeLogic": "Random Search",
+      "searchLimit": 30,
+      "targetLoss": 0.15,
+      "learningRateRange": [
+        8e-05,
+        0.0003
+      ],
+      "batchSizeRange": [
+        8,
+        24
+      ],
+      "epochsRange": [
+        3,
+        8
+      ],
+      "weightDecayRange": [
+        0.005,
+        0.05
+      ],
+      "loraRRange": [
+        16,
+        48
+      ],
+      "loraAlphaRange": [
+        32,
+        96
+      ],
+      "loraDropoutRange": [
+        0.05,
+        0.12
+      ],
+      "configuredAt": "2025-06-29T12:00:00.000Z"
+    },
+    "0100000gdw00060014000100100014003e": {
+      "outputDirectory": "./fine_tuned_model",
+      "adapterMethod": "LoRA",
+      "mode": "Automated",
+      "modeLogic": "Hyperband",
+      "searchLimit": 80,
+      "targetLoss": 0.08,
+      "learningRateRange": [
+        2e-05,
+        0.0006
+      ],
+      "batchSizeRange": [
+        6,
+        20
+      ],
+      "epochsRange": [
+        1,
+        12
+      ],
+      "weightDecayRange": [
+        0.002,
+        0.08
+      ],
+      "loraRRange": [
+        12,
+        40
+      ],
+      "loraAlphaRange": [
+        24,
+        80
+      ],
+      "loraDropoutRange": [
+        0.08,
+        0.18
+      ],
+      "configuredAt": "2025-06-29T12:00:00.000Z"
+    },
+    "0000005k00040003000g002s": {
+      "outputDirectory": "./fine_tuned_model",
+      "adapterMethod": "LoRA",
+      "mode": "Manual",
+      "modeLogic": "Biased Random",
+      "searchLimit": 50,
+      "targetLoss": 0.1,
+      "learningRate": 0.0002,
+      "batchSize": 4,
+      "epochs": 3,
+      "weightDecay": 0.01,
+      "loraR": 16,
+      "loraAlpha": 32,
+      "loraDropout": 0.1,
+      "configuredAt": "2025-06-29T22:20:46.962Z"
+    },
+    "010000rk00rl000500060001000a000g002s": {
+      "outputDirectory": "./fine_tuned_model",
+      "adapterMethod": "LoRA",
+      "mode": "Automated",
+      "modeLogic": "CRv1",
+      "searchLimit": 50,
+      "targetLoss": 0.1,
+      "learningRateRange": [
+        0.000992,
+        0.000993
+      ],
+      "batchSizeRange": [
+        5,
+        6
+      ],
+      "epochsRange": [
+        1,
+        10
+      ],
+      "weightDecayRange": [
+        0.001,
+        0.1
+      ],
+      "loraRRange": [
+        8,
+        64
+      ],
+      "loraAlphaRange": [
+        96,
+        128
+      ],
+      "loraDropoutRange": [
+        0.26,
+        0.27
+      ],
+      "configuredAt": "2025-06-30T19:10:37.717Z"
+    }
+  },
+  "aliases": {
+    "balanced01": "00000008c000g000500200001e",
+    "conservative": "00000002s0004000a000800046",
+    "aggressive": "0000000dw000w00020040000k",
+    "standard": "00000005k0008000300100002s",
+    "widerange": "01000058c0004000w0002000f002000001e",
+    "focused": "01000508c0008000o000300080018000n",
+    "hyperband": "0100000gdw00060014000100100014003e",
+    "bayesian": "0100000a05k000200100001000a00100002s"
+  },
+  "best_config_uid_manual": "00000008c000g000500200001e",
+  "best_config_uid_automated": "00000005k0008000300100002s"
+}

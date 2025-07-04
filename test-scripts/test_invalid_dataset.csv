@@ -1,0 +1,6 @@
+text,label,score,category
+This product is amazing!,positive,0.95,review
+I hate this service.,negative,0.89,feedback
+The quality is okay.,neutral,0.76,review
+Best purchase ever!,positive,0.92,review
+Could be better.,neutral,0.68,feedback

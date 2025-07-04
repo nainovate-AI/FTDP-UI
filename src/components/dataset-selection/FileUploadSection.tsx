@@ -11,6 +11,8 @@ interface FileUploadSectionProps {
   uploadedFile: File | null;
   title: string;
   description: string;
+  previewError?: string | null;
+  usedBackend?: boolean;
   onFileUpload: (event: React.ChangeEvent<HTMLInputElement>) => void;
   onTaskTypeChange: (taskType: string) => void;
   onTagToggle: (tag: string) => void;
@@ -37,6 +39,8 @@ export const FileUploadSection: React.FC<FileUploadSectionProps> = ({
   uploadedFile,
   title,
   description,
+  previewError,
+  usedBackend,
   onFileUpload,
   onTaskTypeChange,
   onTagToggle,
@@ -79,6 +83,21 @@ export const FileUploadSection: React.FC<FileUploadSectionProps> = ({
               <p className="text-sm text-gray-600 dark:text-gray-400">
                 <span className="font-medium">Type:</span> {uploadedFile.type || 'CSV'}
               </p>
+              {/* Backend Status Indicator */}
+              {usedBackend !== undefined && (
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  <span className="font-medium">Preview:</span> 
+                  <span className={`ml-1 ${usedBackend ? 'text-green-600 dark:text-green-400' : 'text-amber-600 dark:text-amber-400'}`}>
+                    {usedBackend ? 'Real CSV parsing ✓' : 'Mock data (backend offline)'}
+                  </span>
+                </p>
+              )}
+              {/* Error Message */}
+              {previewError && (
+                <p className="text-sm text-red-600 dark:text-red-400 mt-1">
+                  <span className="font-medium">Warning:</span> {previewError}
+                </p>
+              )}
             </div>
             <button
               onClick={onClearUpload}
@@ -97,7 +116,7 @@ export const FileUploadSection: React.FC<FileUploadSectionProps> = ({
               <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
             </svg>
             <div className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
-              Drop your CSV dataset file here, or click to browse
+              Drop your CSV dataset file here
             </div>
             <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">
               Currently supports CSV files up to 100MB

@@ -15,7 +15,7 @@ interface Dataset {
 interface ExistingDatasetsProps {
   datasets: Dataset[];
   selectedDataset: string | null;
-  onDatasetSelect: (datasetId: string) => void;
+  onDatasetSelect: (datasetId: string) => void; // This should now just open preview
   onDatasetEdit?: (datasetId: string) => void;
 }
 

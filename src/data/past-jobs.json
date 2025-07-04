@@ -1,0 +1,239 @@
+{
+  "_comment": "Historical completed and failed jobs - streamlined for dashboard display",
+  "_note": "These jobs show historical data and completion metrics",
+  "_lastUpdated": "2025-07-01T14:30:00.000Z",
+  "jobs": [
+    {
+      "uid": "job_1719570000_completed_1",
+      "name": "GPT-3.5 Tech Documentation Helper",
+      "description": "Fine-tuning GPT-3.5 for technical documentation generation and Q&A",
+      "status": "completed",
+      "createdAt": "2025-06-28T08:40:00.000Z",
+      "startedAt": "2025-06-28T09:15:00.000Z",
+      "completedAt": "2025-06-28T14:22:00.000Z",
+      "duration": "5h 7m",
+      "model": {
+        "uid": "openai/gpt-3.5-turbo",
+        "name": "GPT-3.5 Turbo",
+        "provider": "OpenAI",
+        "version": "3.5-turbo-0613"
+      },
+      "dataset": {
+        "uid": "dataset_tech_docs_v3",
+        "name": "Technical Documentation Corpus v3",
+        "size": "3.2 GB",
+        "samples": 18500,
+        "format": "jsonl"
+      },
+      "hyperparameters": {
+        "uid": "hyper_004_docs",
+        "epochs": 3,
+        "batchSize": 16,
+        "learningRate": 3e-5,
+        "warmupSteps": 200,
+        "validationSplit": 0.15,
+        "maxLength": 1024
+      },
+      "finalMetrics": {
+        "finalLoss": 0.183,
+        "finalValidationLoss": 0.201,
+        "bestAccuracy": 0.952,
+        "bestF1Score": 0.948,
+        "perplexity": 1.85,
+        "bleuScore": 0.67
+      },
+      "resources": {
+        "gpuType": "A100-40GB",
+        "gpuCount": 2,
+        "totalCost": 35.40,
+        "peakMemoryUsage": "38.2 GB"
+      },
+      "deployment": {
+        "status": "deployed",
+        "endpoint": "api.company.com/models/gpt35-techdocs-v1",
+        "version": "v1.0.0",
+        "deployedAt": "2025-06-28T15:30:00.000Z"
+      },
+      "tags": ["documentation", "technical-writing", "qa", "deployed"],
+      "owner": {
+        "userId": "user_mike_torres",
+        "email": "mike.torres@company.com",
+        "department": "Technical Writing"
+      }
+    },
+    {
+      "uid": "job_1719483600_completed_2", 
+      "name": "BERT Intent Classification Model",
+      "description": "Training BERT for multi-intent classification in conversational AI",
+      "status": "completed",
+      "createdAt": "2025-06-27T08:40:00.000Z",
+      "startedAt": "2025-06-27T10:20:00.000Z",
+      "completedAt": "2025-06-27T16:45:00.000Z",
+      "duration": "6h 25m",
+      "model": {
+        "uid": "bert-base-uncased",
+        "name": "BERT Base Uncased",
+        "provider": "Hugging Face",
+        "version": "bert-base-uncased"
+      },
+      "dataset": {
+        "uid": "dataset_intent_classification_v4",
+        "name": "Multi-Intent Classification Dataset v4",
+        "size": "1.8 GB",
+        "samples": 12300,
+        "format": "csv"
+      },
+      "hyperparameters": {
+        "uid": "hyper_005_intent",
+        "epochs": 5,
+        "batchSize": 32,
+        "learningRate": 2e-5,
+        "warmupSteps": 1000,
+        "validationSplit": 0.2,
+        "maxLength": 128
+      },
+      "finalMetrics": {
+        "finalLoss": 0.156,
+        "finalValidationLoss": 0.178,
+        "bestAccuracy": 0.943,
+        "bestF1Score": 0.941,
+        "precision": 0.939,
+        "recall": 0.943
+      },
+      "resources": {
+        "gpuType": "V100-32GB",
+        "gpuCount": 1,
+        "totalCost": 28.60,
+        "peakMemoryUsage": "29.8 GB"
+      },
+      "deployment": {
+        "status": "tested",
+        "testAccuracy": 0.938,
+        "testResults": "Passed all validation tests",
+        "readyForProduction": true
+      },
+      "tags": ["intent-classification", "conversational-ai", "nlp", "tested"],
+      "owner": {
+        "userId": "user_anna_wilson",
+        "email": "anna.wilson@company.com",
+        "department": "Conversational AI"
+      }
+    },
+    {
+      "uid": "job_1719397200_failed_1",
+      "name": "LLaMA Legal Document Analysis",
+      "description": "Fine-tuning LLaMA 2 for legal document analysis and extraction",
+      "status": "failed",
+      "createdAt": "2025-06-26T08:40:00.000Z",
+      "startedAt": "2025-06-26T09:45:00.000Z",
+      "failedAt": "2025-06-26T12:20:00.000Z",
+      "duration": "2h 35m",
+      "model": {
+        "uid": "meta/llama2-7b",
+        "name": "LLaMA 2 7B",
+        "provider": "Meta",
+        "version": "llama2-7b-chat"
+      },
+      "dataset": {
+        "uid": "dataset_legal_docs_v2",
+        "name": "Legal Document Analysis Dataset v2",
+        "size": "4.1 GB",
+        "samples": 8900,
+        "format": "jsonl"
+      },
+      "failureReason": "GPU memory exhaustion during epoch 1",
+      "errorDetails": {
+        "errorCode": "CUDA_OUT_OF_MEMORY",
+        "errorMessage": "CUDA out of memory. Tried to allocate 2.73 GiB (GPU 0; 31.75 GiB total capacity; 29.12 GiB already allocated)",
+        "failedEpoch": 1,
+        "failedStep": 847,
+        "suggestedFix": "Reduce batch size or use gradient accumulation"
+      },
+      "resources": {
+        "gpuType": "V100-32GB",
+        "gpuCount": 1,
+        "totalCost": 12.80,
+        "peakMemoryUsage": "31.2 GB"
+      },
+      "tags": ["legal", "document-analysis", "failed", "memory-error"],
+      "owner": {
+        "userId": "user_robert_chen",
+        "email": "robert.chen@company.com",
+        "department": "Legal Tech"
+      },
+      "retryPlanned": true,
+      "retryWithConfig": {
+        "batchSize": 8, 
+        "gradientAccumulation": 4,
+        "gpuType": "A100-40GB"
+      }
+    },
+    {
+      "uid": "job_1719310800_completed_3",
+      "name": "RoBERTa Financial Sentiment",
+      "description": "Fine-tuning RoBERTa for financial news sentiment analysis",
+      "status": "completed",
+      "createdAt": "2025-06-25T08:40:00.000Z",
+      "startedAt": "2025-06-25T11:15:00.000Z",
+      "completedAt": "2025-06-25T17:30:00.000Z",
+      "duration": "6h 15m",
+      "model": {
+        "uid": "roberta-base",
+        "name": "RoBERTa Base",
+        "provider": "Facebook",
+        "version": "roberta-base"
+      },
+      "dataset": {
+        "uid": "dataset_financial_sentiment_v3",
+        "name": "Financial News Sentiment Dataset v3",
+        "size": "2.1 GB",
+        "samples": 14200,
+        "format": "csv"
+      },
+      "hyperparameters": {
+        "uid": "hyper_006_financial",
+        "epochs": 4,
+        "batchSize": 16,
+        "learningRate": 1e-5,
+        "warmupSteps": 800,
+        "validationSplit": 0.15,
+        "maxLength": 256
+      },
+      "finalMetrics": {
+        "finalLoss": 0.198,
+        "finalValidationLoss": 0.224,
+        "bestAccuracy": 0.927,
+        "bestF1Score": 0.925,
+        "precision": 0.923,
+        "recall": 0.928
+      },
+      "resources": {
+        "gpuType": "V100-32GB",
+        "gpuCount": 1,
+        "totalCost": 31.20,
+        "peakMemoryUsage": "27.4 GB"
+      },
+      "deployment": {
+        "status": "deployed",
+        "endpoint": "api.company.com/models/roberta-financial-sentiment-v1",
+        "version": "v1.0.0",
+        "deployedAt": "2025-06-25T18:45:00.000Z"
+      },
+      "tags": ["financial", "sentiment", "news", "deployed"],
+      "owner": {
+        "userId": "user_lisa_zhang",
+        "email": "lisa.zhang@company.com",
+        "department": "Financial Analytics"
+      }
+    }
+  ],
+  "statistics": {
+    "totalHistoricalJobs": 4,
+    "completedJobs": 3,
+    "failedJobs": 1,
+    "deployedModels": 2,
+    "totalCost": 108.00,
+    "avgCompletionTime": "5h 49m",
+    "successRate": "75%"
+  }
+}
