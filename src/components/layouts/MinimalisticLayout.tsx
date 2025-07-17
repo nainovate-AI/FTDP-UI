@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { mockStats } from '../../types';
 import { ThemeToggle } from '../ThemeToggle';
@@ -30,6 +30,16 @@ const getTimeBasedGreeting = () => {
  */
 export const MinimalisticLayout: React.FC<MinimalisticLayoutProps> = ({ children }) => {
   const router = useRouter();
+  const [mounted, setMounted] = useState(false);
+  const [statsVisible, setStatsVisible] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    const timer = setTimeout(() => {
+      setStatsVisible(true);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleViewMore = () => {
     router.push('/finetuning/dashboard/detailed');
@@ -61,7 +71,9 @@ export const MinimalisticLayout: React.FC<MinimalisticLayoutProps> = ({ children
         </div>
         
         {/* Simplified welcome section - Enhanced spacing */}
-        <div className="text-center mb-8">
+        <div className={`text-center mb-8 transition-all duration-700 ${
+          mounted ? 'animate-fade-scale' : 'opacity-0'
+        }`}>
           {getTimeBasedGreeting() === 'SPECIAL_QUOTE' ? (
             <>
               <h1 className="text-xl sm:text-2xl lg:text-3xl font-light text-gray-900 dark:text-gray-100 tracking-tight mb-3">
@@ -69,9 +81,9 @@ export const MinimalisticLayout: React.FC<MinimalisticLayoutProps> = ({ children
               </h1>
               <div>
                 <blockquote className="text-sm sm:text-base lg:text-lg font-serif italic text-amber-700 dark:text-amber-300 relative inline-block">
-                  <span className="text-lg sm:text-xl text-amber-600 dark:text-amber-400">"</span>
+                  <span className="text-lg sm:text-xl text-amber-600 dark:text-amber-400">&quot;</span>
                   <span className="relative z-10 px-1">The world sleeps. You create.</span>
-                  <span className="text-lg sm:text-xl text-amber-600 dark:text-amber-400">"</span>
+                  <span className="text-lg sm:text-xl text-amber-600 dark:text-amber-400">&quot;</span>
                 </blockquote>
               </div>
             </>
@@ -86,9 +98,19 @@ export const MinimalisticLayout: React.FC<MinimalisticLayoutProps> = ({ children
         </div>
 
         {/* 2x2 stats grid - Enhanced spacing and size */}
-        <div className="grid grid-cols-2 gap-8 sm:gap-10 lg:gap-12 mb-10 max-w-4xl mx-auto">
+        <div className={`grid grid-cols-2 gap-8 sm:gap-10 lg:gap-12 mb-10 max-w-4xl mx-auto transition-all duration-700 ${
+          statsVisible ? 'animate-slide-up' : 'opacity-0 translate-y-8'
+        }`}>
           {mockStats.slice(0, 4).map((stat, index) => (
-            <div key={index} className="text-center py-3">
+            <div 
+              key={index} 
+              className={`text-center py-3 transition-all duration-700 ${
+                statsVisible ? 'animate-stagger-up' : 'opacity-0 translate-y-8'
+              }`}
+              style={{
+                animationDelay: statsVisible ? `${index * 150}ms` : '0ms'
+              }}
+            >
               <div className="text-xl sm:text-2xl lg:text-3xl xl:text-4xl font-bold text-gray-900 dark:text-gray-100 mb-2 truncate">
                 {stat.value}
               </div>
@@ -111,13 +133,18 @@ export const MinimalisticLayout: React.FC<MinimalisticLayoutProps> = ({ children
         </div>
 
         {/* Action section - Enhanced spacing */}
-        <div className="text-center">
+        <div className={`text-center transition-all duration-700 ${
+          statsVisible ? 'animate-fade-scale' : 'opacity-0'
+        }`}
+        style={{
+          animationDelay: statsVisible ? '600ms' : '0ms'
+        }}>
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-4">
             <button 
               onClick={handleCreateJob}
               className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 
                        rounded-lg text-base font-medium transition-all duration-200 shadow-sm
-                       hover:-translate-y-0.5 whitespace-nowrap"
+                       hover:-translate-y-0.5 hover:shadow-lg transform hover:scale-105 whitespace-nowrap"
             >
               + Create New Job
             </button>
@@ -125,7 +152,7 @@ export const MinimalisticLayout: React.FC<MinimalisticLayoutProps> = ({ children
               onClick={handleViewMore}
               className="w-full sm:w-auto bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 px-8 py-3 
                          rounded-lg text-base font-medium cursor-pointer transition-all duration-200 shadow-sm
-                         hover:bg-gray-700 dark:hover:bg-gray-300 hover:-translate-y-0.5 whitespace-nowrap"
+                         hover:bg-gray-700 dark:hover:bg-gray-300 hover:-translate-y-0.5 hover:shadow-lg transform hover:scale-105 whitespace-nowrap"
             >
               Detailed Dashboard
             </button>

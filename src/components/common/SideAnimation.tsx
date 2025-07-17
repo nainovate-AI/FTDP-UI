@@ -39,12 +39,12 @@ export const SideAnimation: React.FC<SideAnimationProps> = ({ className = '' }) 
     // Generate random particle paths
     const generatePaths = (): ParticlePath[] => {
       const colors = [
-        'rgba(20, 184, 166, 0.5)', // teal-500
-        'rgba(139, 92, 246, 0.5)', // violet-500
-        'rgba(6, 182, 212, 0.5)',  // cyan-500
-        'rgba(99, 102, 241, 0.5)', // indigo-500
-        'rgba(236, 72, 153, 0.5)', // pink-500
-        'rgba(34, 197, 94, 0.5)',  // green-500
+        'rgba(255, 255, 255, 0.6)', // pure white
+        'rgba(248, 250, 252, 0.5)', // slate-50
+        'rgba(241, 245, 249, 0.5)', // slate-100
+        'rgba(226, 232, 240, 0.4)', // slate-200
+        'rgba(203, 213, 225, 0.4)', // slate-300
+        'rgba(148, 163, 184, 0.3)', // slate-400
       ];
 
       const directions: ('vertical' | 'diagonal')[] = ['vertical', 'diagonal'];
@@ -75,7 +75,7 @@ export const SideAnimation: React.FC<SideAnimationProps> = ({ className = '' }) 
     <div className={`fixed inset-0 pointer-events-none z-0 ${className}`}>
       {/* Left side static lines */}
       <svg
-        className="absolute left-0 top-0 h-full w-24 opacity-15 dark:opacity-8"
+        className="absolute left-0 top-0 h-full w-24 opacity-20 dark:opacity-10"
         viewBox="0 0 24 100"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
@@ -84,28 +84,28 @@ export const SideAnimation: React.FC<SideAnimationProps> = ({ className = '' }) 
           d="M6 0 Q12 25 6 50 Q3 75 6 100"
           stroke="currentColor"
           strokeWidth="0.2"
-          className="text-teal-500 dark:text-teal-400"
+          className="text-slate-100 dark:text-slate-400"
           fill="none"
         />
         <path
           d="M18 0 Q12 25 18 50 Q21 75 18 100"
           stroke="currentColor"
           strokeWidth="0.2"
-          className="text-violet-500 dark:text-violet-400"
+          className="text-slate-200 dark:text-slate-500"
           fill="none"
         />
         <path
           d="M3 20 Q18 40 12 70"
           stroke="currentColor"
           strokeWidth="0.15"
-          className="text-cyan-500 dark:text-cyan-400"
+          className="text-slate-300 dark:text-slate-600"
           fill="none"
         />
       </svg>
       
       {/* Right side static lines */}
       <svg
-        className="absolute right-0 top-0 h-full w-24 opacity-15 dark:opacity-8"
+        className="absolute right-0 top-0 h-full w-24 opacity-20 dark:opacity-10"
         viewBox="0 0 24 100"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
@@ -114,21 +114,21 @@ export const SideAnimation: React.FC<SideAnimationProps> = ({ className = '' }) 
           d="M18 0 Q12 25 18 50 Q21 75 18 100"
           stroke="currentColor"
           strokeWidth="0.2"
-          className="text-indigo-500 dark:text-indigo-400"
+          className="text-slate-100 dark:text-slate-400"
           fill="none"
         />
         <path
           d="M6 0 Q12 25 6 50 Q3 75 6 100"
           stroke="currentColor"
           strokeWidth="0.2"
-          className="text-pink-500 dark:text-pink-400"
+          className="text-slate-200 dark:text-slate-500"
           fill="none"
         />
         <path
           d="M21 30 Q6 50 12 80"
           stroke="currentColor"
           strokeWidth="0.15"
-          className="text-green-500 dark:text-green-400"
+          className="text-slate-300 dark:text-slate-600"
           fill="none"
         />
       </svg>
@@ -287,13 +287,13 @@ export const SideAnimation: React.FC<SideAnimationProps> = ({ className = '' }) 
       </div>
 
       {/* Subtle corner glows - only on sides */}
-      <div className="absolute top-0 left-0 w-24 h-24 bg-gradient-to-br from-teal-500/8 to-transparent rounded-full blur-xl animate-pulse" 
+      <div className="absolute top-0 left-0 w-24 h-24 bg-gradient-to-br from-white/10 to-transparent rounded-full blur-xl animate-pulse" 
            style={{ animationDuration: '8s' }} />
-      <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-violet-500/8 to-transparent rounded-full blur-xl animate-pulse" 
+      <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-slate-100/8 to-transparent rounded-full blur-xl animate-pulse" 
            style={{ animationDuration: '9s', animationDelay: '2s' }} />
-      <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-cyan-500/8 to-transparent rounded-full blur-xl animate-pulse" 
+      <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-slate-200/8 to-transparent rounded-full blur-xl animate-pulse" 
            style={{ animationDuration: '7s', animationDelay: '4s' }} />
-      <div className="absolute bottom-0 right-0 w-24 h-24 bg-gradient-to-tl from-pink-500/8 to-transparent rounded-full blur-xl animate-pulse" 
+      <div className="absolute bottom-0 right-0 w-24 h-24 bg-gradient-to-tl from-slate-300/8 to-transparent rounded-full blur-xl animate-pulse" 
            style={{ animationDuration: '10s', animationDelay: '1s' }} />
     </div>
   );

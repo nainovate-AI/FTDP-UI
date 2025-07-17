@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { ArrowRight, PlayCircle, Home } from 'lucide-react';
 import { ThemeToggle } from '../../../components/ThemeToggle';
@@ -9,7 +9,7 @@ import { JobCard, ToastContainer, DrawingCheckmark } from '../../../components/c
 import { useToast } from '../../../hooks/useToast';
 import { loadCurrentJobs, getActiveJobs, Job } from '../../../utils/jobUtils';
 
-export default function Success() {
+function SuccessContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { toasts, addToast, removeToast } = useToast();
@@ -77,7 +77,7 @@ export default function Success() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 opacity-0 animate-fade-in">
       <div className="max-w-4xl mx-auto px-6 py-8">
         <ThemeToggle />
         
@@ -186,5 +186,20 @@ export default function Success() {
 
       <ToastContainer toasts={toasts} onRemove={removeToast} />
     </div>
+  );
+}
+
+export default function Success() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-white dark:bg-slate-950 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-slate-600 mx-auto mb-4"></div>
+          <p className="text-slate-600 dark:text-slate-400">Loading success page...</p>
+        </div>
+      </div>
+    }>
+      <SuccessContent />
+    </Suspense>
   );
 }

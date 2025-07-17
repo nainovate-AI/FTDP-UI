@@ -252,6 +252,117 @@
         0.27
       ],
       "configuredAt": "2025-06-30T19:10:37.717Z"
+    },
+    "0100000a00dw000200080001000a000g002s": {
+      "outputDirectory": "./fine_tuned_model",
+      "adapterMethod": "LoRA",
+      "mode": "Automated",
+      "modeLogic": "CRv1",
+      "searchLimit": 50,
+      "targetLoss": 0.1,
+      "learningRateRange": [
+        1e-05,
+        0.0005
+      ],
+      "batchSizeRange": [
+        2,
+        8
+      ],
+      "epochsRange": [
+        1,
+        10
+      ],
+      "weightDecayRange": [
+        0.001,
+        0.1
+      ],
+      "loraRRange": [
+        8,
+        64
+      ],
+      "loraAlphaRange": [
+        16,
+        128
+      ],
+      "loraDropoutRange": [
+        0.02,
+        0.3
+      ],
+      "configuredAt": "2025-07-05T11:15:41.917Z"
+    },
+    "0101000a00dw000200080001000a000g002s": {
+      "outputDirectory": "./fine_tuned_model",
+      "adapterMethod": "QLoRA",
+      "mode": "Automated",
+      "modeLogic": "CRv1",
+      "searchLimit": 50,
+      "targetLoss": 0.1,
+      "learningRateRange": [
+        1e-05,
+        0.0005
+      ],
+      "batchSizeRange": [
+        2,
+        8
+      ],
+      "epochsRange": [
+        1,
+        10
+      ],
+      "weightDecayRange": [
+        0.001,
+        0.1
+      ],
+      "loraRRange": [
+        56,
+        64
+      ],
+      "loraAlphaRange": [
+        16,
+        128
+      ],
+      "loraDropoutRange": [
+        0.02,
+        0.3
+      ],
+      "configuredAt": "2025-07-10T14:19:43.515Z"
+    },
+    "010100fl00fm000700080001000a000g002s": {
+      "outputDirectory": "./fine_tuned_model",
+      "adapterMethod": "QLoRA",
+      "mode": "Automated",
+      "modeLogic": "CRv1",
+      "searchLimit": 50,
+      "targetLoss": 0.1,
+      "learningRateRange": [
+        0.000561,
+        0.000562
+      ],
+      "batchSizeRange": [
+        7,
+        8
+      ],
+      "epochsRange": [
+        1,
+        10
+      ],
+      "weightDecayRange": [
+        0.001,
+        0.1
+      ],
+      "loraRRange": [
+        80,
+        88
+      ],
+      "loraAlphaRange": [
+        144,
+        160
+      ],
+      "loraDropoutRange": [
+        0.21,
+        0.21000000000000002
+      ],
+      "configuredAt": "2025-07-16T23:58:56.584Z"
     }
   },
   "aliases": {
