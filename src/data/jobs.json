@@ -1,0 +1,963 @@
+{
+  "_comment": "Master job configuration file - synchronized with current and past jobs",
+  "_note": "This file maintains job configurations and serves as the source of truth",
+  "_lastUpdated": "2025-07-01T14:30:00.000Z",
+  "jobs": [
+    {
+      "uid": "job_1719742200_running",
+      "name": "GPT-3.5 Customer Support Assistant",
+      "description": "Fine-tuning GPT-3.5 for specialized customer support responses with company-specific knowledge",
+      "status": "running",
+      "priority": "high",
+      "createdAt": "2025-06-30T08:30:00.000Z",
+      "startedAt": "2025-06-30T08:45:00.000Z",
+      "estimatedCompletion": "2025-07-01T16:30:00.000Z",
+      "lastModified": "2025-07-01T14:30:00.000Z",
+      "progress": 75,
+      "configuration": {
+        "model": {
+          "uid": "openai/gpt-3.5-turbo",
+          "name": "GPT-3.5 Turbo",
+          "provider": "OpenAI",
+          "version": "3.5-turbo-0613"
+        },
+        "dataset": {
+          "uid": "dataset_customer_support_v2",
+          "name": "Customer Support Conversations v2",
+          "size": "2.8 GB",
+          "samples": 15420,
+          "format": "jsonl"
+        },
+        "hyperparameters": {
+          "uid": "hyper_001_optimal",
+          "epochs": 3,
+          "batchSize": 16,
+          "learningRate": 5e-05,
+          "warmupSteps": 100,
+          "validationSplit": 0.1,
+          "maxLength": 512,
+          "outputDirectory": "./fine_tuned_model",
+          "adapterMethod": "LoRA",
+          "weightDecay": 0.01,
+          "loraR": 16,
+          "loraAlpha": 32,
+          "loraDropout": 0.1
+        }
+      },
+      "metrics": {
+        "currentEpoch": 2,
+        "totalEpochs": 3,
+        "currentLoss": 0.225,
+        "validationLoss": 0.267,
+        "accuracy": 0.935,
+        "f1Score": 0.928
+      },
+      "resources": {
+        "gpuType": "A100-40GB",
+        "gpuCount": 2,
+        "memoryUsage": "32.5 GB",
+        "estimatedCost": 24.75
+      },
+      "tags": [
+        "customer-service",
+        "chatbot",
+        "support",
+        "production"
+      ],
+      "owner": {
+        "userId": "user_alex_chen",
+        "email": "alex.chen@company.com",
+        "department": "AI Engineering"
+      },
+      "training": {
+        "startedAt": "2025-06-30T08:45:00.000Z",
+        "completedAt": null,
+        "progress": 75,
+        "logs": [],
+        "metrics": {
+          "currentEpoch": 2,
+          "totalEpochs": 3,
+          "currentLoss": 0.225,
+          "validationLoss": 0.267
+        }
+      },
+      "results": {
+        "finalModelPath": null,
+        "huggingfaceRepo": null,
+        "checkpoints": [
+          "./checkpoints/epoch-1",
+          "./checkpoints/epoch-2"
+        ],
+        "performance": {}
+      }
+    },
+    {
+      "uid": "job_1719739800_queued_1",
+      "name": "BERT Sentiment Classifier v3",
+      "description": "Training BERT for enhanced sentiment analysis with multilingual support",
+      "status": "queued",
+      "priority": "medium",
+      "createdAt": "2025-06-30T07:50:00.000Z",
+      "queuePosition": 1,
+      "estimatedStart": "2025-07-01T16:30:00.000Z",
+      "lastModified": "2025-07-01T14:30:00.000Z",
+      "configuration": {
+        "model": {
+          "uid": "bert-base-multilingual",
+          "name": "BERT Base Multilingual",
+          "provider": "Hugging Face",
+          "version": "bert-base-multilingual-cased"
+        },
+        "dataset": {
+          "uid": "dataset_multilingual_sentiment",
+          "name": "Multilingual Sentiment Dataset",
+          "size": "1.2 GB",
+          "samples": 8750,
+          "format": "csv"
+        },
+        "hyperparameters": {
+          "uid": "hyper_002_balanced",
+          "epochs": 5,
+          "batchSize": 32,
+          "learningRate": 2e-05,
+          "warmupSteps": 500,
+          "validationSplit": 0.15,
+          "maxLength": 256,
+          "outputDirectory": "./fine_tuned_model",
+          "adapterMethod": "LoRA",
+          "weightDecay": 0.01,
+          "loraR": 16,
+          "loraAlpha": 32,
+          "loraDropout": 0.1
+        }
+      },
+      "resources": {
+        "gpuType": "V100-32GB",
+        "gpuCount": 1,
+        "estimatedDuration": "3.5 hours",
+        "estimatedCost": 18.2
+      },
+      "tags": [
+        "sentiment",
+        "classification",
+        "multilingual",
+        "nlp"
+      ],
+      "owner": {
+        "userId": "user_sarah_kim",
+        "email": "sarah.kim@company.com",
+        "department": "Data Science"
+      },
+      "training": {
+        "startedAt": null,
+        "completedAt": null,
+        "progress": 0,
+        "logs": [],
+        "metrics": {}
+      },
+      "results": {
+        "finalModelPath": null,
+        "huggingfaceRepo": null,
+        "checkpoints": [],
+        "performance": {}
+      }
+    },
+    {
+      "uid": "job_1719820800_created",
+      "name": "T5 Document Summarizer",
+      "description": "Fine-tuning T5 for document summarization in technical domains",
+      "status": "created",
+      "priority": "low",
+      "createdAt": "2025-07-01T06:00:00.000Z",
+      "lastModified": "2025-07-01T14:30:00.000Z",
+      "configuration": {
+        "model": {
+          "uid": "google/t5-base",
+          "name": "T5 Base",
+          "provider": "Google",
+          "version": "t5-base"
+        },
+        "dataset": {
+          "uid": "dataset_tech_summaries",
+          "name": "Technical Document Summaries",
+          "size": "1.8 GB",
+          "samples": 9500,
+          "format": "jsonl"
+        },
+        "hyperparameters": {
+          "uid": "hyper_003_summarization",
+          "epochs": 4,
+          "batchSize": 16,
+          "learningRate": 0.0005,
+          "warmupSteps": 1000,
+          "validationSplit": 0.15,
+          "maxLength": 1024,
+          "outputDirectory": "./fine_tuned_model",
+          "adapterMethod": "LoRA",
+          "weightDecay": 0.01,
+          "loraR": 16,
+          "loraAlpha": 32,
+          "loraDropout": 0.1
+        }
+      },
+      "resources": {
+        "gpuType": "V100-32GB",
+        "gpuCount": 2,
+        "estimatedDuration": "6 hours",
+        "estimatedCost": 42.8
+      },
+      "tags": [
+        "summarization",
+        "technical",
+        "documents",
+        "t5"
+      ],
+      "owner": {
+        "userId": "user_david_lee",
+        "email": "david.lee@company.com",
+        "department": "Legal Tech"
+      },
+      "training": {
+        "startedAt": null,
+        "completedAt": null,
+        "progress": 0,
+        "logs": [],
+        "metrics": {}
+      },
+      "results": {
+        "finalModelPath": null,
+        "huggingfaceRepo": null,
+        "checkpoints": [],
+        "performance": {}
+      }
+    },
+    {
+      "uid": "job_1719570000_completed_1",
+      "name": "GPT-3.5 Tech Documentation Helper",
+      "description": "Fine-tuning GPT-3.5 for technical documentation generation and Q&A",
+      "status": "completed",
+      "priority": "high",
+      "createdAt": "2025-06-28T08:40:00.000Z",
+      "startedAt": "2025-06-28T09:15:00.000Z",
+      "completedAt": "2025-06-28T14:22:00.000Z",
+      "duration": "5h 7m",
+      "lastModified": "2025-06-28T14:22:00.000Z",
+      "progress": 100,
+      "configuration": {
+        "model": {
+          "uid": "openai/gpt-3.5-turbo",
+          "name": "GPT-3.5 Turbo",
+          "provider": "OpenAI",
+          "version": "3.5-turbo-0613"
+        },
+        "dataset": {
+          "uid": "dataset_tech_docs_v3",
+          "name": "Technical Documentation Corpus v3",
+          "size": "3.2 GB",
+          "samples": 18500,
+          "format": "jsonl"
+        },
+        "hyperparameters": {
+          "uid": "hyper_004_docs",
+          "epochs": 3,
+          "batchSize": 16,
+          "learningRate": 3e-05,
+          "warmupSteps": 200,
+          "validationSplit": 0.15,
+          "maxLength": 1024,
+          "outputDirectory": "./fine_tuned_model",
+          "adapterMethod": "LoRA",
+          "weightDecay": 0.01,
+          "loraR": 16,
+          "loraAlpha": 32,
+          "loraDropout": 0.1
+        }
+      },
+      "finalMetrics": {
+        "finalLoss": 0.183,
+        "finalValidationLoss": 0.201,
+        "bestAccuracy": 0.952,
+        "bestF1Score": 0.948,
+        "perplexity": 1.85,
+        "bleuScore": 0.67
+      },
+      "resources": {
+        "gpuType": "A100-40GB",
+        "gpuCount": 2,
+        "totalCost": 35.4,
+        "peakMemoryUsage": "38.2 GB"
+      },
+      "deployment": {
+        "status": "deployed",
+        "endpoint": "api.company.com/models/gpt35-techdocs-v1",
+        "version": "v1.0.0",
+        "deployedAt": "2025-06-28T15:30:00.000Z"
+      },
+      "tags": [
+        "documentation",
+        "technical-writing",
+        "qa",
+        "deployed"
+      ],
+      "owner": {
+        "userId": "user_mike_torres",
+        "email": "mike.torres@company.com",
+        "department": "Technical Writing"
+      },
+      "training": {
+        "startedAt": "2025-06-28T09:15:00.000Z",
+        "completedAt": "2025-06-28T14:22:00.000Z",
+        "progress": 100,
+        "logs": [],
+        "metrics": {
+          "finalLoss": 0.183,
+          "finalValidationLoss": 0.201,
+          "bestAccuracy": 0.952
+        }
+      },
+      "results": {
+        "finalModelPath": "./models/gpt35-techdocs-v1",
+        "huggingfaceRepo": "nainovate/gpt35-techdocs-v1",
+        "checkpoints": [
+          "./checkpoints/epoch-1",
+          "./checkpoints/epoch-2",
+          "./checkpoints/final"
+        ],
+        "performance": {
+          "bleuScore": 0.67,
+          "perplexity": 1.85,
+          "inference_speed": "95ms avg"
+        }
+      }
+    },
+    {
+      "uid": "job_1719483600_completed_2",
+      "name": "BERT Intent Classification Model",
+      "description": "Training BERT for multi-intent classification in conversational AI",
+      "status": "completed",
+      "priority": "medium",
+      "createdAt": "2025-06-27T08:40:00.000Z",
+      "startedAt": "2025-06-27T10:20:00.000Z",
+      "completedAt": "2025-06-27T16:45:00.000Z",
+      "duration": "6h 25m",
+      "lastModified": "2025-06-27T16:45:00.000Z",
+      "progress": 100,
+      "configuration": {
+        "model": {
+          "uid": "bert-base-uncased",
+          "name": "BERT Base Uncased",
+          "provider": "Hugging Face",
+          "version": "bert-base-uncased"
+        },
+        "dataset": {
+          "uid": "dataset_intent_classification_v4",
+          "name": "Multi-Intent Classification Dataset v4",
+          "size": "1.8 GB",
+          "samples": 12300,
+          "format": "csv"
+        },
+        "hyperparameters": {
+          "uid": "hyper_005_intent",
+          "epochs": 5,
+          "batchSize": 32,
+          "learningRate": 2e-05,
+          "warmupSteps": 1000,
+          "validationSplit": 0.2,
+          "maxLength": 128,
+          "outputDirectory": "./fine_tuned_model",
+          "adapterMethod": "LoRA",
+          "weightDecay": 0.01,
+          "loraR": 16,
+          "loraAlpha": 32,
+          "loraDropout": 0.1
+        }
+      },
+      "finalMetrics": {
+        "finalLoss": 0.156,
+        "finalValidationLoss": 0.178,
+        "bestAccuracy": 0.943,
+        "bestF1Score": 0.941,
+        "precision": 0.939,
+        "recall": 0.943
+      },
+      "resources": {
+        "gpuType": "V100-32GB",
+        "gpuCount": 1,
+        "totalCost": 28.6,
+        "peakMemoryUsage": "29.8 GB"
+      },
+      "deployment": {
+        "status": "tested",
+        "testAccuracy": 0.938,
+        "testResults": "Passed all validation tests",
+        "readyForProduction": true
+      },
+      "tags": [
+        "intent-classification",
+        "conversational-ai",
+        "nlp",
+        "tested"
+      ],
+      "owner": {
+        "userId": "user_anna_wilson",
+        "email": "anna.wilson@company.com",
+        "department": "Conversational AI"
+      },
+      "training": {
+        "startedAt": "2025-06-27T10:20:00.000Z",
+        "completedAt": "2025-06-27T16:45:00.000Z",
+        "progress": 100,
+        "logs": [],
+        "metrics": {
+          "finalLoss": 0.156,
+          "finalValidationLoss": 0.178,
+          "bestAccuracy": 0.943
+        }
+      },
+      "results": {
+        "finalModelPath": "./models/bert-intent-v4",
+        "huggingfaceRepo": "nainovate/bert-intent-classification-v4",
+        "checkpoints": [
+          "./checkpoints/epoch-1",
+          "./checkpoints/epoch-2",
+          "./checkpoints/epoch-3",
+          "./checkpoints/final"
+        ],
+        "performance": {
+          "f1Score": 0.941,
+          "precision": 0.939,
+          "recall": 0.943,
+          "inference_speed": "45ms avg"
+        }
+      }
+    },
+    {
+      "uid": "job_1719397200_failed_1",
+      "name": "LLaMA Legal Document Analysis",
+      "description": "Fine-tuning LLaMA 2 for legal document analysis and extraction",
+      "status": "failed",
+      "priority": "high",
+      "createdAt": "2025-06-26T08:40:00.000Z",
+      "startedAt": "2025-06-26T09:45:00.000Z",
+      "failedAt": "2025-06-26T12:20:00.000Z",
+      "duration": "2h 35m",
+      "failureReason": "GPU memory exhaustion during epoch 1",
+      "lastModified": "2025-06-26T12:20:00.000Z",
+      "configuration": {
+        "model": {
+          "uid": "meta/llama2-7b",
+          "name": "LLaMA 2 7B",
+          "provider": "Meta",
+          "version": "llama2-7b-chat"
+        },
+        "dataset": {
+          "uid": "dataset_legal_docs_v2",
+          "name": "Legal Document Analysis Dataset v2",
+          "size": "4.1 GB",
+          "samples": 8900,
+          "format": "jsonl"
+        },
+        "hyperparameters": {
+          "uid": "hyper_007_legal",
+          "epochs": 4,
+          "batchSize": 8,
+          "learningRate": 1e-05,
+          "warmupSteps": 800,
+          "validationSplit": 0.15,
+          "maxLength": 2048,
+          "outputDirectory": "./fine_tuned_model",
+          "adapterMethod": "LoRA",
+          "weightDecay": 0.01,
+          "loraR": 16,
+          "loraAlpha": 32,
+          "loraDropout": 0.1
+        }
+      },
+      "errorDetails": {
+        "errorCode": "CUDA_OUT_OF_MEMORY",
+        "errorMessage": "CUDA out of memory. Tried to allocate 2.73 GiB (GPU 0; 31.75 GiB total capacity; 29.12 GiB already allocated)",
+        "failedEpoch": 1,
+        "failedStep": 847,
+        "suggestedFix": "Reduce batch size or use gradient accumulation"
+      },
+      "resources": {
+        "gpuType": "V100-32GB",
+        "gpuCount": 1,
+        "totalCost": 12.8,
+        "peakMemoryUsage": "31.2 GB"
+      },
+      "tags": [
+        "legal",
+        "document-analysis",
+        "failed",
+        "memory-error"
+      ],
+      "owner": {
+        "userId": "user_robert_chen",
+        "email": "robert.chen@company.com",
+        "department": "Legal Tech"
+      },
+      "retryPlanned": true,
+      "retryWithConfig": {
+        "batchSize": 8,
+        "gradientAccumulation": 4,
+        "gpuType": "A100-40GB"
+      },
+      "training": {
+        "startedAt": "2025-06-26T09:45:00.000Z",
+        "completedAt": null,
+        "progress": 18,
+        "logs": [],
+        "metrics": {
+          "currentEpoch": 1,
+          "failedStep": 847,
+          "lastLoss": 2.456,
+          "lastValidationLoss": 2.678
+        }
+      },
+      "results": {
+        "finalModelPath": null,
+        "huggingfaceRepo": null,
+        "checkpoints": [
+          "./checkpoints/epoch-1-partial"
+        ],
+        "performance": {}
+      }
+    },
+    {
+      "uid": "job_1719310800_completed_3",
+      "name": "RoBERTa Financial Sentiment",
+      "description": "Fine-tuning RoBERTa for financial news sentiment analysis",
+      "status": "completed",
+      "priority": "medium",
+      "createdAt": "2025-06-25T08:40:00.000Z",
+      "startedAt": "2025-06-25T11:15:00.000Z",
+      "completedAt": "2025-06-25T17:30:00.000Z",
+      "duration": "6h 15m",
+      "lastModified": "2025-06-25T17:30:00.000Z",
+      "progress": 100,
+      "configuration": {
+        "model": {
+          "uid": "roberta-base",
+          "name": "RoBERTa Base",
+          "provider": "Facebook",
+          "version": "roberta-base"
+        },
+        "dataset": {
+          "uid": "dataset_financial_sentiment_v3",
+          "name": "Financial News Sentiment Dataset v3",
+          "size": "2.1 GB",
+          "samples": 14200,
+          "format": "csv"
+        },
+        "hyperparameters": {
+          "uid": "hyper_006_financial",
+          "epochs": 4,
+          "batchSize": 16,
+          "learningRate": 1e-05,
+          "warmupSteps": 800,
+          "validationSplit": 0.15,
+          "maxLength": 256,
+          "outputDirectory": "./fine_tuned_model",
+          "adapterMethod": "LoRA",
+          "weightDecay": 0.01,
+          "loraR": 16,
+          "loraAlpha": 32,
+          "loraDropout": 0.1
+        }
+      },
+      "finalMetrics": {
+        "finalLoss": 0.198,
+        "finalValidationLoss": 0.224,
+        "bestAccuracy": 0.927,
+        "bestF1Score": 0.925,
+        "precision": 0.923,
+        "recall": 0.928
+      },
+      "resources": {
+        "gpuType": "V100-32GB",
+        "gpuCount": 1,
+        "totalCost": 31.2,
+        "peakMemoryUsage": "27.4 GB"
+      },
+      "deployment": {
+        "status": "deployed",
+        "endpoint": "api.company.com/models/roberta-financial-sentiment-v1",
+        "version": "v1.0.0",
+        "deployedAt": "2025-06-25T18:45:00.000Z"
+      },
+      "tags": [
+        "financial",
+        "sentiment",
+        "news",
+        "deployed"
+      ],
+      "owner": {
+        "userId": "user_lisa_zhang",
+        "email": "lisa.zhang@company.com",
+        "department": "Financial Analytics"
+      },
+      "training": {
+        "startedAt": "2025-06-25T11:15:00.000Z",
+        "completedAt": "2025-06-25T17:30:00.000Z",
+        "progress": 100,
+        "logs": [],
+        "metrics": {
+          "finalLoss": 0.198,
+          "finalValidationLoss": 0.224,
+          "bestAccuracy": 0.927
+        }
+      },
+      "results": {
+        "finalModelPath": "./models/roberta-financial-sentiment-v3",
+        "huggingfaceRepo": "nainovate/roberta-financial-sentiment-v3",
+        "checkpoints": [
+          "./checkpoints/epoch-1",
+          "./checkpoints/epoch-2",
+          "./checkpoints/epoch-3",
+          "./checkpoints/final"
+        ],
+        "performance": {
+          "f1Score": 0.925,
+          "precision": 0.923,
+          "recall": 0.928,
+          "inference_speed": "38ms avg"
+        }
+      }
+    },
+    {
+      "uid": "job_1751559451590_15c0ef2a",
+      "name": "Test Fine-tuning Job",
+      "description": "Test job created by API test script",
+      "tags": [
+        "test",
+        "api"
+      ],
+      "status": "created",
+      "createdAt": "2025-07-03T12:00:00.000Z",
+      "lastModified": "2025-07-03T21:47:31.000Z",
+      "configuration": {
+        "model": {
+          "uid": "test-model",
+          "name": "Test Model"
+        },
+        "dataset": {
+          "uid": "test-dataset",
+          "name": "Test Dataset"
+        },
+        "hyperparameters": {
+          "uid": "test-config"
+        }
+      },
+      "modelSaving": {
+        "saveModel": true,
+        "modelName": "test-fine-tuned-model"
+      },
+      "training": {
+        "startedAt": null,
+        "completedAt": null,
+        "progress": 0,
+        "logs": [],
+        "metrics": {}
+      },
+      "results": {
+        "finalModelPath": null,
+        "huggingfaceRepo": null,
+        "checkpoints": [],
+        "performance": {}
+      }
+    },
+    {
+      "uid": "job_1751560083942_15c0ef2a",
+      "name": "Test Fine-tuning Job",
+      "description": "Test job created by API test script",
+      "tags": [
+        "test",
+        "api"
+      ],
+      "status": "created",
+      "createdAt": "2025-07-03T12:00:00.000Z",
+      "lastModified": "2025-07-03T21:58:03.000Z",
+      "configuration": {
+        "model": {
+          "uid": "test-model",
+          "name": "Test Model"
+        },
+        "dataset": {
+          "uid": "test-dataset",
+          "name": "Test Dataset"
+        },
+        "hyperparameters": {
+          "uid": "test-config"
+        }
+      },
+      "modelSaving": {
+        "saveModel": true,
+        "modelName": "test-fine-tuned-model"
+      },
+      "training": {
+        "startedAt": null,
+        "completedAt": null,
+        "progress": 0,
+        "logs": [],
+        "metrics": {}
+      },
+      "results": {
+        "finalModelPath": null,
+        "huggingfaceRepo": null,
+        "checkpoints": [],
+        "performance": {}
+      }
+    },
+    {
+      "uid": "job_1751713495647_012b0abe",
+      "name": "Business-Usecase-Finetune-v2",
+      "description": "Custom finetuned model for the business usecase v2.0.1",
+      "tags": [
+        "conversational",
+        "business"
+      ],
+      "status": "created",
+      "createdAt": "2025-07-05T11:04:55.324Z",
+      "lastModified": "2025-07-05T16:34:55.000Z",
+      "configuration": {
+        "model": {
+          "uid": "105720510",
+          "baseModel": "meta-llama/Llama-3.2-3B-Instruct",
+          "modelName": "Llama-3.2-3B-Instruct",
+          "provider": "Meta"
+        },
+        "dataset": {
+          "uid": "dataset_1751713192596_f6law35xs",
+          "name": "test_dataset-3",
+          "selectedAt": "2025-07-05T11:00:02.661Z"
+        },
+        "hyperparameters": {
+          "uid": "0100000a00dw000200080001000a000g002s",
+          "outputDirectory": "./fine_tuned_model",
+          "adapterMethod": "LoRA",
+          "mode": "Automated",
+          "learningRate": 0.0002,
+          "batchSize": 4,
+          "epochs": 3,
+          "weightDecay": 0.01,
+          "loraR": 16,
+          "loraAlpha": 32,
+          "loraDropout": 0.1,
+          "modeLogic": "CRv1",
+          "searchLimit": 30,
+          "targetLoss": 0.2
+        }
+      },
+      "modelSaving": {
+        "type": "local",
+        "localPath": "./ft/job_1751713413813",
+        "isLocalPathCustom": false,
+        "huggingfaceRepo": "",
+        "isPrivateRepo": false
+      },
+      "training": {
+        "startedAt": null,
+        "completedAt": null,
+        "progress": 0,
+        "logs": [],
+        "metrics": {}
+      },
+      "results": {
+        "finalModelPath": null,
+        "huggingfaceRepo": null,
+        "checkpoints": [],
+        "performance": {}
+      }
+    },
+    {
+      "uid": "job_1751714166944_fe2ae76a",
+      "name": "business-testcase-v1",
+      "description": "",
+      "tags": [],
+      "status": "created",
+      "createdAt": "2025-07-05T11:16:06.933Z",
+      "lastModified": "2025-07-05T16:46:06.000Z",
+      "configuration": {
+        "model": {
+          "uid": "105720510",
+          "baseModel": "meta-llama/Llama-3.2-3B-Instruct",
+          "modelName": "Llama-3.2-3B-Instruct",
+          "provider": "Meta"
+        },
+        "dataset": {
+          "uid": "dataset_1751713192596_f6law35xs",
+          "name": "test_dataset-3",
+          "selectedAt": "2025-07-05T11:14:41.587Z"
+        },
+        "hyperparameters": {
+          "uid": "0100000a00dw000200080001000a000g002s",
+          "outputDirectory": "./fine_tuned_model",
+          "adapterMethod": "LoRA",
+          "mode": "Automated",
+          "learningRate": 0.0002,
+          "batchSize": 4,
+          "epochs": 3,
+          "weightDecay": 0.01,
+          "loraR": 16,
+          "loraAlpha": 32,
+          "loraDropout": 0.1,
+          "modeLogic": "CRv1",
+          "searchLimit": 50,
+          "targetLoss": 0.1
+        }
+      },
+      "modelSaving": {
+        "type": "local",
+        "localPath": "./ft/job_1751714143573",
+        "isLocalPathCustom": false,
+        "huggingfaceRepo": "",
+        "isPrivateRepo": false
+      },
+      "training": {
+        "startedAt": null,
+        "completedAt": null,
+        "progress": 0,
+        "logs": [],
+        "metrics": {}
+      },
+      "results": {
+        "finalModelPath": null,
+        "huggingfaceRepo": null,
+        "checkpoints": [],
+        "performance": {}
+      }
+    },
+    {
+      "uid": "job_1752157211412_63d15943",
+      "name": "test-2",
+      "description": "",
+      "tags": [
+        "conversational",
+        "educational",
+        "news"
+      ],
+      "status": "created",
+      "createdAt": "2025-07-10T14:20:11.405Z",
+      "lastModified": "2025-07-10T19:50:11.000Z",
+      "configuration": {
+        "model": {
+          "uid": "111057717",
+          "baseModel": "meta-llama/Llama-3.1-70B-Instruct",
+          "modelName": "Llama 3.1 70B Instruct",
+          "provider": "Meta"
+        },
+        "dataset": {
+          "uid": "dataset_1751023766790_b0zqofldb",
+          "name": "test_dataset",
+          "selectedAt": "2025-07-10T14:18:21.580Z"
+        },
+        "hyperparameters": {
+          "uid": "0101000a00dw000200080001000a000g002s",
+          "outputDirectory": "./fine_tuned_model",
+          "adapterMethod": "QLoRA",
+          "mode": "Automated",
+          "learningRate": 0.0002,
+          "batchSize": 4,
+          "epochs": 3,
+          "weightDecay": 0.01,
+          "loraR": 16,
+          "loraAlpha": 32,
+          "loraDropout": 0.1,
+          "modeLogic": "CRv1",
+          "searchLimit": 50,
+          "targetLoss": 0.1
+        }
+      },
+      "modelSaving": {
+        "type": "local",
+        "localPath": "./ft/job_1752157184905",
+        "isLocalPathCustom": false,
+        "huggingfaceRepo": "",
+        "isPrivateRepo": false
+      },
+      "training": {
+        "startedAt": null,
+        "completedAt": null,
+        "progress": 0,
+        "logs": [],
+        "metrics": {}
+      },
+      "results": {
+        "finalModelPath": null,
+        "huggingfaceRepo": null,
+        "checkpoints": [],
+        "performance": {}
+      }
+    },
+    {
+      "uid": "job_1752710358463_cacf6c32",
+      "name": "test-234",
+      "description": "",
+      "tags": [],
+      "status": "created",
+      "createdAt": "2025-07-16T23:59:18.447Z",
+      "lastModified": "2025-07-17T05:29:18.000Z",
+      "configuration": {
+        "model": {
+          "uid": "22770353",
+          "baseModel": "openai-community/gpt2",
+          "modelName": "gpt2",
+          "provider": "OpenAI"
+        },
+        "dataset": {
+          "uid": "dataset_1752706799531_f8nph9qs5",
+          "name": "4",
+          "selectedAt": "2025-07-16T22:59:59.531Z"
+        },
+        "hyperparameters": {
+          "uid": "010100fl00fm000700080001000a000g002s",
+          "outputDirectory": "./fine_tuned_model",
+          "adapterMethod": "QLoRA",
+          "mode": "Automated",
+          "learningRate": 0.0002,
+          "batchSize": 4,
+          "epochs": 3,
+          "weightDecay": 0.01,
+          "loraR": 16,
+          "loraAlpha": 32,
+          "loraDropout": 0.1,
+          "modeLogic": "CRv1",
+          "searchLimit": 50,
+          "targetLoss": 0.1
+        }
+      },
+      "modelSaving": {
+        "type": "local",
+        "localPath": "./ft/job_1752710348845",
+        "isLocalPathCustom": false,
+        "huggingfaceRepo": "",
+        "isPrivateRepo": false
+      },
+      "training": {
+        "startedAt": null,
+        "completedAt": null,
+        "progress": 0,
+        "logs": [],
+        "metrics": {}
+      },
+      "results": {
+        "finalModelPath": null,
+        "huggingfaceRepo": null,
+        "checkpoints": [],
+        "performance": {}
+      }
+    }
+  ],
+  "statistics": {
+    "totalJobs": 8,
+    "activeJobs": 3,
+    "runningJobs": 1,
+    "queuedJobs": 1,
+    "createdJobs": 1,
+    "completedJobs": 4,
+    "failedJobs": 1,
+    "successRate": "80.0%",
+    "totalCost": 193.55
+  }
+}

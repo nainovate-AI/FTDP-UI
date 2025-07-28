@@ -1,0 +1,31 @@
+Hyperparameter UID Encoding System (Symmetric Cipher)
+
+Format: MMAALLLLBBBBEEEERRRRDDDD
+- MM: Mode (00=Manual, 01=Automated)
+- AA: Adapter (00=LoRA, 01=QLoRA, 02=LoFTQ)
+- LLLL: Learning Rate encoded (base36, 4 chars)
+- BBBB: Batch Size encoded (base36, 4 chars)
+- EEEE: Epochs encoded (base36, 4 chars)
+- RRRR: LoRA Rank encoded (base36, 4 chars)
+- DDDD: Dropout encoded (base36, 4 chars)
+
+Encoding Rules:
+- Learning Rate: Multiply by 1,000,000, convert to base36
+- Batch Size: Direct conversion to base36
+- Epochs: Direct conversion to base36
+- LoRA Rank: Direct conversion to base36
+- Dropout: Multiply by 1000, convert to base36
+
+Example Decoding:
+"0000019g000800030010003c" = Manual, LoRA, LR=2e-4, Batch=8, Epochs=3, Rank=16, Dropout=0.1
+
+For Automated Mode, ranges are encoded as min-max pairs:
+Format: MMAARRRRRRRRBBBBBBBBEEEEEEEE...
+- RRRRRRRR: Learning Rate range (min-max, 4 chars each)
+- BBBBBBBB: Batch Size range (min-max, 4 chars each)
+- EEEEEEEE: Epochs range (min-max, 4 chars each)
+
+Human-readable aliases map to encoded UIDs:
+"balanced01" -> "0000019g000800030010003c"
+"conservative" -> "000000c8000400080008000f"
+"aggressive" -> "00001f40001000020040000a"

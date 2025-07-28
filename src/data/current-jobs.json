@@ -1,0 +1,173 @@
+{
+  "_comment": "Current active jobs - streamlined for dashboard functionality",
+  "_note": "This data should be synchronized with the dashboard displays",
+  "_lastUpdated": "2025-07-01T14:30:00.000Z",
+  "jobs": [
+    {
+      "uid": "job_1719742200_running",
+      "name": "GPT-3.5 Customer Support Assistant",
+      "description": "Fine-tuning GPT-3.5 for specialized customer support responses with company-specific knowledge",
+      "status": "running",
+      "createdAt": "2025-06-30T08:30:00.000Z",
+      "startedAt": "2025-06-30T08:45:00.000Z",
+      "estimatedCompletion": "2025-07-01T16:30:00.000Z",
+      "progress": 75,
+      "model": {
+        "uid": "openai/gpt-3.5-turbo",
+        "name": "GPT-3.5 Turbo",
+        "provider": "OpenAI",
+        "version": "3.5-turbo-0613"
+      },
+      "dataset": {
+        "uid": "dataset_customer_support_v2",
+        "name": "Customer Support Conversations v2",
+        "size": "2.8 GB",
+        "samples": 15420,
+        "format": "jsonl"
+      },
+      "hyperparameters": {
+        "uid": "hyper_001_optimal",
+        "epochs": 3,
+        "batchSize": 16,
+        "learningRate": 5e-5,
+        "warmupSteps": 100,
+        "validationSplit": 0.1,
+        "maxLength": 512
+      },
+      "metrics": {
+        "currentEpoch": 2,
+        "totalEpochs": 3,
+        "currentLoss": 0.225,
+        "validationLoss": 0.267,
+        "accuracy": 0.935,
+        "f1Score": 0.928
+      },
+      "resources": {
+        "gpuType": "A100-40GB",
+        "gpuCount": 2,
+        "memoryUsage": "32.5 GB",
+        "estimatedCost": 24.75
+      },
+      "tags": ["customer-service", "chatbot", "support", "production"],
+      "owner": {
+        "userId": "user_alex_chen",
+        "email": "alex.chen@company.com",
+        "department": "AI Engineering"
+      },
+      "configuration": {
+        "saveCheckpoints": true,
+        "checkpointInterval": 500,
+        "enableEarlyStop": true,
+        "patience": 3,
+        "monitorMetric": "validation_loss"
+      }
+    },
+    {
+      "uid": "job_1719739800_queued_1",
+      "name": "BERT Sentiment Classifier v3",
+      "description": "Training BERT for enhanced sentiment analysis with multilingual support",
+      "status": "queued",
+      "createdAt": "2025-06-30T07:50:00.000Z",
+      "queuePosition": 1,
+      "estimatedStart": "2025-07-01T16:30:00.000Z",
+      "model": {
+        "uid": "bert-base-multilingual",
+        "name": "BERT Base Multilingual",
+        "provider": "Hugging Face",
+        "version": "bert-base-multilingual-cased"
+      },
+      "dataset": {
+        "uid": "dataset_multilingual_sentiment",
+        "name": "Multilingual Sentiment Dataset",
+        "size": "1.2 GB",
+        "samples": 8750,
+        "format": "csv"
+      },
+      "hyperparameters": {
+        "uid": "hyper_002_balanced",
+        "epochs": 5,
+        "batchSize": 32,
+        "learningRate": 2e-5,
+        "warmupSteps": 500,
+        "validationSplit": 0.15,
+        "maxLength": 256
+      },
+      "resources": {
+        "gpuType": "V100-32GB",
+        "gpuCount": 1,
+        "estimatedDuration": "3.5 hours",
+        "estimatedCost": 18.20
+      },
+      "tags": ["sentiment", "classification", "multilingual", "nlp"],
+      "owner": {
+        "userId": "user_sarah_kim",
+        "email": "sarah.kim@company.com",
+        "department": "Data Science"
+      },
+      "configuration": {
+        "saveCheckpoints": true,
+        "checkpointInterval": 1000,
+        "enableEarlyStop": true,
+        "patience": 2,
+        "monitorMetric": "f1_score"
+      }
+    },
+    {
+      "uid": "job_1719820800_created",
+      "name": "T5 Document Summarizer",
+      "description": "Fine-tuning T5 for document summarization in technical domains",
+      "status": "created",
+      "createdAt": "2025-07-01T06:00:00.000Z",
+      "model": {
+        "uid": "google/t5-base",
+        "name": "T5 Base",
+        "provider": "Google",
+        "version": "t5-base"
+      },
+      "dataset": {
+        "uid": "dataset_tech_summaries",
+        "name": "Technical Document Summaries",
+        "size": "1.8 GB",
+        "samples": 9500,
+        "format": "jsonl"
+      },
+      "hyperparameters": {
+        "uid": "hyper_003_summarization",
+        "epochs": 4,
+        "batchSize": 16,
+        "learningRate": 5e-4,
+        "warmupSteps": 1000,
+        "validationSplit": 0.15,
+        "maxLength": 1024
+      },
+      "resources": {
+        "gpuType": "V100-32GB",
+        "gpuCount": 2,
+        "estimatedDuration": "6 hours",
+        "estimatedCost": 42.80
+      },
+      "tags": ["summarization", "technical", "documents", "t5"],
+      "owner": {
+        "userId": "user_david_lee",
+        "email": "david.lee@company.com",
+        "department": "Legal Tech"
+      },
+      "configuration": {
+        "saveCheckpoints": true,
+        "checkpointInterval": 1000,
+        "enableEarlyStop": true,
+        "patience": 2,
+        "monitorMetric": "rouge_score"
+      }
+    }
+  ],
+  "statistics": {
+    "totalActiveJobs": 3,
+    "runningJobs": 1,
+    "queuedJobs": 1,
+    "createdJobs": 1,
+    "totalEstimatedCost": 85.75,
+    "totalEstimatedDuration": "13 hours",
+    "queueWaitTime": "average 3.2 hours"
+  }
+}

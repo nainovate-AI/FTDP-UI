@@ -1,0 +1,37 @@
+{
+  "_comment": "This file contains metadata for the entire fine-tuning process",
+  "_note": "Replace with real API calls when integrating with backend services",
+  "finetuningSession": {
+    "id": "session_1750912194926",
+    "createdAt": "2025-06-26T04:29:54.926Z",
+    "lastModified": "2025-07-16T23:01:18.460Z",
+    "status": "hyperparameters_configured"
+  },
+  "dataset": {
+    "uid": "dataset_1752706799531_f8nph9qs5",
+    "name": "4",
+    "selectedAt": "2025-07-16T22:59:59.531Z"
+  },
+  "model": {
+    "uid": "22770353",
+    "baseModel": "openai-community/gpt2",
+    "modelName": "gpt2",
+    "provider": "OpenAI"
+  },
+  "training": {
+    "_comment": "Training configuration will be added in training setup step",
+    "epochs": null,
+    "batchSize": null,
+    "learningRate": null,
+    "validationSplit": null
+  },
+  "hyperparameters": {
+    "uid": "010100fl00fm000700080001000a000g002s"
+  },
+  "deployment": {
+    "_comment": "Deployment configuration will be added in deployment step",
+    "endpoint": null,
+    "version": null,
+    "environment": null
+  }
+}

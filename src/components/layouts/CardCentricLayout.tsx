@@ -1,9 +1,11 @@
 'use client'
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { mockStats, mockJobs } from '../../types';
+import { mockStats } from '../../types';
 import { ThemeToggle } from '../ThemeToggle';
+import { JobCard } from '../common/JobCard';
+import { loadCurrentJobs, loadPastJobs, Job } from '../../utils/jobUtils';
 
 interface CardCentricLayoutProps {
   children?: React.ReactNode;
@@ -19,6 +21,28 @@ interface CardCentricLayoutProps {
 export const CardCentricLayout: React.FC<CardCentricLayoutProps> = ({ children }) => {
   const router = useRouter();
   const currentJobsScrollRef = useRef<HTMLDivElement>(null);
+  const [currentJobs, setCurrentJobs] = useState<Job[]>([]);
+  const [pastJobs, setPastJobs] = useState<Job[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadJobs = async () => {
+      try {
+        const [current, past] = await Promise.all([
+          loadCurrentJobs(),
+          loadPastJobs()
+        ]);
+        setCurrentJobs(current);
+        setPastJobs(past);
+      } catch (error) {
+        console.error('Error loading jobs:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadJobs();
+  }, []);
 
   const handleBackToDashboard = () => {
     router.push('/finetuning/dashboard/minimal');
@@ -28,9 +52,12 @@ export const CardCentricLayout: React.FC<CardCentricLayoutProps> = ({ children }
     router.push('/finetuning/dataset-selection');
   };
 
+  const handleJobClick = (uid: string) => {
+    router.push(`/job/${uid}`);
+  };
+
   const handleViewAllJobs = () => {
-    // TODO: Navigate to all jobs page or expand view
-    console.log('View all jobs');
+    router.push('/finetuning/dashboard/all-jobs');
   };
 
   const scrollCurrentJobs = (direction: 'left' | 'right') => {
@@ -48,7 +75,96 @@ export const CardCentricLayout: React.FC<CardCentricLayoutProps> = ({ children }
     }
   };
 
-  const currentJobs = mockJobs.filter(job => job.status === 'running' || job.status === 'pending');
+  // Preloading Screen Component
+  const PreloadingScreen = () => (
+    <div className="cards-dashboard-container min-h-screen w-screen m-0 p-0">
+      <div className="max-w-7xl mx-auto p-6 bg-inherit">
+        <ThemeToggle />
+        
+        {/* Animated Welcome Panel Skeleton */}
+        <div className="cards-welcome-panel rounded-xl p-8 mb-8 text-center animate-pulse">
+          <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded-lg w-64 mx-auto mb-4"></div>
+          <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-96 mx-auto mb-6"></div>
+          <div className="h-12 bg-gray-200 dark:bg-gray-700 rounded-lg w-56 mx-auto"></div>
+        </div>
+
+        {/* Stats Grid Skeleton */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          {[...Array(4)].map((_, index) => (
+            <div key={index} className="cards-stat-item rounded-xl p-6 animate-pulse">
+              <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-16 mb-2"></div>
+              <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-24 mb-2"></div>
+              <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-16"></div>
+            </div>
+          ))}
+        </div>
+
+        {/* Current Jobs Skeleton */}
+        <div className="mb-8">
+          <div className="flex justify-between items-center mb-6">
+            <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-36 animate-pulse"></div>
+          </div>
+          <div className="flex gap-6 overflow-x-auto scrollbar-hide pb-4 px-12">
+            {[...Array(3)].map((_, index) => (
+              <div key={index} className="cards-job-item rounded-xl p-6 flex-shrink-0 w-80 md:w-96 animate-pulse">
+                <div className="flex justify-between items-start mb-4">
+                  <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-32"></div>
+                  <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded-full w-16"></div>
+                </div>
+                <div className="space-y-2">
+                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-40"></div>
+                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-36"></div>
+                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-32"></div>
+                </div>
+                <div className="mt-4">
+                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-20 mb-2"></div>
+                  <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded-full w-full"></div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Past Jobs Skeleton */}
+        <div className="mb-8">
+          <div className="flex justify-between items-center mb-6">
+            <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-32 animate-pulse"></div>
+            <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-24 animate-pulse"></div>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[...Array(6)].map((_, index) => (
+              <div key={index} className="cards-job-item rounded-xl p-6 animate-pulse">
+                <div className="flex justify-between items-start mb-4">
+                  <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-32"></div>
+                  <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded-full w-16"></div>
+                </div>
+                <div className="space-y-2">
+                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-40"></div>
+                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-36"></div>
+                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-32"></div>
+                </div>
+                <div className="mt-4">
+                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-20 mb-2"></div>
+                  <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded-full w-full"></div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Back Button Skeleton */}
+        <div className="text-center">
+          <div className="h-12 bg-gray-200 dark:bg-gray-700 rounded-lg w-40 mx-auto animate-pulse"></div>
+        </div>
+
+        {/* Loading indicator */}
+        <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 bg-white dark:bg-gray-800 px-6 py-3 rounded-full shadow-lg flex items-center space-x-3">
+          <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600"></div>
+          <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Loading dashboard...</span>
+        </div>
+      </div>
+    </div>
+  );
 
   if (children) {
     return (
@@ -61,8 +177,13 @@ export const CardCentricLayout: React.FC<CardCentricLayoutProps> = ({ children }
     );
   }
 
+  // Show preloading screen while loading
+  if (loading) {
+    return <PreloadingScreen />;
+  }
+
   return (
-    <div className="cards-dashboard-container min-h-screen w-screen m-0 p-0">
+    <div className="cards-dashboard-container min-h-screen w-screen m-0 p-0 opacity-0 animate-fade-in">
       <div className="max-w-7xl mx-auto p-6 bg-inherit">
         <ThemeToggle />
         {/* Welcome Panel */}
@@ -71,7 +192,7 @@ export const CardCentricLayout: React.FC<CardCentricLayoutProps> = ({ children }
             Welcome back, Alex
           </h1>
           <p className="text-gray-600 dark:text-gray-400 mb-6">
-            Here's what's happening with your projects today
+            Here&apos;s what&apos;s happening with your projects today
           </p>
           <button 
             onClick={handleCreateJob}
@@ -143,7 +264,11 @@ export const CardCentricLayout: React.FC<CardCentricLayoutProps> = ({ children }
             className="flex gap-6 overflow-x-auto scrollbar-hide pb-4 px-12"
           >
             {currentJobs.map((job) => (
-              <div key={job.id} className="cards-job-item rounded-xl p-6 transition-all duration-300 hover:-translate-y-0.5 flex-shrink-0 w-80 md:w-96">
+              <div 
+                key={job.uid} 
+                className="cards-job-item rounded-xl p-6 transition-all duration-300 hover:-translate-y-0.5 flex-shrink-0 w-80 md:w-96 cursor-pointer"
+                onClick={() => handleJobClick(job.uid)}
+              >
                 <div className="flex justify-between items-start mb-4">
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                     {job.name}
@@ -158,13 +283,13 @@ export const CardCentricLayout: React.FC<CardCentricLayoutProps> = ({ children }
                 </div>
                 
                 <div className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
-                  <div>Model: {job.model}</div>
-                  <div>Dataset: {job.dataset}</div>
-                  <div>Started: {new Date(job.startTime).toLocaleDateString()}</div>
-                  {job.accuracy && <div>Accuracy: {job.accuracy}%</div>}
+                  <div>Model: {typeof job.model === 'object' ? job.model?.name : job.model}</div>
+                  <div>Dataset: {typeof job.dataset === 'object' ? job.dataset?.name : job.dataset}</div>
+                  <div>Started: {new Date(job.createdAt).toLocaleDateString()}</div>
+                  {job.metrics?.accuracy && <div>Accuracy: {job.metrics.accuracy}%</div>}
                 </div>
                 
-                {job.progress > 0 && (
+                {job.progress && job.progress > 0 && (
                   <div className="mt-4">
                     <div className="flex justify-between text-sm mb-1">
                       <span>Progress</span>
@@ -198,8 +323,12 @@ export const CardCentricLayout: React.FC<CardCentricLayoutProps> = ({ children }
             </button>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {mockJobs.filter(job => job.status === 'completed' || job.status === 'failed').map((job) => (
-              <div key={job.id} className="cards-job-item rounded-xl p-6 transition-all duration-300 hover:-translate-y-0.5">
+            {pastJobs.map((job) => (
+              <div 
+                key={job.uid} 
+                className="cards-job-item rounded-xl p-6 transition-all duration-300 hover:-translate-y-0.5 cursor-pointer"
+                onClick={() => handleJobClick(job.uid)}
+              >
                 <div className="flex justify-between items-start mb-4">
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                     {job.name}
@@ -214,13 +343,13 @@ export const CardCentricLayout: React.FC<CardCentricLayoutProps> = ({ children }
                 </div>
                 
                 <div className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
-                  <div>Model: {job.model}</div>
-                  <div>Dataset: {job.dataset}</div>
-                  <div>Started: {new Date(job.startTime).toLocaleDateString()}</div>
-                  {job.accuracy && <div>Accuracy: {job.accuracy}%</div>}
+                  <div>Model: {typeof job.model === 'object' ? job.model?.name : job.model}</div>
+                  <div>Dataset: {typeof job.dataset === 'object' ? job.dataset?.name : job.dataset}</div>
+                  <div>Started: {new Date(job.createdAt).toLocaleDateString()}</div>
+                  {job.metrics?.accuracy && <div>Accuracy: {job.metrics.accuracy}%</div>}
                 </div>
                 
-                {job.progress > 0 && (
+                {job.progress && job.progress > 0 && (
                   <div className="mt-4">
                     <div className="flex justify-between text-sm mb-1">
                       <span>Progress</span>

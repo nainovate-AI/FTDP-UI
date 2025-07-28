@@ -19,6 +19,27 @@ export interface Job {
   description?: string;
 }
 
+export interface Model {
+  id: string;
+  name: string;
+  provider: string;
+  category: string;
+  description: string;
+  parameters: string;
+  contextLength?: number;
+  license: string;
+  downloadSize: string;
+  tags?: string[];
+  capabilities?: string[];
+  recommended: boolean;
+  performance?: {
+    speed?: string;
+    accuracy?: string;
+    memoryUsage?: string;
+  };
+  useCase: string;
+}
+
 // Mock stats data
 export const mockStats: Stat[] = [
   {
@@ -146,3 +167,5 @@ export const mockJobs: Job[] = [
     description: 'Multi-language translation optimization'
   }
 ];
+
+

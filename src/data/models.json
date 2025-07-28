@@ -1,0 +1,266 @@
+{
+  "models": [
+    {
+      "id": "meta-llama/Llama-3.1-70B-Instruct",
+      "name": "Llama 3.1 70B Instruct",
+      "provider": "Meta",
+      "category": "Instruction Following",
+      "description": "Large multilingual model with excellent performance on complex tasks",
+      "parameters": "70B",
+      "contextLength": 131072,
+      "license": "Llama 3.1 Community License",
+      "downloadSize": "39.6 GB",
+      "tags": [
+        "large-model",
+        "multilingual",
+        "powerful"
+      ],
+      "capabilities": [
+        "advanced-reasoning",
+        "complex-instruction-following",
+        "code-generation",
+        "analysis"
+      ],
+      "recommended": false,
+      "performance": {
+        "speed": "Moderate",
+        "accuracy": "Excellent",
+        "memoryUsage": "High"
+      },
+      "useCase": "Complex reasoning, advanced code generation, research tasks"
+    },
+    {
+      "id": "google/flan-t5-xxl",
+      "name": "FLAN-T5 XXL",
+      "provider": "Google",
+      "category": "Instruction Following",
+      "description": "Instruction-finetuned T5 model with strong zero-shot performance",
+      "parameters": "11B",
+      "contextLength": 512,
+      "license": "Apache 2.0",
+      "downloadSize": "20.9 GB",
+      "tags": [
+        "instruction-tuned",
+        "zero-shot",
+        "versatile"
+      ],
+      "capabilities": [
+        "instruction-following",
+        "text-generation",
+        "summarization",
+        "question-answering"
+      ],
+      "recommended": true,
+      "performance": {
+        "speed": "Fast",
+        "accuracy": "Very Good",
+        "memoryUsage": "Moderate"
+      },
+      "useCase": "Zero-shot task performance, instruction following, text understanding"
+    },
+    {
+      "id": "stabilityai/stablelm-3b-4e1t",
+      "name": "StableLM 3B 4E1T",
+      "provider": "Stability AI",
+      "category": "Compact Model",
+      "description": "Efficient 3B parameter model trained on diverse text data",
+      "parameters": "3B",
+      "contextLength": 4096,
+      "license": "CC BY-SA-4.0",
+      "downloadSize": "1.2 GB",
+      "tags": [
+        "compact",
+        "efficient",
+        "lightweight"
+      ],
+      "capabilities": [
+        "text-generation",
+        "completion",
+        "basic-reasoning"
+      ],
+      "recommended": false,
+      "performance": {
+        "speed": "Excellent",
+        "accuracy": "Fair",
+        "memoryUsage": "Very Low"
+      },
+      "useCase": "Resource-constrained environments, edge deployment, lightweight applications"
+    },
+    {
+      "id": "codellama/CodeLlama-7b-Instruct-hf",
+      "name": "Code Llama 7B Instruct",
+      "provider": "Meta",
+      "category": "Code Generation",
+      "description": "Specialized code generation model based on Llama 2",
+      "parameters": "7B",
+      "contextLength": 16384,
+      "license": "Llama 2 Community License",
+      "downloadSize": "12.9 GB",
+      "tags": [
+        "code-generation",
+        "programming",
+        "instruction-tuned"
+      ],
+      "capabilities": [
+        "code-generation",
+        "code-completion",
+        "programming-assistance",
+        "debugging"
+      ],
+      "recommended": true,
+      "performance": {
+        "speed": "Fast",
+        "accuracy": "Very Good",
+        "memoryUsage": "Moderate"
+      },
+      "useCase": "Code generation, programming assistance, software development"
+    },
+    {
+      "id": "bert-base-uncased",
+      "name": "BERT Base Uncased",
+      "provider": "Google",
+      "category": "Text Classification",
+      "description": "Test model for verification",
+      "parameters": "110M",
+      "contextLength": 512,
+      "license": "Apache 2.0",
+      "downloadSize": "440MB",
+      "tags": [
+        "test",
+        "bert"
+      ],
+      "capabilities": [
+        "text-classification"
+      ],
+      "recommended": false,
+      "performance": {
+        "speed": "Fast",
+        "accuracy": "Good",
+        "memoryUsage": "Low"
+      },
+      "useCase": "Test model for backend verification"
+    },
+    {
+      "id": "mistralai/Mistral-Small-3.2-24B-Instruct-2506",
+      "name": "Mistral Small 3.2 24B Instruct",
+      "provider": "Mistral AI",
+      "category": "Instruction Following",
+      "description": "Advanced multimodal model capable of processing both text and images",
+      "parameters": "24B",
+      "contextLength": 131072,
+      "license": "Apache 2.0",
+      "downloadSize": "48 GB",
+      "tags": [
+        "multimodal",
+        "instruction-tuned",
+        "multilingual",
+        "vision"
+      ],
+      "capabilities": [
+        "image-text-to-text",
+        "text-generation",
+        "instruction-following",
+        "vision-language"
+      ],
+      "recommended": false,
+      "performance": {
+        "speed": "Moderate",
+        "accuracy": "Very Good",
+        "memoryUsage": "High"
+      },
+      "useCase": "Multimodal applications, image understanding, visual question answering"
+    },
+    {
+      "id": "openai-community/gpt2",
+      "name": "gpt2",
+      "provider": "OpenAI",
+      "category": "Text Generation",
+      "description": "Pre-trained text generation model",
+      "parameters": "Unknown",
+      "contextLength": 1024,
+      "license": "Mit",
+      "downloadSize": "Unknown",
+      "tags": [
+        "gpt2",
+        "text-generation",
+        "exbert",
+        "en",
+        "text-generation-inference"
+      ],
+      "capabilities": [
+        "text-generation"
+      ],
+      "recommended": false,
+      "performance": {
+        "speed": "Unknown",
+        "accuracy": "Unknown",
+        "memoryUsage": "Unknown"
+      },
+      "useCase": "Content creation, code generation, creative writing"
+    },
+    {
+      "id": "meta-llama/Llama-3.2-3B-Instruct",
+      "name": "Llama-3.2-3B-Instruct",
+      "provider": "Meta",
+      "category": "Text Generation",
+      "description": "Pre-trained text generation model",
+      "parameters": "3.0B",
+      "contextLength": 8192,
+      "license": "Llama3.2",
+      "downloadSize": "Unknown",
+      "tags": [
+        "llama",
+        "text-generation",
+        "facebook",
+        "meta",
+        "llama-3",
+        "conversational",
+        "en",
+        "de"
+      ],
+      "capabilities": [
+        "text-generation"
+      ],
+      "recommended": false,
+      "performance": {
+        "speed": "Unknown",
+        "accuracy": "Unknown",
+        "memoryUsage": "Unknown"
+      },
+      "useCase": "Content creation, code generation, creative writing"
+    }
+  ],
+  "categories": [
+    "All Models",
+    "Code Generation",
+    "Compact Model",
+    "Conversational",
+    "Instruction Following",
+    "Multilingual",
+    "Multimodal",
+    "Other",
+    "Text Classification",
+    "Text Generation",
+    "Text Understanding"
+  ],
+  "providers": [
+    "All Providers",
+    "BigScience",
+    "DreadPoor",
+    "Fan-s",
+    "Google",
+    "Meta",
+    "Microsoft",
+    "Mistral AI",
+    "OpenAI",
+    "Stability AI",
+    "boltuix",
+    "institutional",
+    "lj1995",
+    "rednote-hilab",
+    "reducto",
+    "tencent",
+    "test-model",
+    "uer"
+  ]
+}
