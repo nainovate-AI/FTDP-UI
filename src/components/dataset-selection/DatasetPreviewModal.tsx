@@ -165,8 +165,8 @@ export const DatasetPreviewModal: React.FC<DatasetPreviewModalProps> = ({
                     <div className="mt-1 text-sm text-red-700 dark:text-red-300">
                       <p>Your dataset must have columns named exactly:</p>
                       <ul className="list-disc list-inside mt-1 ml-4">
-                        <li><strong>"input"</strong> - for the input text/data {!hasInputColumn && '(missing)'}</li>
-                        <li><strong>"output"</strong> - for the expected output/labels {!hasOutputColumn && '(missing)'}</li>
+                        <li><strong>&quot;input&quot;</strong> - for the input text/data {!hasInputColumn && '(missing)'}</li>
+                        <li><strong>&quot;output&quot;</strong> - for the expected output/labels {!hasOutputColumn && '(missing)'}</li>
                       </ul>
                       <p className="mt-2">Please rename your columns accordingly and re-upload your dataset.</p>
                     </div>
@@ -188,9 +188,9 @@ export const DatasetPreviewModal: React.FC<DatasetPreviewModalProps> = ({
                     </h3>
                     <div className="mt-1 text-sm text-red-700 dark:text-red-300">
                       <p>This dataset cannot be used for model training because it lacks the required column names.</p>
-                      <p className="mt-2"><strong>Required:</strong> "input" and "output" columns</p>
+                      <p className="mt-2"><strong>Required:</strong> &quot;input&quot; and &quot;output&quot; columns</p>
                       <p><strong>Current columns:</strong> {previewData.columns.join(', ')}</p>
-                      <p className="mt-2 font-medium">Model training will fail without the exact "input" and "output" column names. Please update your dataset structure to proceed.</p>
+                      <p className="mt-2 font-medium">Model training will fail without the exact &quot;input&quot; and &quot;output&quot; column names. Please update your dataset structure to proceed.</p>
                     </div>
                   </div>
                 </div>
@@ -209,7 +209,7 @@ export const DatasetPreviewModal: React.FC<DatasetPreviewModalProps> = ({
                       Dataset Format Valid
                     </h3>
                     <p className="mt-1 text-sm text-green-700 dark:text-green-300">
-                      Your dataset has the required "input" and "output" columns. Ready to save!
+                      Your dataset has the required &quot;input&quot; and &quot;output&quot; columns. Ready to save!
                     </p>
                   </div>
                 </div>
@@ -388,7 +388,7 @@ export const DatasetPreviewModal: React.FC<DatasetPreviewModalProps> = ({
                       </h3>
                       <div className="mt-2">
                         <p className="text-sm text-gray-500 dark:text-gray-400">
-                          Your dataset doesn't have the required "input" and "output" column names. Please rename your columns and try again.
+                          Your dataset doesn&apos;t have the required &quot;input&quot; and &quot;output&quot; column names. Please rename your columns and try again.
                         </p>
                       </div>
                     </div>

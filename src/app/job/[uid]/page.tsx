@@ -400,7 +400,7 @@ export default function JobDetailsPage() {
         clearInterval(intervalRef.current);
       }
     };
-  }, [isLive, job?.status]);
+  }, [isLive, job?.status]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const updateStagesFromJob = (job: Job) => {
     const updatedStages = [...TRAINING_STAGES];
@@ -700,7 +700,7 @@ export default function JobDetailsPage() {
   const currentMetrics = resourceData.length > 0 ? resourceData[resourceData.length - 1] : null;
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 opacity-0 animate-fade-in">
       <div className="max-w-7xl mx-auto px-6 py-8">
         <ThemeToggle />
         

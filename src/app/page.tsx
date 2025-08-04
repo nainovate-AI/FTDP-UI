@@ -3,12 +3,37 @@
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { ThemeToggle } from '../components/ThemeToggle'
+import NainovateLogo from '../assets/Nainovate_GenX_Logo.svg'
+import Image from 'next/image'
 
 export default function Home() {
   const [mounted, setMounted] = useState(false)
+  const [logoError, setLogoError] = useState(false)
+  const [kpiVisible, setKpiVisible] = useState(false)
 
   useEffect(() => {
     setMounted(true)
+    
+    // Setup intersection observer for KPI section
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setKpiVisible(true)
+        }
+      },
+      { threshold: 0.3 }
+    )
+
+    const kpiSection = document.getElementById('kpi-section')
+    if (kpiSection) {
+      observer.observe(kpiSection)
+    }
+
+    return () => {
+      if (kpiSection) {
+        observer.unobserve(kpiSection)
+      }
+    }
   }, [])
 
   const features = [
@@ -53,12 +78,24 @@ export default function Home() {
       <nav className="relative z-10 max-w-7xl mx-auto px-6 py-8">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 bg-slate-900 dark:bg-white rounded-lg flex items-center justify-center">
-              <svg className="w-5 h-5 text-white dark:text-slate-900" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
-              </svg>
+            <div className="flex items-center justify-center">
+              {!logoError ? (
+                <Image 
+                  src={NainovateLogo} 
+                  alt="Nainovate Logo" 
+                  width={0}
+                  height={0}
+                  className="w-auto h-auto max-w-80 max-h-20 object-contain"
+                  onError={() => setLogoError(true)}
+                />
+              ) : (
+                <div className="w-8 h-8 bg-slate-900 dark:bg-white rounded-lg flex items-center justify-center">
+                  <svg className="w-5 h-5 text-white dark:text-slate-900" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                  </svg>
+                </div>
+              )}
             </div>
-            <span className="text-xl font-semibold text-slate-900 dark:text-white">Nainovate</span>
           </div>
           <div className="hidden md:flex items-center space-x-8">
             <Link href="/finetuning/dashboard/minimal" className="text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors">
@@ -140,6 +177,100 @@ export default function Home() {
                   </p>
                 </div>
               ))}
+            </div>
+          </div>
+        </div>
+
+        {/* KPI Section */}
+        <div id="kpi-section" className={`py-24 transition-all duration-1000 ${kpiVisible ? 'animate-fade-scale' : 'opacity-0'}`}>
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-16">
+              <h2 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white mb-4">
+                Accelerate Your AI Development
+              </h2>
+              <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
+                Our platform dramatically reduces development time and costs while increasing success rates
+              </p>
+            </div>
+            
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+              <div className={`text-center p-6 rounded-2xl glass-effect transition-all duration-700 delay-100 ${kpiVisible ? 'animate-stagger-up' : 'opacity-0 translate-y-8'}`}>
+                <div className="text-4xl md:text-5xl font-bold text-blue-600 dark:text-blue-400 mb-2">
+                  85%
+                </div>
+                <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
+                  Time Saved
+                </h3>
+                <p className="text-sm text-slate-600 dark:text-slate-400">
+                  Reduce model training setup from weeks to hours
+                </p>
+              </div>
+
+              <div className={`text-center p-6 rounded-2xl glass-effect transition-all duration-700 delay-200 ${kpiVisible ? 'animate-stagger-up' : 'opacity-0 translate-y-8'}`}>
+                <div className="text-4xl md:text-5xl font-bold text-green-600 dark:text-green-400 mb-2">
+                  $50K+
+                </div>
+                <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
+                  Cost Savings
+                </h3>
+                <p className="text-sm text-slate-600 dark:text-slate-400">
+                  Average savings per project vs custom development
+                </p>
+              </div>
+
+              <div className={`text-center p-6 rounded-2xl glass-effect transition-all duration-700 delay-300 ${kpiVisible ? 'animate-stagger-up' : 'opacity-0 translate-y-8'}`}>
+                <div className="text-4xl md:text-5xl font-bold text-purple-600 dark:text-purple-400 mb-2">
+                  92%
+                </div>
+                <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
+                  Success Rate
+                </h3>
+                <p className="text-sm text-slate-600 dark:text-slate-400">
+                  Models reach production with our guided workflow
+                </p>
+              </div>
+
+              <div className={`text-center p-6 rounded-2xl glass-effect transition-all duration-700 delay-400 ${kpiVisible ? 'animate-stagger-up' : 'opacity-0 translate-y-8'}`}>
+                <div className="text-4xl md:text-5xl font-bold text-orange-600 dark:text-orange-400 mb-2">
+                  3x
+                </div>
+                <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
+                  Faster ROI
+                </h3>
+                <p className="text-sm text-slate-600 dark:text-slate-400">
+                  Achieve return on investment compared to traditional methods
+                </p>
+              </div>
+            </div>
+
+            {/* Additional detailed stats */}
+            <div className={`mt-16 grid md:grid-cols-3 gap-8 transition-all duration-1000 delay-500 ${kpiVisible ? 'animate-fade-scale' : 'opacity-0'}`}>
+              <div className="text-center p-8 border border-slate-200 dark:border-slate-700 rounded-2xl hover-lift">
+                <div className="text-2xl font-bold text-slate-900 dark:text-white mb-2">
+                  2-3 weeks → 4-6 hours
+                </div>
+                <p className="text-slate-600 dark:text-slate-400">
+                  <strong>Model Setup Time:</strong> From initial data preparation to first training run
+                </p>
+              </div>
+
+              <div className="text-center p-8 border border-slate-200 dark:border-slate-700 rounded-2xl hover-lift">
+                <div className="text-2xl font-bold text-slate-900 dark:text-white mb-2">
+                  $75K → $15K
+                </div>
+                <p className="text-slate-600 dark:text-slate-400">
+                  <strong>Average Project Cost:</strong> Typical enterprise AI project budget reduction
+                </p>
+              </div>
+
+              <div className="text-center p-8 border border-slate-200 dark:border-slate-700 rounded-2xl hover-lift">
+                <div className="text-2xl font-bold text-slate-900 dark:text-white mb-2">
+                  6 months → 3 weeks
+                </div>
+                <p className="text-slate-600 dark:text-slate-400">
+                  <strong>Time to Production:</strong> From concept to deployed model in production
+                </p>
+              </div>
             </div>
           </div>
         </div>

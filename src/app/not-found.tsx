@@ -46,8 +46,8 @@ export default function NotFound() {
             </h2>
             
             <p className="text-lg md:text-xl text-slate-600 dark:text-slate-400 max-w-lg mx-auto leading-relaxed">
-              Sorry, we couldn't find the page you're looking for. 
-              Perhaps you've mistyped the URL or the page has been moved.
+              Sorry, we couldn&apos;t find the page you&apos;re looking for. 
+              Perhaps you&apos;ve mistyped the URL or the page has been moved.
             </p>
           </div>
 

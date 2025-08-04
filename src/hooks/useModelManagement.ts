@@ -13,33 +13,55 @@ export const useModelManagement = () => {
   const [isSearching, setIsSearching] = useState(false);
   const [isUsingBackend, setIsUsingBackend] = useState(false);
 
-  useEffect(() => {
-    loadModels();
-  }, []);
-
-  const loadModels = async () => {
+  const loadModels = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
       
       console.log('🔍 Attempting to connect to backend at http://localhost:8000/api/models');
-      const response = await fetch('http://localhost:8000/api/models');
+      const response = await fetch('http://localhost:8000/api/models', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        // Add cache busting to ensure fresh data
+        cache: 'no-cache'
+      });
       console.log('🌐 Backend response received:', response.status);
       
       if (response.ok) {
         const data = await response.json();
-        console.log('✅ Successfully loaded', data.length, 'models from backend');
-        setModels(data);
-        setIsUsingBackend(true);
+        console.log('✅ Successfully loaded models from backend');
         
-        // Extract categories and providers from the loaded models
+        // Handle both array and object responses
+        const models = Array.isArray(data) ? data : data.models || [];
+        const categories = data.categories || [];
+        const providers = data.providers || [];
+        
+        console.log('📊 Loaded', models.length, 'models from backend');
+        setModels(models);
+        setIsUsingBackend(true);
+        setError(null); // Clear any previous errors
+        
+        // Extract categories and providers from the loaded models if not provided
         const uniqueCategories = new Set(['All Models']);
         const uniqueProviders = new Set(['All Providers']);
         
-        data.forEach((model: Model) => {
-          uniqueCategories.add(model.category);
-          uniqueProviders.add(model.provider);
-        });
+        if (categories.length > 0) {
+          categories.forEach((cat: string) => uniqueCategories.add(cat));
+        } else {
+          models.forEach((model: Model) => {
+            uniqueCategories.add(model.category);
+          });
+        }
+        
+        if (providers.length > 0) {
+          providers.forEach((prov: string) => uniqueProviders.add(prov));
+        } else {
+          models.forEach((model: Model) => {
+            uniqueProviders.add(model.provider);
+          });
+        }
         
         setCategories(Array.from(uniqueCategories));
         setProviders(Array.from(uniqueProviders));
@@ -61,7 +83,11 @@ export const useModelManagement = () => {
       setLoading(false);
       return false; // Indicate fallback to local data
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    loadModels();
+  }, [loadModels]);
 
   // Force reconnect to backend and reload
   const forceReconnect = useCallback(async () => {
@@ -75,7 +101,7 @@ export const useModelManagement = () => {
       console.log('❌ Reconnection failed');
     }
     return success;
-  }, []);
+  }, [loadModels]);
 
   const handleModelSelect = (model: Model) => {
     setSelectedModel(model);

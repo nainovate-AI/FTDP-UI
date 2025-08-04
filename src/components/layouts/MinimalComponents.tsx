@@ -105,8 +105,10 @@ export const Card: React.FC<CardProps> = ({
   )
 }
 
-export default {
+const MinimalComponents = {
   MinimalLayout,
   PageHeader,
   Card
 }
+
+export default MinimalComponents

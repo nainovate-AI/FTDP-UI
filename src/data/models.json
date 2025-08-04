@@ -197,6 +197,37 @@
         "memoryUsage": "Unknown"
       },
       "useCase": "Content creation, code generation, creative writing"
+    },
+    {
+      "id": "meta-llama/Llama-3.2-3B-Instruct",
+      "name": "Llama-3.2-3B-Instruct",
+      "provider": "Meta",
+      "category": "Text Generation",
+      "description": "Pre-trained text generation model",
+      "parameters": "3.0B",
+      "contextLength": 8192,
+      "license": "Llama3.2",
+      "downloadSize": "Unknown",
+      "tags": [
+        "llama",
+        "text-generation",
+        "facebook",
+        "meta",
+        "llama-3",
+        "conversational",
+        "en",
+        "de"
+      ],
+      "capabilities": [
+        "text-generation"
+      ],
+      "recommended": false,
+      "performance": {
+        "speed": "Unknown",
+        "accuracy": "Unknown",
+        "memoryUsage": "Unknown"
+      },
+      "useCase": "Content creation, code generation, creative writing"
     }
   ],
   "categories": [

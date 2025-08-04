@@ -50,7 +50,7 @@ export const HuggingFaceSearch: React.FC<HuggingFaceSearchProps> = ({
         clearTimeout(searchTimeoutRef.current);
       }
     };
-  }, [searchQuery]);
+  }, [searchQuery]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleSearch = async () => {
     if (searchQuery.trim()) {
@@ -244,7 +244,7 @@ export const HuggingFaceSearch: React.FC<HuggingFaceSearchProps> = ({
             </div>
           ) : (
             <div>
-              <p>No models found for "{searchQuery}".</p>
+              <p>No models found for &quot;{searchQuery}&quot;.</p>
               <p className="text-xs mt-1">Try a different search term or wait for auto-search.</p>
             </div>
           )}
