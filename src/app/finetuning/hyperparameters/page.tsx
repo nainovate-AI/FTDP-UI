@@ -4,25 +4,16 @@ import React, { useState, useEffect } from 'react';
 import * as hash from 'object-hash';
 import { useRouter } from 'next/navigation';
 import { HelpCircle, AlertTriangle } from 'lucide-react';
-import { ThemeToggle } from '../../../components/ThemeToggle';
-import { ProgressStepper } from '../../../components/dataset-selection/ProgressStepper';
+import { ProgressStepper } from '../../../components/stepper';
 import { NavigationButtons } from '../../../components/model-selection/NavigationButtons';
-import { useToast } from '../../../hooks/useToast';
-import { ToastContainer } from '../../../components/common/ToastNotification';
+import { useToastHelpers } from '../../../components/toast';
 
 export default function HyperparameterConfiguration() {
   const router = useRouter();
-  const { toasts, addToast, removeToast: originalRemoveToast } = useToast();
+  const { success: showSuccess, error: showError, warning: showWarning } = useToastHelpers();
   
-  // Enhanced removeToast that also cleans up activeToastIds
-  const removeToast = (id: string) => {
-    originalRemoveToast(id);
-    setActiveToastIds(prev => {
-      const newSet = new Set(prev);
-      newSet.delete(id);
-      return newSet;
-    });
-  };
+  // State for managing active toast IDs to prevent duplicates
+  const [activeToastIds, setActiveToastIds] = useState<Set<string>>(new Set());
   
   // State management
   const [adapterMethod, setAdapterMethod] = useState<'LoRA' | 'QLoRA' | 'LoFTQ'>('LoRA');
@@ -46,9 +37,6 @@ export default function HyperparameterConfiguration() {
 
   // Animation states for smooth transitions
   const [isAnimating, setIsAnimating] = useState(false);
-  
-  // Batch size warning tracking
-  const [activeToastIds, setActiveToastIds] = useState<Set<string>>(new Set());
 
   // Editing states for inline editing
   const [editingField, setEditingField] = useState<string | null>(null);
@@ -160,8 +148,7 @@ export default function HyperparameterConfiguration() {
   // Handle batch size warning for both manual and automated modes with debouncing
   const checkBatchSizeWarning = (batchValue: number) => {
     if (batchValue > memorySoftLimit) {
-      const toastId = addToast(`Batch size exceeds recommended value. Consider lowering to ${memorySoftLimit} or less.`, 'warning', 8000);
-      setActiveToastIds(prev => new Set(prev).add(toastId));
+      showWarning(`Batch size exceeds recommended value. Consider lowering to ${memorySoftLimit} or less.`);
     }
   };
 
@@ -283,13 +270,12 @@ export default function HyperparameterConfiguration() {
     } else {
       // Allow manual override but warn about limits
       if (numValue > max) {
-        addToast(`${paramName} value (${numValue}) exceeds recommended maximum (${max}). This may cause issues.`, 'warning', 6000);
+        showWarning(`${paramName} value (${numValue}) exceeds recommended maximum (${max}). This may cause issues.`);
       }
       
       // Special handling for batch size with enhanced warning
       if (paramName === 'Batch Size' && numValue > memorySoftLimit) {
-        const toastId = addToast(`Batch size exceeds recommended value. Consider lowering to ${memorySoftLimit} or less.`, 'warning', 8000);
-        setActiveToastIds(prev => new Set(prev).add(toastId));
+        showWarning(`Batch size exceeds recommended value. Consider lowering to ${memorySoftLimit} or less.`);
       }
       
       // Allow any positive value, no blocking
@@ -355,21 +341,21 @@ export default function HyperparameterConfiguration() {
         throw new Error('Failed to save metadata');
       }
 
-      addToast('Hyperparameters saved successfully', 'success');
+      showSuccess('Hyperparameters saved successfully');
       return true;
     } catch (error) {
       console.error('Error saving hyperparameters:', error);
-      addToast('Failed to save hyperparameters. Make sure the backend is running.', 'error');
+      showError('Failed to save hyperparameters. Make sure the backend is running.');
       return false;
     }
   };
 
   const steps = [
-    'Data Upload',
-    'Model Selection',
-    'Hyperparameters',
-    'Job Review',
-    'Success'
+    { id: 'data-upload', title: 'Data Upload' },
+    { id: 'model-selection', title: 'Model Selection' },
+    { id: 'hyperparameters', title: 'Hyperparameters' },
+    { id: 'job-review', title: 'Job Review' },
+    { id: 'success', title: 'Success' }
   ];
 
   const handleBack = () => {
@@ -455,12 +441,12 @@ export default function HyperparameterConfiguration() {
           setIsAnimating(false);
         }, 100);
         
-        addToast(`Best ${mode.toLowerCase()} configuration loaded successfully`, 'info');
+        showSuccess(`Best ${mode.toLowerCase()} configuration loaded successfully`);
       } else {
-        addToast(`No best ${mode.toLowerCase()} configuration found`, 'warning');
+        showWarning(`No best ${mode.toLowerCase()} configuration found`);
       }
     } catch (error) {
-      addToast('Failed to load best configuration', 'error');
+      showError('Failed to load best configuration');
     }
   };
 
@@ -608,11 +594,12 @@ export default function HyperparameterConfiguration() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 opacity-0 animate-fade-in">
       <div className="max-w-4xl mx-auto px-6 py-8">
-        <ThemeToggle />
-        
         <ProgressStepper 
-          currentStep={3} 
-          steps={steps} 
+          currentStep={2}
+          steps={steps}
+          variant="horizontal"
+          allowStepClick={false}
+          showNavigation={false}
         />
 
         {/* Header */}
@@ -857,8 +844,6 @@ export default function HyperparameterConfiguration() {
           />
         </div>
       </div>
-
-      <ToastContainer toasts={toasts} onRemove={removeToast} />
 
       <style jsx>{`
         .slider::-webkit-slider-thumb {

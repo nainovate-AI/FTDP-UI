@@ -2,7 +2,6 @@
 
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
-import { ThemeToggle } from '../components/ThemeToggle'
 
 export default function Home() {
   const [mounted, setMounted] = useState(false)
@@ -47,8 +46,6 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-white dark:bg-slate-950 gradient-mesh">
-      <ThemeToggle />
-      
       {/* Navigation */}
       <nav className="relative z-10 max-w-7xl mx-auto px-6 py-8">
         <div className="flex items-center justify-between">

@@ -2,18 +2,16 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { ThemeToggle } from '../../../components/ThemeToggle';
 import {
-  ProgressStepper,
   ModelGrid,
   ModelFilters,
   ModelSummaryPanel,
-  NavigationButtons,
   HuggingFaceSearch
 } from '../../../components/model-selection';
+import { ProgressStepper } from '../../../components/stepper';
+import { NavigationButtons } from '../../../components/model-selection';
+import { useToastHelpers } from '../../../components/toast';
 import { useModelManagement } from '../../../hooks';
-import { useToast } from '../../../hooks/useToast';
-import { ToastContainer } from '../../../components/common/ToastNotification';
 import { updateModelSelection } from '../../../utils/modelUtils';
 import type { Model } from '../../../types';
 
@@ -22,7 +20,7 @@ export default function ModelSelection() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All Models');
   const [selectedProvider, setSelectedProvider] = useState('All Providers');
-  const { toasts, removeToast, showSuccess, showError, showWarning } = useToast();
+  const { success: showSuccess, error: showError, warning: showWarning } = useToastHelpers();
 
   const handleModelSelect = async (model: Model) => {
     await updateModelSelection(model);
@@ -56,21 +54,22 @@ export default function ModelSelection() {
   };
 
   const steps = [
-    'Data Upload',
-    'Model Selection', 
-    'Hyperparameters',
-    'Job Review',
-    'Success'
+    { id: 'data-upload', title: 'Data Upload' },
+    { id: 'model-selection', title: 'Model Selection' },
+    { id: 'hyperparameters', title: 'Hyperparameters' },
+    { id: 'job-review', title: 'Job Review' },
+    { id: 'success', title: 'Success' }
   ];
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 opacity-0 animate-fade-in">
       <div className="max-w-7xl mx-auto px-6 py-8">
-        <ThemeToggle />
-        
         <ProgressStepper 
-          currentStep={2} 
-          steps={steps} 
+          currentStep={1}
+          steps={steps}
+          variant="horizontal"
+          allowStepClick={false}
+          showNavigation={false}
         />
 
         {/* Header */}
@@ -136,7 +135,7 @@ export default function ModelSelection() {
 
           {/* Right Sidebar */}
           <div className="lg:col-span-1">
-            <div className="sticky top-8">
+            <div className="sticky-below-navbar">
               <ModelSummaryPanel selectedModel={selectedModel} />
             </div>
           </div>
@@ -150,9 +149,6 @@ export default function ModelSelection() {
           nextLabel="Continue to Hyperparameters"
           backLabel="Back to Data Upload"
         />
-        
-        {/* Global Toast Notifications */}
-        <ToastContainer toasts={toasts} onRemove={removeToast} />
       </div>
     </div>
   );

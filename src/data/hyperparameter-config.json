@@ -277,8 +277,8 @@
         0.1
       ],
       "loraRRange": [
-        8,
-        64
+        64,
+        72
       ],
       "loraAlphaRange": [
         16,
@@ -288,7 +288,7 @@
         0.02,
         0.3
       ],
-      "configuredAt": "2025-07-05T11:15:41.917Z"
+      "configuredAt": "2025-07-25T13:53:20.423Z"
     },
     "0101000a00dw000200080001000a000g002s": {
       "outputDirectory": "./fine_tuned_model",

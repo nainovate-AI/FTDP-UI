@@ -2,16 +2,15 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { ThemeToggle } from '../../../components/ThemeToggle';
 import {
-  ProgressStepper,
   FileUploadSection,
   ExistingDatasets,
   DatasetTips,
-  NavigationButtons,
   DatasetPreviewModal,
   DatasetEditModal
 } from '../../../components/dataset-selection';
+import { ProgressStepper } from '../../../components/stepper';
+import { NavigationButtons } from '../../../components/dataset-selection';
 import {
   useDatasetManagement,
   useTagManagement,
@@ -229,11 +228,18 @@ export default function DatasetSelection() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 opacity-0 animate-fade-in">
       <div className="max-w-7xl mx-auto px-6 py-8">
-        <ThemeToggle />
-        
         <ProgressStepper 
-          currentStep={1} 
-          steps={['Data Upload', 'Model Selection', 'Hyperparameters', 'Job Review', 'Success']} 
+          currentStep={0}
+          steps={[
+            { id: 'data-upload', title: 'Data Upload' },
+            { id: 'model-selection', title: 'Model Selection' },
+            { id: 'hyperparameters', title: 'Hyperparameters' },
+            { id: 'job-review', title: 'Job Review' },
+            { id: 'success', title: 'Success' }
+          ]}
+          variant="horizontal"
+          allowStepClick={false}
+          showNavigation={false}
         />
 
         {/* Header */}
@@ -287,7 +293,7 @@ export default function DatasetSelection() {
 
           {/* Sidebar */}
           <div className="lg:col-span-1">
-            <div className="sticky top-8">
+            <div className="sticky-below-navbar">
               <DatasetTips />
             </div>
           </div>

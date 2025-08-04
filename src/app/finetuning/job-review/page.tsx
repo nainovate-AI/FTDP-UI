@@ -3,17 +3,15 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { ChevronDown, ChevronUp, Edit3, Check, X, HelpCircle, AlertTriangle, ExternalLink } from 'lucide-react';
-import { ThemeToggle } from '../../../components/ThemeToggle';
-import { ProgressStepper } from '../../../components/dataset-selection/ProgressStepper';
+import { ProgressStepper } from '../../../components/stepper';
 import {
   JobReviewNavigationButtons,
   JobConfigurationSummary,
   ModelSavingOptions,
   JobMetadata
 } from '../../../components/job-review';
-import { useToast } from '../../../hooks/useToast';
+import { useToastHelpers } from '../../../components/toast';
 import { useTagManagement } from '../../../hooks/useTagManagement';
-import { ToastContainer } from '../../../components/common/ToastNotification';
 
 interface JobConfiguration {
   model: {
@@ -60,7 +58,7 @@ interface ModelSavingState {
 
 export default function JobReview() {
   const router = useRouter();
-  const { toasts, addToast, removeToast } = useToast();
+  const { success: showSuccess, error: showError, warning: showWarning } = useToastHelpers();
   
   // State management
   const [loading, setLoading] = useState(true);
@@ -161,21 +159,21 @@ export default function JobReview() {
       } catch (err) {
         console.error('Error loading job configuration:', err);
         setError(err instanceof Error ? err.message : 'Failed to load configuration');
-        addToast('Failed to load job configuration. Make sure the backend is running.', 'error');
+        showError('Failed to load job configuration. Make sure the backend is running.');
       } finally {
         setLoading(false);
       }
     };
     
     loadJobConfiguration();
-  }, [addToast]);
+  }, [showError]);
 
   const steps = [
-    'Data Upload',
-    'Model Selection', 
-    'Hyperparameters',
-    'Job Review',
-    'Success'
+    { id: 'data-upload', title: 'Data Upload' },
+    { id: 'model-selection', title: 'Model Selection' },
+    { id: 'hyperparameters', title: 'Hyperparameters' },
+    { id: 'job-review', title: 'Job Review' },
+    { id: 'success', title: 'Success' }
   ];
 
   const handleBack = () => {
@@ -185,12 +183,12 @@ export default function JobReview() {
   const handleCreateJob = async () => {
     // Validate required fields
     if (!jobMetadata.name.trim()) {
-      addToast('Job name is required', 'error');
+      showError('Job name is required');
       return;
     }
     
     if (modelSaving.type === 'huggingface' && !modelSaving.huggingfaceRepo.trim()) {
-      addToast('Hugging Face repository name is required', 'error');
+      showError('Hugging Face repository name is required');
       return;
     }
     
@@ -219,16 +217,15 @@ export default function JobReview() {
       
       const result = await response.json();
       
-      addToast(`Finetuning job "${jobMetadata.name}" created successfully!`, 'success');
+      showSuccess(`Finetuning job "${jobMetadata.name}" created successfully!`);
       
       // Navigate to success screen with job UID
       router.push(`/finetuning/success?jobUid=${result.jobUid}`);
       
     } catch (err) {
       console.error('Error creating job:', err);
-      addToast(
-        err instanceof Error ? err.message : 'Failed to create finetuning job. Make sure the backend is running.',
-        'error'
+      showError(
+        err instanceof Error ? err.message : 'Failed to create finetuning job. Make sure the backend is running.'
       );
     }
   };
@@ -277,11 +274,12 @@ export default function JobReview() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 opacity-0 animate-fade-in">
       <div className="max-w-4xl mx-auto px-6 py-8">
-        <ThemeToggle />
-        
         <ProgressStepper 
-          currentStep={4} 
-          steps={steps} 
+          currentStep={3}
+          steps={steps}
+          variant="horizontal"
+          allowStepClick={false}
+          showNavigation={false}
         />
 
         {/* Header */}
@@ -331,8 +329,6 @@ export default function JobReview() {
           />
         </div>
       </div>
-
-      <ToastContainer toasts={toasts} onRemove={removeToast} />
     </div>
   );
 }

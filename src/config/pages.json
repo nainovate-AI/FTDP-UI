@@ -1,0 +1,128 @@
+{
+  "header": {
+    "enabled": true,
+    "showLogo": true,
+    "showBreadcrumbs": true,
+    "showThemeToggle": true,
+    "title": "Nainovate AI Platform"
+  },
+  "pages": {
+    "landing": {
+      "id": "landing",
+      "name": "Welcome",
+      "component": "LandingPage",
+      "enabled": true,
+      "showInNavigation": true,
+      "requiresAuth": false,
+      "route": "/",
+      "header": {
+        "title": "Nainovate AI Platform",
+        "showBackButton": false,
+        "showBreadcrumbs": false
+      }
+    },
+    "dataset-selection": {
+      "id": "dataset-selection",
+      "name": "Dataset Selection",
+      "component": "DatasetSelectionPage",
+      "enabled": true,
+      "stepOrder": 1,
+      "route": "/finetuning/dataset-selection",
+      "nextPage": "model-selection",
+      "previousPage": "landing",
+      "header": {
+        "title": "Select Your Dataset",
+        "showBackButton": true,
+        "showBreadcrumbs": true
+      }
+    },
+    "model-selection": {
+      "id": "model-selection", 
+      "name": "Model Selection",
+      "component": "ModelSelectionPage",
+      "enabled": true,
+      "stepOrder": 2,
+      "route": "/finetuning/model-selection",
+      "nextPage": "hyperparameters",
+      "previousPage": "dataset-selection",
+      "fallbackNext": "job-review",
+      "header": {
+        "title": "Choose Your Model",
+        "showBackButton": true,
+        "showBreadcrumbs": true
+      }
+    },
+    "hyperparameters": {
+      "id": "hyperparameters",
+      "name": "Hyperparameters",
+      "component": "HyperparametersPage", 
+      "enabled": true,
+      "stepOrder": 3,
+      "route": "/finetuning/hyperparameters",
+      "nextPage": "job-review",
+      "previousPage": "model-selection",
+      "header": {
+        "title": "Configure Hyperparameters",
+        "showBackButton": true,
+        "showBreadcrumbs": true
+      }
+    },
+    "job-review": {
+      "id": "job-review",
+      "name": "Job Review",
+      "component": "JobReviewPage",
+      "enabled": true,
+      "stepOrder": 4,
+      "route": "/finetuning/job-review",
+      "nextPage": "success",
+      "previousPage": "hyperparameters",
+      "header": {
+        "title": "Review Your Job",
+        "showBackButton": true,
+        "showBreadcrumbs": true
+      }
+    },
+    "success": {
+      "id": "success",
+      "name": "Success",
+      "component": "SuccessPage",
+      "enabled": true,
+      "stepOrder": 5,
+      "route": "/finetuning/success",
+      "previousPage": "job-review",
+      "header": {
+        "title": "Job Created Successfully",
+        "showBackButton": false,
+        "showBreadcrumbs": true
+      }
+    },
+    "dashboard-minimal": {
+      "id": "dashboard-minimal",
+      "name": "Dashboard",
+      "component": "DashboardPage",
+      "enabled": true,
+      "showInNavigation": true,
+      "route": "/finetuning/dashboard/minimal",
+      "dashboardMode": "minimal",
+      "header": {
+        "title": "Training Dashboard",
+        "showBackButton": false,
+        "showBreadcrumbs": false
+      }
+    },
+    "dashboard-detailed": {
+      "id": "dashboard-detailed",
+      "name": "Detailed Dashboard",
+      "component": "DashboardPage",
+      "enabled": true,
+      "showInNavigation": true,
+      "route": "/finetuning/dashboard/detailed",
+      "dashboardMode": "detailed",
+      "header": {
+        "title": "Detailed Training Dashboard",
+        "showBackButton": false,
+        "showBreadcrumbs": false
+      }
+    }
+  }
+}

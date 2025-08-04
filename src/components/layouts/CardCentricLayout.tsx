@@ -3,12 +3,14 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { mockStats } from '../../types';
-import { ThemeToggle } from '../ThemeToggle';
 import { JobCard } from '../common/JobCard';
 import { loadCurrentJobs, loadPastJobs, Job } from '../../utils/jobUtils';
+import { LoadingSkeleton, SkeletonCard, Button } from '../ui';
+import { Plus } from 'lucide-react';
 
 interface CardCentricLayoutProps {
   children?: React.ReactNode;
+  onNavigate?: (pageId: string) => void;
 }
 
 /**
@@ -18,7 +20,7 @@ interface CardCentricLayoutProps {
  * Modern card-based layout with emphasis on visual separation and modularity.
  * Everything is contained in cards for consistent visual treatment.
  */
-export const CardCentricLayout: React.FC<CardCentricLayoutProps> = ({ children }) => {
+export const CardCentricLayout: React.FC<CardCentricLayoutProps> = ({ children, onNavigate }) => {
   const router = useRouter();
   const currentJobsScrollRef = useRef<HTMLDivElement>(null);
   const [currentJobs, setCurrentJobs] = useState<Job[]>([]);
@@ -45,19 +47,35 @@ export const CardCentricLayout: React.FC<CardCentricLayoutProps> = ({ children }
   }, []);
 
   const handleBackToDashboard = () => {
-    router.push('/finetuning/dashboard/minimal');
+    if (onNavigate) {
+      onNavigate('dashboard-minimal');
+    } else {
+      router.push('/finetuning/dashboard/minimal');
+    }
   };
 
   const handleCreateJob = () => {
-    router.push('/finetuning/dataset-selection');
+    if (onNavigate) {
+      onNavigate('dataset-selection');
+    } else {
+      router.push('/finetuning/dataset-selection');
+    }
   };
 
   const handleJobClick = (uid: string) => {
-    router.push(`/job/${uid}`);
+    if (onNavigate) {
+      onNavigate(`job?uid=${uid}`);
+    } else {
+      router.push(`/job/${uid}`);
+    }
   };
 
   const handleViewAllJobs = () => {
-    router.push('/finetuning/dashboard/all-jobs');
+    if (onNavigate) {
+      onNavigate('all-jobs');
+    } else {
+      router.push('/finetuning/dashboard/all-jobs');
+    }
   };
 
   const scrollCurrentJobs = (direction: 'left' | 'right') => {
@@ -79,8 +97,6 @@ export const CardCentricLayout: React.FC<CardCentricLayoutProps> = ({ children }
   const PreloadingScreen = () => (
     <div className="cards-dashboard-container min-h-screen w-screen m-0 p-0">
       <div className="max-w-7xl mx-auto p-6 bg-inherit">
-        <ThemeToggle />
-        
         {/* Animated Welcome Panel Skeleton */}
         <div className="cards-welcome-panel rounded-xl p-8 mb-8 text-center animate-pulse">
           <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded-lg w-64 mx-auto mb-4"></div>
@@ -106,21 +122,7 @@ export const CardCentricLayout: React.FC<CardCentricLayoutProps> = ({ children }
           </div>
           <div className="flex gap-6 overflow-x-auto scrollbar-hide pb-4 px-12">
             {[...Array(3)].map((_, index) => (
-              <div key={index} className="cards-job-item rounded-xl p-6 flex-shrink-0 w-80 md:w-96 animate-pulse">
-                <div className="flex justify-between items-start mb-4">
-                  <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-32"></div>
-                  <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded-full w-16"></div>
-                </div>
-                <div className="space-y-2">
-                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-40"></div>
-                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-36"></div>
-                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-32"></div>
-                </div>
-                <div className="mt-4">
-                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-20 mb-2"></div>
-                  <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded-full w-full"></div>
-                </div>
-              </div>
+              <SkeletonCard key={index} className="flex-shrink-0 w-80 md:w-96" />
             ))}
           </div>
         </div>
@@ -133,28 +135,14 @@ export const CardCentricLayout: React.FC<CardCentricLayoutProps> = ({ children }
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[...Array(6)].map((_, index) => (
-              <div key={index} className="cards-job-item rounded-xl p-6 animate-pulse">
-                <div className="flex justify-between items-start mb-4">
-                  <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-32"></div>
-                  <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded-full w-16"></div>
-                </div>
-                <div className="space-y-2">
-                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-40"></div>
-                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-36"></div>
-                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-32"></div>
-                </div>
-                <div className="mt-4">
-                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-20 mb-2"></div>
-                  <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded-full w-full"></div>
-                </div>
-              </div>
+              <SkeletonCard key={index} />
             ))}
           </div>
         </div>
 
         {/* Back Button Skeleton */}
         <div className="text-center">
-          <div className="h-12 bg-gray-200 dark:bg-gray-700 rounded-lg w-40 mx-auto animate-pulse"></div>
+          <LoadingSkeleton variant="button" size="lg" width="10rem" />
         </div>
 
         {/* Loading indicator */}
@@ -170,7 +158,6 @@ export const CardCentricLayout: React.FC<CardCentricLayoutProps> = ({ children }
     return (
       <div className="cards-dashboard-container min-h-screen w-screen m-0 p-0">
         <div className="max-w-7xl mx-auto p-6 bg-inherit">
-          <ThemeToggle />
           {children}
         </div>
       </div>
@@ -185,7 +172,6 @@ export const CardCentricLayout: React.FC<CardCentricLayoutProps> = ({ children }
   return (
     <div className="cards-dashboard-container min-h-screen w-screen m-0 p-0 opacity-0 animate-fade-in">
       <div className="max-w-7xl mx-auto p-6 bg-inherit">
-        <ThemeToggle />
         {/* Welcome Panel */}
         <div className="cards-welcome-panel rounded-xl p-8 mb-8 text-center">
           <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">
@@ -314,13 +300,13 @@ export const CardCentricLayout: React.FC<CardCentricLayoutProps> = ({ children }
         <div className="mb-8">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Past Jobs</h2>
-            <button 
+            <Button
+              variant="secondary"
+              size="sm"
               onClick={handleViewAllJobs}
-              className="bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 
-                       text-gray-700 dark:text-gray-300 px-4 py-2 rounded-lg text-sm font-medium 
-                       transition-colors duration-200">
+            >
               View All Jobs
-            </button>
+            </Button>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {pastJobs.map((job) => (
@@ -372,28 +358,23 @@ export const CardCentricLayout: React.FC<CardCentricLayoutProps> = ({ children }
 
         {/* Back to Minimal View Button */}
         <div className="text-center">
-          <button
+          <Button
+            variant="secondary"
             onClick={handleBackToDashboard}
-            className="bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 px-6 py-3 
-                       rounded-lg font-medium hover:bg-gray-700 dark:hover:bg-gray-300 
-                       transition-colors duration-200"
           >
             Back to Minimal View
-          </button>
+          </Button>
         </div>
 
         {/* Floating Action Button */}
-        <button
+        <Button
+          variant="primary"
+          size="lg"
+          icon={Plus}
           onClick={handleCreateJob}
-          className="fixed bottom-6 right-6 bg-blue-600 hover:bg-blue-700 text-white 
-                     w-14 h-14 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 
-                     flex items-center justify-center z-40"
+          className="fixed bottom-6 right-6 w-14 h-14 rounded-full shadow-lg hover:shadow-xl z-40 !p-0"
           aria-label="Create new fine-tuning job"
-        >
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-          </svg>
-        </button>
+        />
       </div>
     </div>
   );

@@ -1,7 +1,6 @@
 'use client'
 
 import Link from 'next/link'
-import { ThemeToggle } from '../components/ThemeToggle'
 
 export default function Home() {
   const features = [
@@ -49,7 +48,6 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-blue-900">
-      <ThemeToggle />
       <div className="max-w-6xl mx-auto p-8">
         {/* Hero Section */}
         <div className="text-center mb-16">

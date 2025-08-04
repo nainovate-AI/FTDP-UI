@@ -3,16 +3,15 @@
 import React, { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { ArrowRight, PlayCircle, Home } from 'lucide-react';
-import { ThemeToggle } from '../../../components/ThemeToggle';
-import { ProgressStepper } from '../../../components/dataset-selection/ProgressStepper';
-import { JobCard, ToastContainer, DrawingCheckmark } from '../../../components/common';
-import { useToast } from '../../../hooks/useToast';
+import { ProgressStepper } from '../../../components/stepper';
+import { JobCard, DrawingCheckmark } from '../../../components/common';
+import { useToastHelpers } from '../../../components/toast';
 import { loadCurrentJobs, getActiveJobs, Job } from '../../../utils/jobUtils';
 
 function SuccessContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { toasts, addToast, removeToast } = useToast();
+  const { success: showSuccess, error: showError } = useToastHelpers();
   
   const [currentJobs, setCurrentJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
@@ -23,11 +22,11 @@ function SuccessContent() {
   const jobUid = searchParams?.get('jobUid');
 
   const steps = [
-    'Data Upload',
-    'Model Selection', 
-    'Hyperparameters',
-    'Job Review',
-    'Success'
+    { id: 'data-upload', title: 'Data Upload' },
+    { id: 'model-selection', title: 'Model Selection' },
+    { id: 'hyperparameters', title: 'Hyperparameters' },
+    { id: 'job-review', title: 'Job Review' },
+    { id: 'success', title: 'Success' }
   ];
 
   // Load current jobs from backend or local data
@@ -79,11 +78,12 @@ function SuccessContent() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 opacity-0 animate-fade-in">
       <div className="max-w-4xl mx-auto px-6 py-8">
-        <ThemeToggle />
-        
         <ProgressStepper 
-          currentStep={5} 
-          steps={steps} 
+          currentStep={4}
+          steps={steps}
+          variant="horizontal"
+          allowStepClick={false}
+          showNavigation={false}
         />
 
         {/* Success Section */}
@@ -183,8 +183,6 @@ function SuccessContent() {
           </div>
         </div>
       </div>
-
-      <ToastContainer toasts={toasts} onRemove={removeToast} />
     </div>
   );
 }

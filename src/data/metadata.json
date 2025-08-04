@@ -4,19 +4,19 @@
   "finetuningSession": {
     "id": "session_1750912194926",
     "createdAt": "2025-06-26T04:29:54.926Z",
-    "lastModified": "2025-07-16T23:01:18.460Z",
+    "lastModified": "2025-08-04T19:36:09.894Z",
     "status": "hyperparameters_configured"
   },
   "dataset": {
-    "uid": "dataset_1752706799531_f8nph9qs5",
-    "name": "4",
-    "selectedAt": "2025-07-16T22:59:59.531Z"
+    "uid": "dataset_1751713192596_f6law35xs",
+    "name": "test_dataset-3",
+    "selectedAt": "2025-08-04T19:36:09.894Z"
   },
   "model": {
-    "uid": "22770353",
-    "baseModel": "openai-community/gpt2",
-    "modelName": "gpt2",
-    "provider": "OpenAI"
+    "uid": "763915222",
+    "baseModel": "Chain-GPT/Solidity-LLM",
+    "modelName": "Solidity-LLM",
+    "provider": "Chain-GPT"
   },
   "training": {
     "_comment": "Training configuration will be added in training setup step",
@@ -26,7 +26,7 @@
     "validationSplit": null
   },
   "hyperparameters": {
-    "uid": "010100fl00fm000700080001000a000g002s"
+    "uid": "0100000a00dw000200080001000a000g002s"
   },
   "deployment": {
     "_comment": "Deployment configuration will be added in deployment step",

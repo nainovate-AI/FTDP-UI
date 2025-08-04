@@ -14,7 +14,6 @@ import {
   ArrowRight,
   ArrowLeft
 } from 'lucide-react';
-import { ThemeToggle } from '../../../../components/ThemeToggle';
 import { loadCurrentJobs, loadPastJobs, Job } from '../../../../utils/jobUtils';
 
 interface QueueItem extends Job {
@@ -96,7 +95,6 @@ export default function AllJobsDashboard() {
                 Monitor all fine-tuning jobs and training progress
               </p>
             </div>
-            <ThemeToggle />
           </div>
         </div>
       </div>

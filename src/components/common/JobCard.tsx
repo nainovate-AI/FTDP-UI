@@ -1,6 +1,7 @@
 import React from 'react';
 import { ExternalLink, Clock, Tag, Zap, Database, User, Calendar } from 'lucide-react';
 import { Job } from '../../utils/jobUtils';
+import { StatusBadge, ProgressBar, Button, type StatusBadgeVariant } from '../ui';
 
 interface JobCardProps {
   job: Job;
@@ -15,20 +16,20 @@ export const JobCard: React.FC<JobCardProps> = ({
   compact = false,
   showProgress = false 
 }) => {
-  const getStatusBadgeColor = (status: string) => {
+  const getStatusBadgeVariant = (status: string): StatusBadgeVariant => {
     switch (status) {
       case 'queued':
-        return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200';
+        return 'queued';
       case 'running':
-        return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200';
+        return 'running';
       case 'completed':
-        return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
+        return 'completed';
       case 'failed':
-        return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200';
+        return 'failed';
       case 'created':
-        return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200';
+        return 'created';
       default:
-        return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200';
+        return 'neutral';
     }
   };
 
@@ -51,11 +52,13 @@ export const JobCard: React.FC<JobCardProps> = ({
         }`}>
           {job.name}
         </h3>
-        <span className={`px-2 py-1 rounded-full text-xs font-medium flex-shrink-0 ml-2 ${
-          getStatusBadgeColor(job.status)
-        }`}>
+        <StatusBadge 
+          variant={getStatusBadgeVariant(job.status)}
+          size={compact ? 'sm' : 'md'}
+          animate={job.status === 'running'}
+        >
           {job.status.charAt(0).toUpperCase() + job.status.slice(1)}
-        </span>
+        </StatusBadge>
       </div>
 
       {/* Job Details */}
@@ -93,19 +96,14 @@ export const JobCard: React.FC<JobCardProps> = ({
       {/* Progress Bar */}
       {showProgress && job.progress !== undefined && job.progress > 0 && (
         <div className="mt-4">
-          <div className="flex justify-between items-center text-sm mb-2">
-            <span className="text-gray-600 dark:text-gray-400">Progress</span>
-            <span className="font-medium text-gray-900 dark:text-gray-100">{Math.round(job.progress || 0)}%</span>
-          </div>
-          <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-            <div 
-              className={`h-2 rounded-full transition-all duration-500 ${
-                job.status === 'running' ? 'bg-blue-500' : 
-                job.status === 'completed' ? 'bg-green-500' : 'bg-gray-400'
-              }`}
-              style={{ width: `${job.progress}%` }}
-            ></div>
-          </div>
+          <ProgressBar
+            value={job.progress || 0}
+            variant={job.status === 'running' ? 'running' : job.status === 'completed' ? 'success' : 'default'}
+            size="md"
+            showLabel={true}
+            showPercentage={true}
+            label="Progress"
+          />
           {job.status === 'running' && job.estimatedCompletion && (
             <div className="flex items-center mt-2 text-xs text-gray-500 dark:text-gray-400">
               <Clock className="w-3 h-3 mr-1" />
@@ -161,16 +159,20 @@ export const JobCard: React.FC<JobCardProps> = ({
             <span>Position #{job.queuePosition} in queue</span>
           )}
         </div>
-        <button
+        <Button
+          variant="ghost"
+          size="sm"
+          icon={ExternalLink}
+          iconPosition="right"
+          animate={false}
           onClick={(e) => {
             e.stopPropagation();
             if (onClick) onClick(job.uid);
           }}
-          className="flex items-center text-xs text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium transition-colors"
+          className="text-xs"
         >
-          <span className="mr-1">View Details</span>
-          <ExternalLink className="w-3 h-3" />
-        </button>
+          View Details
+        </Button>
       </div>
     </div>
   );

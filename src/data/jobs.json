@@ -947,6 +947,67 @@
         "checkpoints": [],
         "performance": {}
       }
+    },
+    {
+      "uid": "job_1753451640689_d0d7f615",
+      "name": "Test",
+      "description": "",
+      "tags": [
+        "educational",
+        "technical"
+      ],
+      "status": "created",
+      "createdAt": "2025-07-25T13:54:00.678Z",
+      "lastModified": "2025-07-25T19:24:00.000Z",
+      "configuration": {
+        "model": {
+          "uid": "763915222",
+          "baseModel": "Chain-GPT/Solidity-LLM",
+          "modelName": "Solidity-LLM",
+          "provider": "Chain-GPT"
+        },
+        "dataset": {
+          "uid": "dataset_1751713192596_f6law35xs",
+          "name": "test_dataset-3",
+          "selectedAt": "2025-07-25T13:47:21.744Z"
+        },
+        "hyperparameters": {
+          "uid": "0100000a00dw000200080001000a000g002s",
+          "outputDirectory": "./fine_tuned_model",
+          "adapterMethod": "LoRA",
+          "mode": "Automated",
+          "learningRate": 0.0002,
+          "batchSize": 4,
+          "epochs": 3,
+          "weightDecay": 0.01,
+          "loraR": 16,
+          "loraAlpha": 32,
+          "loraDropout": 0.1,
+          "modeLogic": "CRv1",
+          "searchLimit": 50,
+          "targetLoss": 0.1
+        }
+      },
+      "modelSaving": {
+        "type": "local",
+        "localPath": "./ft/job_1753451603258",
+        "isLocalPathCustom": false,
+        "huggingfaceRepo": "",
+        "isPrivateRepo": false
+      },
+      "training": {
+        "startedAt": null,
+        "completedAt": null,
+        "progress": 0,
+        "logs": [],
+        "metrics": {}
+      },
+      "results": {
+        "finalModelPath": null,
+        "huggingfaceRepo": null,
+        "checkpoints": [],
+        "performance": {}
+      }
     }
   ],
   "statistics": {

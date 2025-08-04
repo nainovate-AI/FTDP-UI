@@ -228,6 +228,36 @@
         "memoryUsage": "Unknown"
       },
       "useCase": "Content creation, code generation, creative writing"
+    },
+    {
+      "id": "Chain-GPT/Solidity-LLM",
+      "name": "Solidity-LLM",
+      "provider": "Chain-GPT",
+      "category": "Text Generation",
+      "description": "Pre-trained text generation model",
+      "parameters": "Unknown",
+      "contextLength": 2048,
+      "license": "Mit",
+      "downloadSize": "Unknown",
+      "tags": [
+        "codegen",
+        "text-generation",
+        "solidity",
+        "blockchain",
+        "smart contracts",
+        "code generation",
+        "en"
+      ],
+      "capabilities": [
+        "text-generation"
+      ],
+      "recommended": false,
+      "performance": {
+        "speed": "Unknown",
+        "accuracy": "Unknown",
+        "memoryUsage": "Unknown"
+      },
+      "useCase": "Content creation, code generation, creative writing"
     }
   ],
   "categories": [
@@ -246,6 +276,7 @@
   "providers": [
     "All Providers",
     "BigScience",
+    "Chain-GPT",
     "DreadPoor",
     "Fan-s",
     "Google",

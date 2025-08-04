@@ -3,11 +3,13 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { mockStats } from '../../types';
-import { ThemeToggle } from '../ThemeToggle';
 import { SideAnimation } from '../common/SideAnimation';
+import { Button } from '../ui';
+import { Plus } from 'lucide-react';
 
 interface MinimalisticLayoutProps {
   children?: React.ReactNode;
+  onNavigate?: (pageId: string) => void;
 }
 
 /**
@@ -28,7 +30,7 @@ const getTimeBasedGreeting = () => {
  * Clean, focused design with emphasis on whitespace and typography.
  * Shows essential information with option to view more detailed content.
  */
-export const MinimalisticLayout: React.FC<MinimalisticLayoutProps> = ({ children }) => {
+export const MinimalisticLayout: React.FC<MinimalisticLayoutProps> = ({ children, onNavigate }) => {
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
   const [statsVisible, setStatsVisible] = useState(false);
@@ -42,18 +44,25 @@ export const MinimalisticLayout: React.FC<MinimalisticLayoutProps> = ({ children
   }, []);
 
   const handleViewMore = () => {
-    router.push('/finetuning/dashboard/detailed');
+    if (onNavigate) {
+      onNavigate('dashboard-detailed');
+    } else {
+      router.push('/finetuning/dashboard/detailed');
+    }
   };
 
   const handleCreateJob = () => {
-    router.push('/finetuning/dataset-selection');
+    if (onNavigate) {
+      onNavigate('dataset-selection');
+    } else {
+      router.push('/finetuning/dataset-selection');
+    }
   };
 
   if (children) {
     return (
       <div className="minimal-dashboard-container h-screen w-full overflow-hidden flex flex-col">
         <div className="max-w-7xl mx-auto px-2 sm:px-3 py-1 flex-1 flex flex-col">
-          <ThemeToggle />
           {children}
         </div>
       </div>
@@ -66,10 +75,6 @@ export const MinimalisticLayout: React.FC<MinimalisticLayoutProps> = ({ children
       <SideAnimation />
       
       <div className="max-w-7xl mx-auto px-6 sm:px-8 flex-1 flex flex-col justify-center relative z-10">
-        <div className="absolute top-4 right-4">
-          <ThemeToggle />
-        </div>
-        
         {/* Simplified welcome section - Enhanced spacing */}
         <div className={`text-center mb-8 transition-all duration-700 ${
           mounted ? 'animate-fade-scale' : 'opacity-0'
@@ -140,22 +145,27 @@ export const MinimalisticLayout: React.FC<MinimalisticLayoutProps> = ({ children
           animationDelay: statsVisible ? '600ms' : '0ms'
         }}>
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-4">
-            <button 
+            <Button 
+              variant="primary"
+              size="lg"
+              icon={Plus}
+              iconPosition="left"
               onClick={handleCreateJob}
-              className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 
-                       rounded-lg text-base font-medium transition-all duration-200 shadow-sm
-                       hover:-translate-y-0.5 hover:shadow-lg transform hover:scale-105 whitespace-nowrap"
+              fullWidth={true}
+              className="sm:w-auto whitespace-nowrap"
             >
-              + Create New Job
-            </button>
-            <button 
+              Create New Job
+            </Button>
+            
+            <Button 
+              variant="secondary"
+              size="lg"
               onClick={handleViewMore}
-              className="w-full sm:w-auto bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 px-8 py-3 
-                         rounded-lg text-base font-medium cursor-pointer transition-all duration-200 shadow-sm
-                         hover:bg-gray-700 dark:hover:bg-gray-300 hover:-translate-y-0.5 hover:shadow-lg transform hover:scale-105 whitespace-nowrap"
+              fullWidth={true}
+              className="sm:w-auto whitespace-nowrap"
             >
               Detailed Dashboard
-            </button>
+            </Button>
           </div>
           <p className="text-gray-500 dark:text-gray-400 text-sm italic">
             See detailed view of jobs, datasets, and more
