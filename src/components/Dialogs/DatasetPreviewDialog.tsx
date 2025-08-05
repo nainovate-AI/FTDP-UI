@@ -125,13 +125,13 @@ export const DatasetPreviewDialog: React.FC<DatasetPreviewDialogProps> = ({
             <Button
               variant="secondary"
               onClick={onDownload}
-              icon={Download}
             >
+              <Download className="h-4 w-4 mr-2" />
               Download
             </Button>
           )}
           <Button
-            variant="primary"
+            variant="default"
             onClick={onClose}
           >
             Close

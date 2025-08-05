@@ -59,9 +59,10 @@ export const Tag: React.FC<TagProps> = ({
           variant="ghost"
           size="sm"
           onClick={onRemove}
-          icon={X}
           className="ml-1 h-auto w-auto p-0.5 hover:bg-black/10 dark:hover:bg-white/10 rounded-full"
-        />
+        >
+          <X className="h-3 w-3" />
+        </Button>
       )}
     </span>
   );

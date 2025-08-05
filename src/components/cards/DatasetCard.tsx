@@ -123,7 +123,6 @@ export const DatasetCard: React.FC<DatasetCardProps> = ({
                 e.stopPropagation();
                 onPreview(dataset.id);
               }}
-              fullWidth={false}
             >
               Preview
             </Button>
@@ -132,13 +131,12 @@ export const DatasetCard: React.FC<DatasetCardProps> = ({
             <Button
               variant="ghost"
               size="sm"
-              icon={Download}
               onClick={(e) => {
                 e.stopPropagation();
                 onDownload(dataset.id);
               }}
-              fullWidth={false}
             >
+              <Download className="h-4 w-4 mr-2" />
               Download
             </Button>
           )}

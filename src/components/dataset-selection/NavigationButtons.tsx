@@ -18,21 +18,18 @@ export const NavigationButtons: React.FC<NavigationButtonsProps> = ({
       <Button
         variant="ghost"
         onClick={onBack}
-        icon={ChevronLeft}
-        iconPosition="left"
-        animate={false}
       >
+        <ChevronLeft className="h-4 w-4 mr-2" />
         Back to Dashboard
       </Button>
       
       <Button
-        variant="primary"
+        variant="default"
         onClick={onNext}
         disabled={!canProceed}
-        icon={ChevronRight}
-        iconPosition="right"
       >
         Continue to Model Selection
+        <ChevronRight className="h-4 w-4 ml-2" />
       </Button>
     </div>
   );

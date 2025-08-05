@@ -162,9 +162,6 @@ export const JobCard: React.FC<JobCardProps> = ({
         <Button
           variant="ghost"
           size="sm"
-          icon={ExternalLink}
-          iconPosition="right"
-          animate={false}
           onClick={(e) => {
             e.stopPropagation();
             if (onClick) onClick(job.uid);
@@ -172,6 +169,7 @@ export const JobCard: React.FC<JobCardProps> = ({
           className="text-xs"
         >
           View Details
+          <ExternalLink className="h-3 w-3 ml-1" />
         </Button>
       </div>
     </div>

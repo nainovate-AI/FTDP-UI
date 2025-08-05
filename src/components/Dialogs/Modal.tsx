@@ -89,9 +89,10 @@ export const Modal: React.FC<ModalProps> = ({
                   variant="ghost"
                   size="sm"
                   onClick={onClose}
-                  icon={X}
                   className="h-auto w-auto p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
-                />
+                >
+                  <X className="h-4 w-4" />
+                </Button>
               )}
             </div>
           )}

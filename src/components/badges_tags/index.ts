@@ -5,4 +5,4 @@ export { DatasetTypeBadge, type DatasetTypeBadgeType } from './DatasetTypeBadge'
 export { PerformanceBadge, type PerformanceBadgeType, type PerformanceLevel } from './PerformanceBadge';
 
 // Re-export StatusBadge from ui since it's already reusable
-export { StatusBadge, type StatusBadgeVariant, type StatusBadgeSize } from '../ui/StatusBadge';
+export { StatusBadge, type StatusBadgeVariant, type StatusBadgeSize } from '../ui/status-badge';

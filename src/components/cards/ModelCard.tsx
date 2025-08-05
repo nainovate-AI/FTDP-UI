@@ -65,11 +65,12 @@ export const ModelCard: React.FC<ModelCardProps> = ({
           variant="ghost"
           size="sm"
           onClick={handleRemove}
-          loading={isRemoving}
-          icon={X}
+          disabled={isRemoving}
           className="absolute top-2 right-2 p-1 h-auto w-auto text-gray-400 hover:text-red-500"
           title="Remove model"
-        />
+        >
+          <X className="h-4 w-4" />
+        </Button>
       )}
 
       {/* Recommended badge */}

@@ -36,7 +36,7 @@ export const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
         return {
           icon: Info,
           iconColor: 'text-blue-500',
-          confirmVariant: 'primary' as const
+          confirmVariant: 'default' as const
         };
       case 'warning':
         return {
@@ -48,13 +48,13 @@ export const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
         return {
           icon: XCircle,
           iconColor: 'text-red-500',
-          confirmVariant: 'danger' as const
+          confirmVariant: 'destructive' as const
         };
       case 'success':
         return {
           icon: CheckCircle,
           iconColor: 'text-green-500',
-          confirmVariant: 'success' as const
+          confirmVariant: 'default' as const
         };
     }
   };
@@ -100,7 +100,7 @@ export const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
           <Button
             variant={config.confirmVariant}
             onClick={onConfirm}
-            loading={loading}
+            disabled={loading}
             className="min-w-[80px]"
           >
             {confirmText}

@@ -202,9 +202,10 @@ export const FileUpload: React.FC<FileUploadProps> = ({
                     e.stopPropagation();
                     onFileRemove(index);
                   }}
-                  icon={X}
                   className="h-auto w-auto p-1 text-gray-400 hover:text-red-500"
-                />
+                >
+                  <X className="h-3 w-3" />
+                </Button>
               )}
             </div>
           ))}
