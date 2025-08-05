@@ -7,13 +7,14 @@ import { GlobalHeader } from './GlobalHeader';
 
 // Import page components
 import { LandingPage } from '../pages/LandingPage';
-import {
-  DatasetSelectionPage,
-  ModelSelectionPage,
-  HyperparametersPage,
-  JobReviewPage,
-  SuccessPage
-} from '../pages';
+// Note: Individual finetuning pages now use app router
+// import {
+//   DatasetSelectionPage,
+//   ModelSelectionPage,
+//   HyperparametersPage,
+//   JobReviewPage,
+//   SuccessPage
+// } from '../pages';
 
 interface PageContainerProps {
   initialPage?: string;
@@ -217,16 +218,15 @@ export const PageContainer: React.FC<PageContainerProps> = ({
       case 'landing':
         return <LandingPage {...pageProps} />;
       
+      // Note: Finetuning pages now use app router (/finetuning/*)
       case 'dataset-selection':
-        return <DatasetSelectionPage {...pageProps} />;
       case 'model-selection':
-        return <ModelSelectionPage {...pageProps} />;
       case 'hyperparameters':
-        return <HyperparametersPage {...pageProps} />;
       case 'job-review':
-        return <JobReviewPage {...pageProps} />;
       case 'success':
-        return <SuccessPage {...pageProps} searchParams={searchParams} />;
+        // Redirect to app router equivalent
+        window.location.href = `/finetuning/${currentPageId}`;
+        return <div>Redirecting...</div>;
       
       // TODO: Add dashboard and other page components
       // case 'dashboard-minimal':

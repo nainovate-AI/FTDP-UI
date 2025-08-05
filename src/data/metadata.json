@@ -4,13 +4,13 @@
   "finetuningSession": {
     "id": "session_1750912194926",
     "createdAt": "2025-06-26T04:29:54.926Z",
-    "lastModified": "2025-08-04T19:36:09.894Z",
+    "lastModified": "2025-08-04T21:32:19.633Z",
     "status": "hyperparameters_configured"
   },
   "dataset": {
     "uid": "dataset_1751713192596_f6law35xs",
     "name": "test_dataset-3",
-    "selectedAt": "2025-08-04T19:36:09.894Z"
+    "selectedAt": "2025-08-04T21:32:19.633Z"
   },
   "model": {
     "uid": "763915222",

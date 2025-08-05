@@ -7,6 +7,7 @@ import { JobCard } from '../common/JobCard';
 import { loadCurrentJobs, loadPastJobs, Job } from '../../utils/jobUtils';
 import { LoadingSkeleton, SkeletonCard, Button } from '../ui';
 import { Plus } from 'lucide-react';
+import { useFinetuningStore } from '../../store/finetuningStore';
 
 interface CardCentricLayoutProps {
   children?: React.ReactNode;
@@ -22,6 +23,7 @@ interface CardCentricLayoutProps {
  */
 export const CardCentricLayout: React.FC<CardCentricLayoutProps> = ({ children, onNavigate }) => {
   const router = useRouter();
+  const reset = useFinetuningStore((state) => state.reset);
   const currentJobsScrollRef = useRef<HTMLDivElement>(null);
   const [currentJobs, setCurrentJobs] = useState<Job[]>([]);
   const [pastJobs, setPastJobs] = useState<Job[]>([]);
@@ -55,6 +57,9 @@ export const CardCentricLayout: React.FC<CardCentricLayoutProps> = ({ children, 
   };
 
   const handleCreateJob = () => {
+    // Reset the finetuning store to start fresh
+    reset();
+    
     if (onNavigate) {
       onNavigate('dataset-selection');
     } else {

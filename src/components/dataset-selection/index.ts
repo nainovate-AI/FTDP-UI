@@ -1,4 +1,3 @@
-export { ProgressStepper } from './ProgressStepper';
 export { FileUploadSection } from './FileUploadSection';
 export { ExistingDatasets } from './ExistingDatasets';
 export { DatasetTips } from './DatasetTips';

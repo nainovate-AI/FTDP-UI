@@ -12,9 +12,11 @@ import {
   Activity,
   Database,
   ArrowRight,
-  ArrowLeft
+  ArrowLeft,
+  Plus
 } from 'lucide-react';
 import { loadCurrentJobs, loadPastJobs, Job } from '../../../../utils/jobUtils';
+import { useFinetuningStore } from '../../../../store/finetuningStore';
 
 interface QueueItem extends Job {
   position: number;
@@ -23,6 +25,7 @@ interface QueueItem extends Job {
 
 export default function AllJobsDashboard() {
   const router = useRouter();
+  const reset = useFinetuningStore((state) => state.reset);
   const [currentJobs, setCurrentJobs] = useState<Job[]>([]);
   const [pastJobs, setPastJobs] = useState<Job[]>([]);
   const [queuedJobs, setQueuedJobs] = useState<QueueItem[]>([]);
@@ -62,6 +65,14 @@ export default function AllJobsDashboard() {
     router.push('/finetuning/dashboard/detailed');
   };
 
+  const handleCreateNewJob = () => {
+    // Reset the finetuning store to start fresh
+    reset();
+    
+    // Navigate to the beginning of the finetuning workflow
+    router.push('/finetuning?step=dataset-selection');
+  };
+
   const getStageProgress = (progress: number = 0) => {
     if (progress < 20) return { current: 'Dataset Loading', step: 1, total: 5 };
     if (progress < 40) return { current: 'Tokenization', step: 2, total: 5 };
@@ -95,6 +106,13 @@ export default function AllJobsDashboard() {
                 Monitor all fine-tuning jobs and training progress
               </p>
             </div>
+            <button
+              onClick={handleCreateNewJob}
+              className="flex items-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+            >
+              <Plus className="w-5 h-5 mr-2" />
+              Create New Job
+            </button>
           </div>
         </div>
       </div>

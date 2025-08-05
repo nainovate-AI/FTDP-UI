@@ -147,7 +147,7 @@ export const ProgressStepper: React.FC<ProgressStepperProps> = ({
   const getConnectorClasses = (index: number) => {
     const isCompleted = isStepCompleted(index + 1);
     const base = variant === 'horizontal' 
-      ? 'flex-1 h-0.5 mx-2' 
+      ? 'flex-1 h-0.5 min-w-8' 
       : 'w-0.5 h-8 mx-auto my-2';
     
     return `${base} ${
@@ -250,22 +250,22 @@ export const ProgressStepper: React.FC<ProgressStepperProps> = ({
 
   // Horizontal Layout
   return (
-    <div className={`space-y-6 ${className}`}>
+    <div className={`space-y-8 ${className}`}>
       {/* Horizontal Steps */}
-      <div className="flex items-center">
+      <div className="flex items-center justify-center w-full">
         {steps.map((step, index) => (
           <React.Fragment key={step.id}>
             <div className="flex flex-col items-center">
               <button
                 onClick={() => handleStepClick(index)}
                 disabled={isStepDisabled(index)}
-                className={`${getStepClasses(index)} ${stepClassName}`}
+                className={`${getStepClasses(index)} ${stepClassName} mb-3`}
               >
                 {getStepIcon(index)}
               </button>
-              <div className="mt-2 text-center">
+              <div className="text-center max-w-24">
                 <div className={`
-                  font-medium transition-colors
+                  font-medium transition-colors leading-tight
                   ${isStepCurrent(index) 
                     ? 'text-blue-600 dark:text-blue-400' 
                     : isStepCompleted(index)
@@ -277,14 +277,14 @@ export const ProgressStepper: React.FC<ProgressStepperProps> = ({
                 `}>
                   {step.title}
                   {step.optional && (
-                    <div className="text-xs text-gray-500 dark:text-gray-400 font-normal">
+                    <div className="text-xs text-gray-500 dark:text-gray-400 font-normal mt-1">
                       (Optional)
                     </div>
                   )}
                 </div>
                 {step.description && (
                   <div className={`
-                    text-gray-500 dark:text-gray-400 mt-1 max-w-24 
+                    text-gray-500 dark:text-gray-400 mt-1 leading-tight
                     ${sizeClasses[size].description}
                   `}>
                     {step.description}
@@ -293,7 +293,7 @@ export const ProgressStepper: React.FC<ProgressStepperProps> = ({
               </div>
             </div>
             {index < steps.length - 1 && (
-              <div className={getConnectorClasses(index)} />
+              <div className={`${getConnectorClasses(index)} mt-[-40px]`} />
             )}
           </React.Fragment>
         ))}

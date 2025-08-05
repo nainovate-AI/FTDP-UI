@@ -1,8 +1,8 @@
 'use client'
 
 import React, { useState } from 'react';
+import { ProgressStepper } from '../stepper';
 import {
-  ProgressStepper,
   FileUploadSection,
   ExistingDatasets,
   DatasetTips,
@@ -18,6 +18,7 @@ import {
 } from '../../hooks';
 import { validatePreviewColumns } from '../../utils/filePreviewUtils';
 import type { Dataset } from '../../utils/datasetUtils';
+import { useFinetuningStore } from '../../store/finetuningStore';
 
 interface DatasetSelectionPageProps {
   onNavigate?: (pageId: string) => void;
@@ -27,6 +28,7 @@ interface DatasetSelectionPageProps {
   canGoPrevious?: boolean;
   pageConfig?: any;
   config?: any;
+  hideProgressStepper?: boolean;
 }
 
 /**
@@ -46,11 +48,13 @@ export const DatasetSelectionPage: React.FC<DatasetSelectionPageProps> = ({
   canGoNext, 
   canGoPrevious, 
   pageConfig, 
-  config 
+  config,
+  hideProgressStepper = false
 }) => {
   const [taskType, setTaskType] = useState<string>('');
 
-  // Custom hooks for state management
+  // Zustand store integration
+  const { dataset: datasetState, setDataset, markStepComplete } = useFinetuningStore();
   const {
     datasets,
     selectedDataset,
@@ -263,11 +267,6 @@ export const DatasetSelectionPage: React.FC<DatasetSelectionPageProps> = ({
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 opacity-0 animate-fade-in">
       <div className="max-w-7xl mx-auto px-6 py-8">
-        <ProgressStepper 
-          currentStep={1} 
-          steps={['Data Upload', 'Model Selection', 'Hyperparameters', 'Job Review', 'Success']} 
-        />
-
         {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">

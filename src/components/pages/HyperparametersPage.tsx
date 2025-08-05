@@ -3,10 +3,9 @@
 import React, { useState, useEffect } from 'react';
 import * as hash from 'object-hash';
 import { HelpCircle, AlertTriangle } from 'lucide-react';
-import { ProgressStepper } from '../dataset-selection/ProgressStepper';
+import { ProgressStepper } from '../stepper';
 import { NavigationButtons } from '../model-selection/NavigationButtons';
-import { useToast } from '../../hooks/useToast';
-import { ToastContainer } from '../common/ToastNotification';
+import { useToast } from '../toast';
 
 interface HyperparametersPageProps {
   onNavigate?: (pageId: string) => void;
@@ -186,7 +185,11 @@ export const HyperparametersPage: React.FC<HyperparametersPageProps> = ({
   // Handle batch size warning for both manual and automated modes with debouncing
   const checkBatchSizeWarning = (batchValue: number) => {
     if (batchValue > memorySoftLimit) {
-      const toastId = addToast(`Batch size exceeds recommended value. Consider lowering to ${memorySoftLimit} or less.`, 'warning', 8000);
+      const toastId = addToast({
+        type: 'warning',
+        title: `Batch size exceeds recommended value. Consider lowering to ${memorySoftLimit} or less.`,
+        duration: 8000
+      });
       setActiveToastIds(prev => new Set(prev).add(toastId));
     }
   };
@@ -309,12 +312,20 @@ export const HyperparametersPage: React.FC<HyperparametersPageProps> = ({
     } else {
       // Allow manual override but warn about limits
       if (numValue > max) {
-        addToast(`${paramName} value (${numValue}) exceeds recommended maximum (${max}). This may cause issues.`, 'warning', 6000);
+        addToast({
+          type: 'warning',
+          title: `${paramName} value (${numValue}) exceeds recommended maximum (${max}). This may cause issues.`,
+          duration: 6000
+        });
       }
       
       // Special handling for batch size with enhanced warning
       if (paramName === 'Batch Size' && numValue > memorySoftLimit) {
-        const toastId = addToast(`Batch size exceeds recommended value. Consider lowering to ${memorySoftLimit} or less.`, 'warning', 8000);
+        const toastId = addToast({
+          type: 'warning',
+          title: `Batch size exceeds recommended value. Consider lowering to ${memorySoftLimit} or less.`,
+          duration: 8000
+        });
         setActiveToastIds(prev => new Set(prev).add(toastId));
       }
       
@@ -381,21 +392,21 @@ export const HyperparametersPage: React.FC<HyperparametersPageProps> = ({
         throw new Error('Failed to save metadata');
       }
 
-      addToast('Hyperparameters saved successfully', 'success');
+      addToast({ type: 'success', title: 'Hyperparameters saved successfully' });
       return true;
     } catch (error) {
       console.error('Error saving hyperparameters:', error);
-      addToast('Failed to save hyperparameters. Make sure the backend is running.', 'error');
+      addToast({ type: 'error', title: 'Failed to save hyperparameters. Make sure the backend is running.' });
       return false;
     }
   };
 
   const steps = [
-    'Data Upload',
-    'Model Selection',
-    'Hyperparameters',
-    'Job Review',
-    'Success'
+    { id: 'data-upload', title: 'Data Upload' },
+    { id: 'model-selection', title: 'Model Selection' },
+    { id: 'hyperparameters', title: 'Hyperparameters' },
+    { id: 'job-review', title: 'Job Review' },
+    { id: 'success', title: 'Success' }
   ];
 
   // Navigation handlers - updated to use new URL system
@@ -488,12 +499,12 @@ export const HyperparametersPage: React.FC<HyperparametersPageProps> = ({
           setIsAnimating(false);
         }, 100);
         
-        addToast(`Best ${mode.toLowerCase()} configuration loaded successfully`, 'info');
+        addToast({ type: 'info', title: `Best ${mode.toLowerCase()} configuration loaded successfully` });
       } else {
-        addToast(`No best ${mode.toLowerCase()} configuration found`, 'warning');
+        addToast({ type: 'warning', title: `No best ${mode.toLowerCase()} configuration found` });
       }
     } catch (error) {
-      addToast('Failed to load best configuration', 'error');
+      addToast({ type: 'error', title: 'Failed to load best configuration' });
     }
   };
 
@@ -888,8 +899,6 @@ export const HyperparametersPage: React.FC<HyperparametersPageProps> = ({
           />
         </div>
       </div>
-
-      <ToastContainer toasts={toasts} onRemove={removeToast} />
 
       <style jsx>{`
         .slider::-webkit-slider-thumb {

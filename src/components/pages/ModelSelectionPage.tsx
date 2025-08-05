@@ -1,8 +1,8 @@
 'use client'
 
 import React, { useState } from 'react';
+import { ProgressStepper } from '../stepper';
 import {
-  ProgressStepper,
   ModelGrid,
   ModelFilters,
   ModelSummaryPanel,
@@ -10,8 +10,6 @@ import {
   HuggingFaceSearch
 } from '../model-selection';
 import { useModelManagement } from '../../hooks';
-import { useToast } from '../../hooks/useToast';
-import { ToastContainer } from '../common/ToastNotification';
 import { updateModelSelection } from '../../utils/modelUtils';
 import type { Model } from '../../types';
 
@@ -47,7 +45,6 @@ export const ModelSelectionPage: React.FC<ModelSelectionPageProps> = ({
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All Models');
   const [selectedProvider, setSelectedProvider] = useState('All Providers');
-  const { toasts, removeToast, showSuccess, showError, showWarning } = useToast();
 
   const handleModelSelect = async (model: Model) => {
     await updateModelSelection(model);
@@ -88,11 +85,11 @@ export const ModelSelectionPage: React.FC<ModelSelectionPageProps> = ({
   };
 
   const steps = [
-    'Data Upload',
-    'Model Selection', 
-    'Hyperparameters',
-    'Job Review',
-    'Success'
+    { id: 'data-upload', title: 'Data Upload' },
+    { id: 'model-selection', title: 'Model Selection' },
+    { id: 'hyperparameters', title: 'Hyperparameters' },
+    { id: 'job-review', title: 'Job Review' },
+    { id: 'success', title: 'Success' }
   ];
 
   return (
@@ -146,9 +143,6 @@ export const ModelSelectionPage: React.FC<ModelSelectionPageProps> = ({
                     models={filteredModels}
                     selectedModel={selectedModel}
                     onModelSelect={handleModelSelect}
-                    showWarning={showWarning}
-                    showSuccess={showSuccess}
-                    showError={showError}
                   />
                 )}
               </div>
@@ -156,11 +150,7 @@ export const ModelSelectionPage: React.FC<ModelSelectionPageProps> = ({
 
             {/* HuggingFace Search Section */}
             <div className="mt-8">
-              <HuggingFaceSearch 
-                showSuccess={showSuccess}
-                showError={showError}
-                showWarning={showWarning}
-              />
+              <HuggingFaceSearch />
             </div>
           </div>
 
@@ -180,9 +170,6 @@ export const ModelSelectionPage: React.FC<ModelSelectionPageProps> = ({
           nextLabel="Continue to Hyperparameters"
           backLabel="Back to Data Upload"
         />
-        
-        {/* Global Toast Notifications */}
-        <ToastContainer toasts={toasts} onRemove={removeToast} />
       </div>
     </div>
   );

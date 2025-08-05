@@ -56,7 +56,7 @@ const ToastNotification: React.FC<ToastNotificationProps> = ({
       onRemove(toast.id);
       toast.onClose?.();
     }, 300); // Match animation duration
-  }, [onRemove, toast.id, toast.onClose]);
+  }, [onRemove, toast.id, toast.onClose, toast]);
 
   useEffect(() => {
     // Trigger entrance animation

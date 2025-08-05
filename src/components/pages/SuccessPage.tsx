@@ -1,11 +1,12 @@
 'use client'
 
 import React, { useState, useEffect, Suspense } from 'react';
-import { ArrowRight, PlayCircle, Home } from 'lucide-react';
-import { ProgressStepper } from '../dataset-selection/ProgressStepper';
-import { JobCard, ToastContainer, DrawingCheckmark } from '../common';
-import { useToast } from '../../hooks/useToast';
+import { ArrowRight, PlayCircle, Home, Plus } from 'lucide-react';
+import { ProgressStepper } from '../stepper';
+import { JobCard, DrawingCheckmark } from '../common';
+import { useToast } from '../toast';
 import { loadCurrentJobs, getActiveJobs, Job } from '../../utils/jobUtils';
+import { useFinetuningStore } from '../../store/finetuningStore';
 
 interface SuccessPageProps {
   onNavigate?: (pageId: string) => void;
@@ -40,6 +41,7 @@ export const SuccessPage: React.FC<SuccessPageProps> = ({
   searchParams 
 }) => {
   const { toasts, addToast, removeToast } = useToast();
+  const reset = useFinetuningStore((state) => state.reset);
   
   const [currentJobs, setCurrentJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
@@ -50,11 +52,11 @@ export const SuccessPage: React.FC<SuccessPageProps> = ({
   const jobUid = searchParams?.get('jobUid');
 
   const steps = [
-    'Data Upload',
-    'Model Selection', 
-    'Hyperparameters',
-    'Job Review',
-    'Success'
+    { id: 'data-upload', title: 'Data Upload' },
+    { id: 'model-selection', title: 'Model Selection' },
+    { id: 'hyperparameters', title: 'Hyperparameters' },
+    { id: 'job-review', title: 'Job Review' },
+    { id: 'success', title: 'Success' }
   ];
 
   // Load current jobs from backend or local data
@@ -100,6 +102,21 @@ export const SuccessPage: React.FC<SuccessPageProps> = ({
     if (onNavigate) {
       onNavigate('dashboard');
     }
+  };
+
+  const handleStartNewJob = () => {
+    // Reset the finetuning store to start fresh
+    reset();
+    
+    // Navigate to the beginning of the finetuning workflow
+    if (onNavigate) {
+      onNavigate('dataset-selection');
+    }
+    
+    addToast({ 
+      type: 'success', 
+      title: 'Ready to create a new job! All previous data has been cleared.'
+    });
   };
 
   const handleViewJob = (uid: string) => {
@@ -154,6 +171,14 @@ export const SuccessPage: React.FC<SuccessPageProps> = ({
                 <PlayCircle className="w-5 h-5 mr-2" />
                 View Job Progress
                 <ArrowRight className="w-5 h-5 ml-2" />
+              </button>
+              
+              <button
+                onClick={handleStartNewJob}
+                className="flex items-center px-8 py-4 bg-green-600 hover:bg-green-700 text-white rounded-xl font-medium transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+              >
+                <Plus className="w-5 h-5 mr-2" />
+                Start New Job
               </button>
               
               <button
@@ -213,8 +238,6 @@ export const SuccessPage: React.FC<SuccessPageProps> = ({
           </div>
         </div>
       </div>
-
-      <ToastContainer toasts={toasts} onRemove={removeToast} />
     </div>
   );
 };

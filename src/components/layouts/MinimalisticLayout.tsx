@@ -6,6 +6,7 @@ import { mockStats } from '../../types';
 import { SideAnimation } from '../common/SideAnimation';
 import { Button } from '../ui';
 import { Plus } from 'lucide-react';
+import { useFinetuningStore } from '../../store/finetuningStore';
 
 interface MinimalisticLayoutProps {
   children?: React.ReactNode;
@@ -32,6 +33,7 @@ const getTimeBasedGreeting = () => {
  */
 export const MinimalisticLayout: React.FC<MinimalisticLayoutProps> = ({ children, onNavigate }) => {
   const router = useRouter();
+  const reset = useFinetuningStore((state) => state.reset);
   const [mounted, setMounted] = useState(false);
   const [statsVisible, setStatsVisible] = useState(false);
 
@@ -52,6 +54,9 @@ export const MinimalisticLayout: React.FC<MinimalisticLayoutProps> = ({ children
   };
 
   const handleCreateJob = () => {
+    // Reset the finetuning store to start fresh
+    reset();
+    
     if (onNavigate) {
       onNavigate('dataset-selection');
     } else {

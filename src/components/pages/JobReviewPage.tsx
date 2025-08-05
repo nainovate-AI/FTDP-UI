@@ -2,16 +2,15 @@
 
 import React, { useState, useEffect } from 'react';
 import { ChevronDown, ChevronUp, Edit3, Check, X, HelpCircle, AlertTriangle, ExternalLink } from 'lucide-react';
-import { ProgressStepper } from '../dataset-selection/ProgressStepper';
+import { ProgressStepper } from '../stepper';
 import {
   JobReviewNavigationButtons,
   JobConfigurationSummary,
   ModelSavingOptions,
   JobMetadata
 } from '../job-review';
-import { useToast } from '../../hooks/useToast';
+import { useToast } from '../toast';
 import { useTagManagement } from '../../hooks/useTagManagement';
-import { ToastContainer } from '../common/ToastNotification';
 
 interface JobConfiguration {
   model: {
@@ -187,7 +186,7 @@ export const JobReviewPage: React.FC<JobReviewPageProps> = ({
       } catch (err) {
         console.error('Error loading job configuration:', err);
         setError(err instanceof Error ? err.message : 'Failed to load configuration');
-        addToast('Failed to load job configuration. Make sure the backend is running.', 'error');
+        addToast({ type: 'error', title: 'Failed to load job configuration. Make sure the backend is running.' });
       } finally {
         setLoading(false);
       }
@@ -197,11 +196,11 @@ export const JobReviewPage: React.FC<JobReviewPageProps> = ({
   }, [addToast]);
 
   const steps = [
-    'Data Upload',
-    'Model Selection', 
-    'Hyperparameters',
-    'Job Review',
-    'Success'
+    { id: 'data-upload', title: 'Data Upload' },
+    { id: 'model-selection', title: 'Model Selection' },
+    { id: 'hyperparameters', title: 'Hyperparameters' },
+    { id: 'job-review', title: 'Job Review' },
+    { id: 'success', title: 'Success' }
   ];
 
   // Navigation handlers - updated to use new URL system
@@ -216,12 +215,12 @@ export const JobReviewPage: React.FC<JobReviewPageProps> = ({
   const handleCreateJob = async () => {
     // Validate required fields
     if (!jobMetadata.name.trim()) {
-      addToast('Job name is required', 'error');
+      addToast({ type: 'error', title: 'Job name is required' });
       return;
     }
     
     if (modelSaving.type === 'huggingface' && !modelSaving.huggingfaceRepo.trim()) {
-      addToast('Hugging Face repository name is required', 'error');
+      addToast({ type: 'error', title: 'Hugging Face repository name is required' });
       return;
     }
     
@@ -250,7 +249,7 @@ export const JobReviewPage: React.FC<JobReviewPageProps> = ({
       
       const result = await response.json();
       
-      addToast(`Finetuning job "${jobMetadata.name}" created successfully!`, 'success');
+      addToast({ type: 'success', title: `Finetuning job "${jobMetadata.name}" created successfully!` });
       
       // Navigate to success screen with job UID using new URL system
       if (onNext) {
@@ -261,10 +260,10 @@ export const JobReviewPage: React.FC<JobReviewPageProps> = ({
       
     } catch (err) {
       console.error('Error creating job:', err);
-      addToast(
-        err instanceof Error ? err.message : 'Failed to create finetuning job. Make sure the backend is running.',
-        'error'
-      );
+      addToast({
+        type: 'error',
+        title: err instanceof Error ? err.message : 'Failed to create finetuning job. Make sure the backend is running.'
+      });
     }
   };
 
@@ -364,8 +363,6 @@ export const JobReviewPage: React.FC<JobReviewPageProps> = ({
           />
         </div>
       </div>
-
-      <ToastContainer toasts={toasts} onRemove={removeToast} />
     </div>
   );
 };

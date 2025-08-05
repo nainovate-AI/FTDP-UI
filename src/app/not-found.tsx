@@ -79,7 +79,7 @@ export default function NotFound() {
             
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
               <Link 
-                href="/finetuning/dataset-selection"
+                href="/finetuning?step=dataset-selection"
                 className="group p-4 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all duration-200"
               >
                 <div className="flex items-center space-x-3">
@@ -113,7 +113,7 @@ export default function NotFound() {
               </Link>
 
               <Link 
-                href="/finetuning/model-selection"
+                href="/finetuning?step=model-selection"
                 className="group p-4 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all duration-200"
               >
                 <div className="flex items-center space-x-3">
